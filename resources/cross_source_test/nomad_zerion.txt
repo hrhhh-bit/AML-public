@@ -1,0 +1,73 @@
+read://https_zerion.io/?url=https%3A%2F%2Fzerion.io%2Fblog%2Fnomad-bridge-hack%2F
+
+$190 Million Bridge Hack: A Simple Explanation of How Nomad Bridge Got Drained
+An attacker and hundreds of copypasta looters took $190 million during the Nomad bridge hack. Here’s a simple explanation of what happened.
+
+An attacker and hundreds of copypasta looters withdrew over $190 million from Nomad bridge. Here’s a simple explanation of what happened.
+
+What is the Nomad bridge?
+Nomad is a cross-chain bridge for sending tokens between Ethereum, Avalanche, Evmos, Milkomeda C1, and Moonbeam networks.
+
+How did Nomad get hacked?
+It appears that the attacker first managed to withdraw 100 WBTC. Then they immediately swapped it for WETH and ETH.
+
+👀
+You can use Zerion Wallet to get notifications for transactions from any wallet, including whales and hackers who could dump tokens.
+Nomad bridge attacker
+The first transaction from the Nomad bridge hacker
+The attacker dumped all the tokens and converted all to ETH. The hacker's wallet still holds >2k ETH.
+
+👍
+UPD: On August 6, the hacker returned 1,885 ETH (~$3.2 million) to the bridge address.
+Nomad bridge hacker's wallet
+The Nomad hacker's wallet
+Over the next couple of hours, Nomad’s wallet balance went down from >$190 million to $16.5k.
+
+Nomad bridge's address
+Nomad bridge's address
+The original cause of the attack was that Nomad's smart contract failed to properly validate the input of the transaction.
+
+What’s unique about this attack is that thousands of addresses looted Nomad’s account.
+
+It appears that they were able to copy & paste the attacker’s original call data, adding their own addresses. If you want to understand how this was possible, 0xfoobar has done a post-mortem on the attack.
+
+Nomad also published their detailed own root cause analysis of the attack.
+
+In short: the attacker found a vulnerability in the smart code. It doesn’t look like this could affect other bridges.
+
+Over $36 million returned by white hat hackers
+Luckily, some of the ‘looting’ addresses have said they acted as 'white hat hackers' and returned the funds:
+
+This one got $3.4 million and already returned
+Darkfi.eth, the Rari Capital exploiter, got almost $2 million and also returned
+returner-of-beans.eth sent back $1 million USDC
+anime-enjoyer.eth returned over $1 million
+So far, more than 40 addresses returned over $36 million to the Nomad recovery address.
+
+Could it be because people were after the highly sought-after RAAVE tickets?
+
+
+Nomad also announced an up to 10% bounty: those who return >90% of funds they looted will be considered white hat and can keep the rest. Nomad will not pursue any legal action against those who returned funds.
+
+What can you do?
+If you had funds bridged via Nomad, unfortunately, there likely's nothing you can do.
+
+Please ignore any impersonators who promise to “return funds” — those are scammers.
+
+The best thing to do now is to wait until official instructions from the Nomad team and the affected networks' teams.
+
+You can also poke around the transaction history for Nomad’s smart contract address and see who was withdrawn assets.
+
+A telltale of the attacker or copycat looter (some even used their ENS handles) are transactions with the same amounts — it’s all on-chain.
+
+Suspicious transactions during Nomad bridge attack
+Suspicious transactions during the Nomad bridge attack
+If you see a suspicious transaction, tweet them with a link.
+
+Maybe as a community, we could call on more people to declare their actions as “white hat” and return the funds.  
+
+Watch wallets with Zerion
+With Zerion Wallet, you can easily watch any address and get notifications when they do anything. That's a great way to avoid being blindsided by whale trades.
+
+You can also easily track your own transaction history as well as the whole DeFi and NFT portfolio by connecting all your addresses to Zerion.
+

@@ -45,6 +45,11 @@ __all__ = [
 #: Engineering tolerance for normalised flow-conservation checks.
 FLOW_TOLERANCE: float = 0.01
 
+#: Valid macro scale tiers (mirrors the agent layer's ScaleTier values).
+_VALID_SCALE_TIERS: frozenset[str] = frozenset(
+    {"Retail", "Medium", "Whale", "State_Sponsored"}
+)
+
 
 # ---------------------------------------------------------------------------
 # Enumerations (abstract vocabularies)
@@ -287,6 +292,20 @@ class TopologicalMotif(BaseModel):
         default=(),
         description="Optional semantic tags used by the dense retriever.",
     )
+    applicable_scale_tiers: tuple[str, ...] = Field(
+        default=(),
+        description="Macro fund-volume tiers this motif applies to (e.g. "
+        "'Whale'). Strings kept in aml_rag to avoid an upward dependency on "
+        "the agent layer; valid values mirror ScaleTier.",
+    )
+
+    @field_validator("applicable_scale_tiers")
+    @classmethod
+    def _check_scale_tiers(cls, v: tuple[str, ...]) -> tuple[str, ...]:
+        invalid = sorted(set(v) - _VALID_SCALE_TIERS)
+        if invalid:
+            raise ValueError(f"Invalid scale tier(s): {invalid}")
+        return v
 
     # -- structural validation ----------------------------------------------
     @model_validator(mode="after")
@@ -419,6 +438,24 @@ class TopologicalMotif(BaseModel):
         role_of = {n.temp_id: n.role.value for n in self.nodes}
         return {
             (role_of[e.source], role_of[e.target], e.operation.value)
+            for e in self.edges
+        }
+
+    def flow_signature_set(self) -> set[tuple[str, str, str, float]]:
+        """Flow-aware signatures ``(src_role, tgt_role, op, flow_share)``.
+
+        Used for non-isomorphic de-duplication at ingest time: two motifs are
+        distinct only if their operator/role topology *and* flow archetypes
+        differ (e.g. asymmetric peel vs. equal-slice split).
+        """
+        role_of = {n.temp_id: n.role.value for n in self.nodes}
+        return {
+            (
+                role_of[e.source],
+                role_of[e.target],
+                e.operation.value,
+                round(e.flow_share, 2),
+            )
             for e in self.edges
         }
 

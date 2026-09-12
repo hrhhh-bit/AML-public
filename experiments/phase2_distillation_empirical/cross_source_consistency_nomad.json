@@ -1,0 +1,59 @@
+{
+  "sources": {
+    "CertiK": {
+      "path": "D:\\projects\\AML\\resources\\cross_source_test\\nomad_certik.txt",
+      "chunks": 2,
+      "motifs": 1
+    },
+    "Zerion": {
+      "path": "D:\\projects\\AML\\resources\\cross_source_test\\nomad_zerion.txt",
+      "chunks": 1,
+      "motifs": 1
+    }
+  },
+  "check2_cross_source_consistency": {
+    "source_names": [
+      "CertiK",
+      "Zerion"
+    ],
+    "overall_consistency": 0.6667,
+    "pattern_strict_jaccard": 0.25,
+    "global_topology_jaccard": 0.6667,
+    "per_pattern": {
+      "Chain_Hopping": 0.25
+    },
+    "global_operator_sets": {
+      "CertiK": [
+        "Bridge",
+        "Transfer"
+      ],
+      "Zerion": [
+        "Bridge",
+        "Swap",
+        "Transfer"
+      ]
+    },
+    "global_role_sets": {
+      "CertiK": [
+        "Cross_Chain",
+        "Source",
+        "Target"
+      ],
+      "Zerion": [
+        "Asset_Conversion",
+        "Cross_Chain",
+        "Source",
+        "Target"
+      ]
+    }
+  },
+  "zero_noise_audit": {
+    "CertiK_residue_count": 0,
+    "Zerion_residue_count": 0,
+    "all_passed": true
+  },
+  "topology_validity": {
+    "CertiK_valid_rate": 1.0,
+    "Zerion_valid_rate": 1.0
+  }
+}

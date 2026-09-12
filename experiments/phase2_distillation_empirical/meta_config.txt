@@ -1,0 +1,10 @@
+﻿experiment: phase2_distillation_empirical
+model: deepseek-flash
+temperature: 0.1
+timestamp: 2026-09-12 17:11:47
+input_dataset: resources/Crypto-Asset-Tracing-Handbook
+chunks_processed: 9
+motifs_extracted: 7
+kb_size_after: 18
+validity_rate: 1.0
+noise_residue: 0

@@ -1,0 +1,90 @@
+https://www.certik.com/blog/nomad-bridge-exploit-incident-analysis
+
+Nomad Bridge Exploit Incident Analysis 
+TL;DR
+On Aug 1st, 2022 the Nomad bridge experienced an exploit causing a loss of around $190M worth of assets. The vulnerability was in the initialization process where the “committedRoot” is set as ZERO. Therefore, the attackers were able to bypass the message verification process and drain the tokens from the bridge contract.
+
+Summary
+Nomad Bridge, a cross-chain bridge between Ethereum, Moonbeam, Avalanche, Evmos and Milkomeda was exploited for ~$190M. The exploit occured when a routine upgrade allowed verification messages to be bypassed on Nomad. Attackers abused this to copy/paste transactions and were able to drain the bridge of nearly all funds before it could be stopped.
+
+Protocol Details: Nomad Bridge is a protocol allowing users to move digital assets between different blockchains. Asset issuers can deploy tokens across chains. Developers can build native cross-chain applications (xApps) with Nomad. The goal of Nomad is to provide the connective tissue to enable users and developers to interact securely. Nomad is a token bridge that allows transfers of tokens between Avalanche (AVAX), Ethereum (ETH), Evmos (EVMOS), Milkomeda C1, and Moonbeam (GLMR).
+
+The Nomad token bridge appears to have experienced a security exploit that has allowed hackers to systematically drain the bridge’s funds over a long series of transactions.The vulnerability was in the initialization process where the “committedRoot” is set as ZERO. Therefore, the attacker was able to bypass the message verification process and drain the tokens from the bridge contract. Due to this flawed upgrade, users could exploit bridge funds by copying the original hacker's transaction calldata and replacing the original address with a personal one. The transaction then processed and successfully removed funds from the bridge. At this time, ~$190M has been exploited. In four hours, other hackers, bots, and community members replicated the initial attack, draining it in a frenzied mob attack in what twitter user @0xfoobar called, “...the first decentralized crowd-looting of a 9-figure bridge in history?” Nomad tweeted: “We are aware of the incident involving the Nomad token bridge. We are currently investigating and will provide updates when we have them.”Nomad (⤭⛓🏛) on Twitter
+
+Exploit Transactions
+Example attack:
+
+On moonbeam bridge transfer 0.01 WBTC: GLMR Transaction Hash (Txhash) Details | Moonbeam
+
+On etherem bridge received 100WBTC transfer 0xa5fe9
+
+There are multiple attacks txs
+
+Addresses
+Address	Amount (USD)	Gas Source
+0x56d8b	47.5M (WETH)	Tornado Cash
+0xbf293	39M (USDC+DAI)	Tornado Cash
+0xb5c55	8M(CQT+DAI+USDC+WBTC+FRAX)	Tornado Cash
+0xc9943	5.6M(USDC+FRAX+WETH+CQT)	Tornado Cash ->0x3ee9f5e0c085775312076Ec82ed6bf4942D8BD7f
+0x00000	3M(WBTC+WETH+USDC+FRAX+DAI+CQT)	Tornado Cash ->Creator: 0xE71AcA93C0E0721F8250D2d0e4F883AA1C020361
+0x51841	1.5M(ETH + USDC)	https://etherscan.io/accounts/label/opportunistResident Arbitrageur
+0xe403c	1M(FRAX + USDC)	Tornado Cash ->0xe3f40743cc18fd45d475fae149ce3ecc40af68c3
+
+显示详细信息
+Attack Flow
+Take transaction 0xa5fe9 as an example.
+
+The attacker called process function.
+
+Inside the process function, acceptableRoot(messages[_messageHash]), is called, which is used to check that the root has been submitted and that the optimistic timeout period has expired. The messages[_messageHash] is 0x000 in this case.
+
+lbD8cmxFFGT0pvVZx OtT5syX-XslRYwwvoEKaP88jJD g14M0YMMBMM96yTxZeXaVzr2DjgBIIa9kcHmi8afWtEtd2w06E8qaf3gxxUJhlftLosp 1mGxOVtXwuowh-GU8eskosasxd c56RoyOCDk (1)
+
+The function acceptableRoot(messages[_messageHash]) returns true, and the message is proved. This is caused by 0x0000 is initialized as true(We believe this is a mistake in the deployment).
+I8DPT8rmGZOMT2Jyahv8AXnEawQOyDkMVXHkWc2gAx9IVYZsDwhzUW8d2n3X4EORozRdjnEQvKLS365JjubnUo2U1wA 0N49mIbAz5ipTsyhBzm6t47TN8S0DW np1amLrLL8hGVXpgnshYEHWhKzGII8DPT8rmGZOMT2Jyahv8AXnEawQOyDkMVXHkWc2gAx9IVYZsDwhzUW8d2n3X4EORozRdjnEQvKLS365JjubnUo2U1wA 0N49mIbAz5ipTsyhBzm6t47TN8S0DW np1amLrLL8hGVXpgnshYEHWhKzGI
+
+After the message is proved, the attacker is able to transfer tokens out of the bridge.
+Vulnerability
+Initialization stage
+The Replica contract was mistakenly initialized in the transaction 0x53fd9, in which the “committedRoot” is initialized as ZERO.
+
+Attack Stage
+Therefore, the attacker can directly call the “process(byte memory _message)” function with an arbitrary “_message” to bypass the verification.
+
+Contract address: 0x88a69
+
+The function process ensures the message hash is proven by checking acceptableRoot(). CAhN2ccyazdxCQJjV cfVnrv 2RFHvVMubeoHgF-ID9uLuLBFfN5dto71lqPqcO imQx6avOwc-9dTjp687B1lcZwxHL3RC5Gm3DeGU94srGuSKrVWl1kVTDzzSTwzlz5BIFczWjCeWNIis5JcVrwpY
+
+The function acceptableRoot() will check the root if it’s proven, processed or confirmed.
+
+UpWX-n73x14aC3pDogK9ax5pfy7wVfyuDdeXYjrpABfFsjPVVdXsPsTczvwzUIuWkZrHH-arUB0XRowSwVlMJUZahZX6wUaHVDX-A Q Yge iAEoOkbV0UhobgEQyr 7FeP9JhKS8q3wBPd2sRWAQoA
+
+While in the initialization transaction 0x53fd9, the owner sends 0 and the confirmAt of 0 will be set as 1.
+
+ut8Kvcrq8rjlGPchC9q6xufziuWPdYusJoTsL7Z4FX28OuRE8z3UNyfDFSWGJyxBF7-8UobqFOe2S8QEgLLZl-HJvmr07LPyfbNoBiJJb9xyPFZ7v HAPO63OqCT6cAGvZp1WzHZsiBGUP4vUQZS- o
+
+2N2QzHs4omRFW4PeEvisfN- vN8 xFDLLYD3LsMNg2Np-9PU1-6CBrzrvrJIxaHFQpeZGdaM53Onh61ohoNTE7G1ufmGA-O1M-MECFholbTE2otaYD0PUd8nT38klazseZ2A FrPxiIAv5agnKRiFhg
+
+Thus, zero is considered as an acceptableRoot and can be checked in 0xb9233.
+
+Based on the implementation of function prove(), the root of an unproven message is also zero and zero as a valid confirmed root can bypass the require check. The attacker just needs to call process send the transaction to the bridge and get the money.
+
+iWRWPVp6-VhI234yWNWykQ54gqLdmfZHLYpfPBVTxC6mefVjpiaVlKmcQR7b9iGIZEj8Yvy3KMC9Gv1hCLulWthfC8wMg1UjeVy85yPVuf5ZDE0dAjq6Mfih2dgMoxI W9IkLGTLAyB2kGu0l5zvctY 5b2GLTo-DJAdHgKKj5NjCvCeDJ32jHij0xTLOONPMuoTdcmX-yvh7iCXAFd-QIv i0b4FNwsFs7u-x83qfmU8gIlfJrjRkCo23TGPcvx1NjLWbjqyNhPdvu9EvjGRozhfAwM rxX9bTBk TYOIHy7RQ
+
+Profit and Assets Tracing
+About 190M worth of tokens are drained from the bridge.
+
+DefiLlama ← Current valuation of bridge and charts to the in and outflows. LtbB5J2ILex3joLZj-OvHWm8O7zbYhv3A4twzeRVNfpUiVCB8RncMnov43MSUKV7qmuBbUL5wpYNMMnui5gclSywTL-wwxA9ulnTlICwG yF5 XMfWrdDJhsS95FNJG2zVISFrRYIbM0dsD0qbmYrsY (1)
+
+Token Type	Amount(USD)
+USDC	87.42M
+WETH	37.98M
+WBTC	23.9M
+CQT	14.2
+USDT	8.6M
+FRAX	7.11M
+DAI	4.48M
+IAG	4.1M
+Can the issue be found during the audit?
+This type of issue would be difficult to discover under conventional auditing practices that assume all deployment configurations are correct, because this particular bug was introduced by mistakes in the deployment parameters. However, a broader auditing process and full-scope penetration test that includes validating deployment processes would potentially capture this bug. In addition, CertiK offers added service for the post deployment stage - Contract Verification which with in-depth analysis of smart contract analysis and post deployment contract verification. For more information, please contact [email protected].
+

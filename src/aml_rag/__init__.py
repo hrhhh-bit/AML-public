@@ -14,11 +14,37 @@ Generation framework.  Provides:
 from __future__ import annotations
 
 from .context_builder import PromptContextCompressor
+from .distiller import (
+    DISTILLATION_SYSTEM_PROMPT_V2,
+    DistillationFailure,
+    DistillationPromptBuilder,
+    DistillationResult,
+    MotifDistiller,
+    TextChunker,
+)
+from .evaluation import (
+    CrossSourceConsistencyEvaluator,
+    CrossSourceReport,
+    NoiseAuditReport,
+    SaturationPoint,
+    TopologyValidityReport,
+    cross_source_consistency,
+    motif_topology_issues,
+    saturation_analysis,
+    topology_validity,
+    zero_noise_audit,
+)
 from .extractor import (
     DISTILLATION_SYSTEM_PROMPT,
     DistillationError,
     DistillationParseError,
     MotifExtractor,
+)
+from .json_utils import (
+    extract_json_list,
+    extract_outermost_json,
+    load_json_robust,
+    strip_code_fences,
 )
 from .mock_data import SEED_MOTIFS, build_seed_motifs
 from .retriever import (
@@ -40,9 +66,9 @@ from .schema import (
     QueryContext,
     TopologicalMotif,
 )
-from .storage import MotifKnowledgeBase, build_default_knowledge_base
+from .storage import IngestReport, MotifKnowledgeBase, build_default_knowledge_base
 
-__version__ = "0.1.0"
+__version__ = "0.3.0"
 
 __all__ = [
     # schema
@@ -62,12 +88,36 @@ __all__ = [
     "SEED_MOTIFS",
     # storage
     "MotifKnowledgeBase",
+    "IngestReport",
     "build_default_knowledge_base",
     # extractor
     "DISTILLATION_SYSTEM_PROMPT",
     "DistillationError",
     "DistillationParseError",
     "MotifExtractor",
+    # distiller
+    "DISTILLATION_SYSTEM_PROMPT_V2",
+    "TextChunker",
+    "DistillationPromptBuilder",
+    "MotifDistiller",
+    "DistillationResult",
+    "DistillationFailure",
+    # evaluation
+    "topology_validity",
+    "motif_topology_issues",
+    "cross_source_consistency",
+    "CrossSourceConsistencyEvaluator",
+    "zero_noise_audit",
+    "saturation_analysis",
+    "TopologyValidityReport",
+    "CrossSourceReport",
+    "NoiseAuditReport",
+    "SaturationPoint",
+    # json utils
+    "strip_code_fences",
+    "extract_outermost_json",
+    "load_json_robust",
+    "extract_json_list",
     # retriever
     "DeterministicHashEmbedder",
     "DualTrackMotifRetriever",

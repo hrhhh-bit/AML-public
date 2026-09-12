@@ -1,0 +1,89 @@
+{
+  "input": "D:\\projects\\AML\\resources\\Crypto-Asset-Tracing-Handbook",
+  "chunks": 9,
+  "motifs_distilled": 7,
+  "distillation_failures": [],
+  "check1_topology_validity": {
+    "total": 7,
+    "valid": 7,
+    "valid_rate": 1.0,
+    "invalid_motifs": {}
+  },
+  "check2_cross_source_consistency": {
+    "overall_consistency": 0.25,
+    "per_pattern": {
+      "Peeling_Chain": 0.25
+    },
+    "source_names": [
+      "source_a",
+      "source_b"
+    ]
+  },
+  "check3_zero_noise_audit": {
+    "total": 7,
+    "violations": {},
+    "residue_count": 0
+  },
+  "check4_saturation_analysis": [
+    {
+      "chunk_index": 0,
+      "marginal_new": 0,
+      "cumulative_unique": 0
+    },
+    {
+      "chunk_index": 1,
+      "marginal_new": 0,
+      "cumulative_unique": 0
+    },
+    {
+      "chunk_index": 2,
+      "marginal_new": 1,
+      "cumulative_unique": 1
+    },
+    {
+      "chunk_index": 3,
+      "marginal_new": 1,
+      "cumulative_unique": 2
+    },
+    {
+      "chunk_index": 4,
+      "marginal_new": 1,
+      "cumulative_unique": 3
+    },
+    {
+      "chunk_index": 5,
+      "marginal_new": 1,
+      "cumulative_unique": 4
+    },
+    {
+      "chunk_index": 6,
+      "marginal_new": 1,
+      "cumulative_unique": 5
+    },
+    {
+      "chunk_index": 7,
+      "marginal_new": 1,
+      "cumulative_unique": 6
+    },
+    {
+      "chunk_index": 8,
+      "marginal_new": 1,
+      "cumulative_unique": 7
+    }
+  ],
+  "ingest": {
+    "added": [
+      "peeling_chain_iterative_asymmetric_split_v1",
+      "multi_layering_split_fanout_v1",
+      "mixer_pooling_obfuscation",
+      "motif_chain_hopping_bridge_evasion",
+      "many_to_one_consolidation",
+      "otc_p2p_integration_merge"
+    ],
+    "duplicate_ids": [],
+    "isomorphic_skips": [
+      "multi_hop_transfer_chain_v1"
+    ]
+  },
+  "kb_size_after_ingest": 18
+}

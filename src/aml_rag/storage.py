@@ -16,9 +16,38 @@ import json
 from pathlib import Path
 from typing import Any, Iterable, Iterator, Mapping
 
+from pydantic import BaseModel, ConfigDict, Field
+
 from .schema import TopologicalMotif
 
-__all__ = ["MotifKnowledgeBase", "build_default_knowledge_base"]
+__all__ = [
+    "MotifKnowledgeBase",
+    "IngestReport",
+    "build_default_knowledge_base",
+]
+
+
+class IngestReport(BaseModel):
+    """Outcome of merging distilled motifs into a knowledge base."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    added: list[str] = Field(default_factory=list)
+    duplicate_ids: list[str] = Field(
+        default_factory=list, description="motif_id already present in the KB."
+    )
+    isomorphic_skips: list[str] = Field(
+        default_factory=list,
+        description="Flow-aware signatures already present (non-new topology).",
+    )
+
+    @property
+    def total_added(self) -> int:
+        return len(self.added)
+
+    @property
+    def total_skipped(self) -> int:
+        return len(self.duplicate_ids) + len(self.isomorphic_skips)
 
 
 class MotifKnowledgeBase:
@@ -40,6 +69,35 @@ class MotifKnowledgeBase:
     def add_many(self, motifs: Iterable[TopologicalMotif]) -> None:
         for motif in motifs:
             self.add(motif)
+
+    def merge_motifs(
+        self,
+        motifs: Iterable[TopologicalMotif],
+        *,
+        dedupe_isomorphic: bool = True,
+    ) -> IngestReport:
+        """Safely merge distilled motifs, de-duplicating ids & isomorphic shapes.
+
+        Returns an :class:`IngestReport` describing what was added vs skipped.
+        Existing records are never overwritten.
+        """
+        report = IngestReport()
+        existing_signatures: list[frozenset] = [
+            frozenset(m.flow_signature_set()) for m in self._motifs.values()
+        ]
+        for motif in motifs:
+            if motif.motif_id in self._motifs:
+                report.duplicate_ids.append(motif.motif_id)
+                continue
+            if dedupe_isomorphic:
+                signature = frozenset(motif.flow_signature_set())
+                if signature in existing_signatures:
+                    report.isomorphic_skips.append(motif.motif_id)
+                    continue
+                existing_signatures.append(signature)
+            self._motifs[motif.motif_id] = motif
+            report.added.append(motif.motif_id)
+        return report
 
     def get(self, motif_id: str) -> TopologicalMotif:
         try:
