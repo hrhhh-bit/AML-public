@@ -1,0 +1,1 @@
+Model: deepseek-flash | Temp: 0.1 | Base: https://api.deepseek.com | Runs: 9 trajectories

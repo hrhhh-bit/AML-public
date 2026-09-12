@@ -12,6 +12,14 @@ Decision layer that closes the loop between the prior knowledge engine
 
 from __future__ import annotations
 
+from .client import (
+    DEFAULT_BASE_URL,
+    DEFAULT_MODEL,
+    CallRecord,
+    LLMClient,
+    LLMMetrics,
+)
+from .narrative import audit_export_purity, build_strategy_narrative
 from .planner import (
     LLMCallable,
     Planner,
@@ -22,13 +30,14 @@ from .planner import (
     strip_code_fences,
 )
 from .prompts import PLANNER_SYSTEM_PROMPT, build_planner_prompt
-from .scenario import ScenarioGoals, ScenarioSpec
+from .scenario import ScaleTier, ScenarioGoals, ScenarioSpec
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "ScenarioSpec",
     "ScenarioGoals",
+    "ScaleTier",
     "Planner",
     "PlannerAgent",
     "Trajectory",
@@ -38,5 +47,12 @@ __all__ = [
     "PLANNER_SYSTEM_PROMPT",
     "parse_action_reply",
     "strip_code_fences",
+    "build_strategy_narrative",
+    "audit_export_purity",
+    "LLMClient",
+    "LLMMetrics",
+    "CallRecord",
+    "DEFAULT_MODEL",
+    "DEFAULT_BASE_URL",
     "__version__",
 ]

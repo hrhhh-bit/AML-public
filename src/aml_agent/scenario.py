@@ -9,11 +9,48 @@ evaluate the generated graph.
 
 from __future__ import annotations
 
+from enum import Enum
+
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from aml_rag.schema import NodeRole, OperationType
 
-__all__ = ["ScenarioGoals", "ScenarioSpec"]
+__all__ = ["ScaleTier", "ScenarioGoals", "ScenarioSpec"]
+
+
+class ScaleTier(str, Enum):
+    """Macro fund-volume tier guiding intended topology complexity.
+
+    Stage-1 uses this ONLY as an intent hint (chain length, branching,
+    cross-chain hops). It never participates in any balance arithmetic —
+    that belongs to Stage-2.
+    """
+
+    RETAIL = "Retail"
+    MEDIUM = "Medium"
+    WHALE = "Whale"
+    STATE_SPONSORED = "State_Sponsored"
+
+    def complexity_guidance(self) -> str:
+        """Natural-language complexity hint injected into planner prompts."""
+        return {
+            ScaleTier.RETAIL: (
+                "small retail-scale funds: keep the topology short and simple "
+                "(short linear chains, low branching, no cross-chain hops)"
+            ),
+            ScaleTier.MEDIUM: (
+                "medium-scale funds: moderate layering (a few splits and "
+                "merges, at most one cross-chain hop)"
+            ),
+            ScaleTier.WHALE: (
+                "whale-scale funds: deep obfuscation (multiple split/merge "
+                "cycles, multi-chain hopping through aggregators)"
+            ),
+            ScaleTier.STATE_SPONSORED: (
+                "state-sponsored scale: maximal layering (very deep chains, "
+                "heavy cross-chain hopping, nested split-merge structures)"
+            ),
+        }[self]
 
 
 class ScenarioGoals(BaseModel):
@@ -72,6 +109,18 @@ class ScenarioSpec(BaseModel):
         ge=1,
         description="Environment-level trajectory length cap (the PRIMARY "
         "limit; the planner itself does not add a separate cap).",
+    )
+    scale_tier: ScaleTier = Field(
+        default=ScaleTier.MEDIUM,
+        description="Macro fund-volume tier: intent hint for topology "
+        "complexity only; never used in balance arithmetic.",
+    )
+    estimated_value_usd: float | None = Field(
+        default=None,
+        ge=0.0,
+        description="Optional macro baseline valuation (USD). Static metadata "
+        "passed through to Stage-2; MUST NOT take part in any Stage-1 "
+        "balance calculation or deduction.",
     )
     goals: ScenarioGoals | None = Field(
         default=None, description="Structural success criteria (None = "

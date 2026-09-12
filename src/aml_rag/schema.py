@@ -39,7 +39,11 @@ __all__ = [
     "TopologicalMotif",
     "CurrentState",
     "QueryContext",
+    "FLOW_TOLERANCE",
 ]
+
+#: Engineering tolerance for normalised flow-conservation checks.
+FLOW_TOLERANCE: float = 0.01
 
 
 # ---------------------------------------------------------------------------
@@ -97,13 +101,26 @@ class AbstractNode(BaseModel):
 
 
 class AbstractEdge(BaseModel):
-    """A directed abstract operation edge between two motif-local nodes."""
+    """A directed abstract operation edge between two motif-local nodes.
+
+    ``flow_share`` is the normalised relative flow carried by this edge
+    (backward compatible default ``1.0``). It lets the knowledge base
+    distinguish geometrically identical sub-graphs behaviourally — e.g. a
+    Peeling Chain with asymmetric main/strip ratios vs. an equal-slice
+    Layering Split. Pure relative prior: no absolute amounts allowed.
+    """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     source: str = Field(min_length=1)
     target: str = Field(min_length=1)
     operation: OperationType
+    flow_share: float = Field(
+        default=1.0,
+        gt=0.0,
+        le=1.0,
+        description="Normalised flow share in (0.0, 1.0]; relative prior only.",
+    )
 
     def signature(self) -> tuple[str, str, str]:
         """Role/operation signature used for cross-motif path de-duplication."""
@@ -319,6 +336,31 @@ class TopologicalMotif(BaseModel):
                 raise ValueError(
                     f"Motif '{self.motif_id}': node '{nid}' out-degree {deg} exceeds "
                     f"max_branching_factor={self.constraints.max_branching_factor}."
+                )
+
+        # 6) motif-level flow conservation (relative priors must be physical)
+        split_groups: dict[str, list[AbstractEdge]] = {}
+        merge_groups: dict[str, list[AbstractEdge]] = {}
+        for e in edges:
+            if e.operation == OperationType.SPLIT:
+                split_groups.setdefault(e.source, []).append(e)
+            elif e.operation == OperationType.MERGE:
+                merge_groups.setdefault(e.target, []).append(e)
+        for nid, group in split_groups.items():
+            total = sum(e.flow_share for e in group)
+            if abs(total - 1.0) > FLOW_TOLERANCE:
+                raise ValueError(
+                    f"Motif '{self.motif_id}': Split out-edges of node '{nid}' "
+                    f"violate flow conservation (sum={total:.4f}, tolerance "
+                    f"{FLOW_TOLERANCE})."
+                )
+        for nid, group in merge_groups.items():
+            total = sum(e.flow_share for e in group)
+            if abs(total - 1.0) > FLOW_TOLERANCE:
+                raise ValueError(
+                    f"Motif '{self.motif_id}': Merge in-edges of node '{nid}' "
+                    f"violate flow conservation (sum={total:.4f}, tolerance "
+                    f"{FLOW_TOLERANCE})."
                 )
 
         return self

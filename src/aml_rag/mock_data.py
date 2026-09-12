@@ -50,8 +50,12 @@ def _n(temp_id: str, role: NodeRole, chain: str, level: int) -> AbstractNode:
     return AbstractNode(temp_id=temp_id, role=role, chain=chain, level=level)
 
 
-def _e(source: str, target: str, operation: OperationType) -> AbstractEdge:
-    return AbstractEdge(source=source, target=target, operation=operation)
+def _e(
+    source: str, target: str, operation: OperationType, flow_share: float = 1.0
+) -> AbstractEdge:
+    return AbstractEdge(
+        source=source, target=target, operation=operation, flow_share=flow_share
+    )
 
 
 def build_seed_motifs() -> list[TopologicalMotif]:
@@ -162,12 +166,14 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_A, 3),
             ],
             edges=[
-                _e("S", "I1", P),
-                _e("S", "I2", P),
-                _e("S", "I3", P),
-                _e("I1", "AGG", M),
-                _e("I2", "AGG", M),
-                _e("I3", "AGG", M),
+                # asymmetric split: dominant trunk + smaller peel streams
+                _e("S", "I1", P, 0.60),
+                _e("S", "I2", P, 0.25),
+                _e("S", "I3", P, 0.15),
+                # converging merge with graded contributions
+                _e("I1", "AGG", M, 0.45),
+                _e("I2", "AGG", M, 0.30),
+                _e("I3", "AGG", M, 0.25),
                 _e("AGG", "T", T),
             ],
             post_state_effect=PostStateEffect(
@@ -234,9 +240,9 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_A, 2),
             ],
             edges=[
-                _e("S1", "AGG", M),
-                _e("S2", "AGG", M),
-                _e("S3", "AGG", M),
+                _e("S1", "AGG", M, 0.40),
+                _e("S2", "AGG", M, 0.35),
+                _e("S3", "AGG", M, 0.25),
                 _e("AGG", "T", T),
             ],
             post_state_effect=PostStateEffect(
@@ -373,10 +379,11 @@ def build_seed_motifs() -> list[TopologicalMotif]:
             ],
             edges=[
                 _e("S", "AC", T),
-                _e("AC", "I1", P),
-                _e("AC", "I2", P),
-                _e("I1", "AGG", M),
-                _e("I2", "AGG", M),
+                # equal-slice anonymisation split (symmetric prototype)
+                _e("AC", "I1", P, 0.50),
+                _e("AC", "I2", P, 0.50),
+                _e("I1", "AGG", M, 0.50),
+                _e("I2", "AGG", M, 0.50),
                 _e("AGG", "T", T),
             ],
             post_state_effect=PostStateEffect(
@@ -442,8 +449,8 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_B, 4),
             ],
             edges=[
-                _e("S1", "AGG1", M),
-                _e("S2", "AGG1", M),
+                _e("S1", "AGG1", M, 0.60),
+                _e("S2", "AGG1", M, 0.40),
                 _e("AGG1", "CC", B),
                 _e("S3", "AGG2", M),
                 _e("CC", "AGG2", T),
@@ -484,9 +491,10 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_B, 3),
             ],
             edges=[
-                _e("S", "I1", P),
-                _e("S", "I2", P),
-                _e("S", "I3", P),
+                # equal three-way split (symmetric prototype)
+                _e("S", "I1", P, 0.34),
+                _e("S", "I2", P, 0.33),
+                _e("S", "I3", P, 0.33),
                 _e("I1", "CC1", B),
                 _e("I2", "CC2", B),
                 _e("I3", "CC3", B),

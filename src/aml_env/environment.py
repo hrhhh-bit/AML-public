@@ -217,10 +217,24 @@ class BehavioralEnvironment:
             )
             child_ids.append(cid)
 
+        # per-edge flow shares: agent-provided, else equal/unit fallbacks
+        shares: list[float]
+        if op == OperationType.SPLIT:
+            provided = action.parameters.get("flow_shares")
+            shares = (
+                [float(v) for v in provided]
+                if provided is not None
+                else [1.0 / num_children] * num_children  # equal-slice fallback
+            )
+        else:
+            shares = [1.0] * len(child_ids)
+
         for pid in action.parent_ids:
-            for cid in child_ids:
+            for cid, share in zip(child_ids, shares):
                 self._edges.append(
-                    AbstractEdge(source=pid, target=cid, operation=op)
+                    AbstractEdge(
+                        source=pid, target=cid, operation=op, flow_share=share
+                    )
                 )
                 self._outdeg[pid] = self._outdeg.get(pid, 0) + 1
 
@@ -293,7 +307,12 @@ class BehavioralEnvironment:
                 for _, n in sorted(self._nodes.items(), key=lambda kv: kv[0])
             ],
             "edges": [
-                {"source": e.source, "target": e.target, "operation": e.operation.value}
+                {
+                    "source": e.source,
+                    "target": e.target,
+                    "operation": e.operation.value,
+                    "flow_share": round(e.flow_share, 4),
+                }
                 for e in self._edges
             ],
         }
@@ -306,8 +325,11 @@ class BehavioralEnvironment:
             label = f"{node.role.value}<br/>{node.chain} · L{node.level}"
             lines.append(f'    {nid}["{label}"]')
         for edge in self._edges:
+            op_label = edge.operation.value
+            if edge.flow_share < 1.0:
+                op_label += f" {edge.flow_share:.2f}"
             lines.append(
-                f"    {edge.source} -->|{edge.operation.value}| {edge.target}"
+                f"    {edge.source} -->|{op_label}| {edge.target}"
             )
         return "\n".join(lines)
 

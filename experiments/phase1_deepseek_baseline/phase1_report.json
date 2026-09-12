@@ -1,0 +1,44 @@
+{
+  "per_scenario": [
+    {
+      "scenario": "retail_single_chain",
+      "runs": 3,
+      "success_rate": 1.0,
+      "conservation_first_try_compliance": 1.0,
+      "conservation_recovery_rate": 1.0,
+      "avg_steps": 4.0,
+      "avg_retries_per_step": 0.0,
+      "avg_prompt_tokens": 10298.3,
+      "avg_completion_tokens": 6134.0,
+      "avg_latency_ms": 8019.89
+    },
+    {
+      "scenario": "whale_cross_chain_mixing",
+      "runs": 3,
+      "success_rate": 1.0,
+      "conservation_first_try_compliance": 0.9643,
+      "conservation_recovery_rate": 1.0,
+      "avg_steps": 9.33,
+      "avg_retries_per_step": 1.214,
+      "avg_prompt_tokens": 32018.3,
+      "avg_completion_tokens": 29795.3,
+      "avg_latency_ms": 14722.66
+    },
+    {
+      "scenario": "medium_peeling_split",
+      "runs": 3,
+      "success_rate": 1.0,
+      "conservation_first_try_compliance": 1.0,
+      "conservation_recovery_rate": 1.0,
+      "avg_steps": 5.0,
+      "avg_retries_per_step": 0.0,
+      "avg_prompt_tokens": 14148.0,
+      "avg_completion_tokens": 7608.0,
+      "avg_latency_ms": 7801.76
+    }
+  ],
+  "overall": {
+    "success_rate": 1.0,
+    "avg_retries_per_step": 0.405
+  }
+}

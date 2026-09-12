@@ -24,7 +24,13 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from aml_rag.schema import AbstractEdge, AbstractNode, MotifConstraints, OperationType
+from aml_rag.schema import (
+    FLOW_TOLERANCE,
+    AbstractEdge,
+    AbstractNode,
+    MotifConstraints,
+    OperationType,
+)
 
 if TYPE_CHECKING:  # pragma: no cover - avoids circular import at runtime
     from .environment import AgentAction
@@ -91,6 +97,11 @@ class HardVerifier:
                 )
             new_edges_per_parent[action.parent_ids[0]] = num_children
 
+        # --- flow conservation gate (branching / merging actions) ----------
+        gate_error = self._check_flow_conservation(action, op, new_edges_per_parent)
+        if gate_error is not None:
+            return False, gate_error
+
         # --- branching cap d_max (current out-degree + new edges) ----------
         outdeg = Counter(e.source for e in edges)
         for pid, inc in new_edges_per_parent.items():
@@ -126,3 +137,51 @@ class HardVerifier:
             )
 
         return True, None
+
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _check_flow_conservation(
+        action: "AgentAction",
+        op: OperationType,
+        new_edges_per_parent: dict[str, int],
+    ) -> str | None:
+        """Flow conservation gate for branching/merging actions.
+
+        When ``flow_shares`` is provided it MUST be a normalised, well-formed
+        list summing to 1.0 within :data:`aml_rag.schema.FLOW_TOLERANCE`.
+        Returns a standardised reflection message on violation; ``None`` when
+        the action is clean. Missing shares are NOT rejected here — the
+        environment falls back to equal/unit defaults.
+        """
+        if op not in (OperationType.SPLIT, OperationType.MERGE):
+            return None
+        shares_raw = action.parameters.get("flow_shares")
+        if shares_raw is None:
+            return None  # environment-side fallback (equal split / unit merge)
+        n_edges = (
+            int(action.parameters.get("num_children", 2))
+            if op == OperationType.SPLIT
+            else len(action.parent_ids)
+        )
+        if not isinstance(shares_raw, (list, tuple)) or len(shares_raw) != n_edges:
+            return (
+                f"flow conservation: flow_shares must be a list of exactly "
+                f"{n_edges} entries for {op.value}, got {shares_raw!r}"
+            )
+        try:
+            values = [float(v) for v in shares_raw]
+        except (TypeError, ValueError):
+            return f"flow conservation: flow_shares must be numeric, got {shares_raw!r}"
+        if any(not (0.0 < v <= 1.0) for v in values):
+            return (
+                f"flow conservation: every share must be in (0.0, 1.0], "
+                f"got {values}"
+            )
+        total = sum(values)
+        if abs(total - 1.0) > FLOW_TOLERANCE:
+            return (
+                f"flow conservation violated: sum(flow_shares)={total:.4f} "
+                f"!= 1.0 (tolerance {FLOW_TOLERANCE}). Rebalance the shares "
+                f"so they sum to exactly 1.0."
+            )
+        return None

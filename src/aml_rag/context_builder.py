@@ -78,8 +78,12 @@ class PromptContextCompressor:
                 {"id": n.temp_id, "role": n.role.value, "chain": n.chain, "lvl": n.level}
                 for n in motif.topological_order()
             ],
-            # MOT-style triplets: [source, target, operation]
-            "edges": [[e.source, e.target, e.operation.value] for e in motif.edges],
+            # MOT-style quadruplets: [source, target, operation, flow_share]
+            # (flow_share is the motif's recommended relative flow ratio)
+            "edges": [
+                [e.source, e.target, e.operation.value, round(e.flow_share, 4)]
+                for e in motif.edges
+            ],
             "post": {
                 "branch_inc": post.branch_increment,
                 "chain_transition": post.chain_transition,
@@ -99,8 +103,11 @@ class PromptContextCompressor:
             label = f"{node.role.value}<br/>{node.chain} · L{node.level}"
             lines.append(f'    {mid(node.temp_id)}["{label}"]')
         for edge in motif.edges:
+            op_label = edge.operation.value
+            if edge.flow_share < 1.0:
+                op_label += f" {edge.flow_share:.2f}"
             lines.append(
-                f"    {mid(edge.source)} -->|{edge.operation.value}| {mid(edge.target)}"
+                f"    {mid(edge.source)} -->|{op_label}| {mid(edge.target)}"
             )
         return "\n".join(lines)
 

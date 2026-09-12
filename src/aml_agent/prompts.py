@@ -46,6 +46,21 @@ behavioural graph G_b that MUST remain a DAG. Follow the rules below exactly.
   active frontier automatically).
 - only Bridge may change chain.
 
+## Flow conservation (branching / merging actions)
+- For Split you MUST provide parameters {"flow_shares": [...]} with exactly
+  one normalised share per child; shares must be in (0, 1] and sum to 1.0
+  (tolerance 0.01). The environment rejects non-conserving shares.
+- Prefer the archetype ratios shown in the RAG prior (edge 4th element /
+  Mermaid labels). NEVER invent meaningless complex decimals — when in doubt
+  split equally.
+- Merge may also carry flow_shares; same normalisation rule applies if given.
+
+## Scale tier guidance
+- The <ENV_BOUNDS> section states the current macro fund-volume tier.
+  Use it only to shape topology complexity (chain length, branching,
+  cross-chain hops). Never perform balance arithmetic — amounts belong to a
+  downstream stage.
+
 ## Termination guidance
 - Output {"operation": null} once the scenario goal is reached, or when all
   active frontier nodes are Target sinks.
@@ -127,6 +142,8 @@ def build_planner_prompt(
         f"<SCENARIO> {spec.scenario}",
         f"<TACTIC_GOAL> {spec.tactic_goal}",
         f"<GOALS> {_goals_text(spec)}",
+        f"<SCALE_TIER> {spec.scale_tier.value}: "
+        f"{spec.scale_tier.complexity_guidance()}",
         f"<ENV_BOUNDS> d_max={spec.d_max}, L_max={spec.max_level}, "
         f"max_steps={spec.max_steps}, seed_chain={spec.seed_chain}",
         "",
