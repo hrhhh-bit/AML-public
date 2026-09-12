@@ -1,0 +1,97 @@
+### Core Concepts in Tracing
+
+**Wallets**
+
+* Hot Wallet: Always connected to the internet, with private keys stored on network devices. Used for frequent transactions, such as mobile wallets (imToken) or browser extension wallets (MetaMask).  
+* Cold Wallet: Stores private keys offline, such as hardware wallets like Ledger or Trezor. Used for storing large amounts of assets or for long-term storage.
+
+**Blockchain Addresses**
+
+* Deposit Address: Used for depositing to exchanges, typically controlled by the exchange and linkable to user accounts.
+
+
+* Hot Wallet Address: Active exchange addresses for daily transactions, frequently interacting with multiple addresses.
+
+
+* Cold Wallet Address: Long-term storage for large sums, with few transactions but large amounts.
+
+
+* Regular Address: A wallet address controlled by an individual, without obvious labels.
+
+* Contract Address: A deployed smart contract address that cannot initiate transactions itself; represents code on the blockchain capable of receiving assets, distributing funds, and executing logic (e.g., staking, lending, or trading).
+
+
+* Multi-Signature Address: Requires multiple private keys for authorization, commonly used by teams or institutions for asset custody.
+
+
+* Burn Address: An address without a known private key, used to destroy or pseudo-destroy assets, e.g., the all-zero address (0x0000000000000000000000000000000000000000).
+
+
+
+
+**Transaction Structure and Elements**
+
+* Block Height: The position of a block in the blockchain, used to determine transaction order.
+
+
+* Transaction Hash: The unique identifier (ID) for each transaction, enabling tracking of transfers or contract calls—like a transaction’s fingerprint.
+
+
+* Gas: The “fuel” cost of blockchain operations. Gas analysis can reveal transaction timing, priority, and even the source of fee funding.
+
+* Mixing: Using mixer protocols or services (e.g., Tornado Cash, Wasabi) to obfuscate transaction sources and destinations.
+
+* Swap: Token exchanges on DEXs (e.g., Uniswap, PancakeSwap), which may change asset form in the process.
+
+
+* Cross-Chain: Asset transfers between different blockchains, often involving bridge contracts; frequently used for laundering and dispersing funds.
+
+* Input Data: Parameters included when calling a smart contract, decodable to reveal swap paths, recipients, etc., often viewable in blockchain explorers.
+
+* Event Logs: Records of key operations during contract execution, useful for identifying token transfers, swaps, deposits, and withdrawals.
+
+
+
+## Common Fund Movement Patterns
+
+In cryptocurrency asset tracking, understanding the “transfer playbook” of attackers or scammers is a crucial step in determining transaction paths. Although fund movements on-chain may appear to be a series of simple address-to-address transfers, they often follow certain patterns or “behavior templates.” This section summarizes several common fund movement methods to help you quickly identify “non-standard” behavior in practical investigations.
+
+### Peel Chain
+
+A Peel Chain refers to a laundering technique in which large amounts of cryptocurrency are split into a long series of small transactions. This pattern is common in blockchain analysis. It typically starts from a “dirty” address linked to illicit activity. For example, Address A sends funds to Addresses B and C, with the transfer to B being very small while the transfer to C contains most of the value. C then sends a small amount to D and a large amount to E, and so on, until numerous addresses receive tiny amounts of cryptocurrency.
+
+
+### One-to-Many Distribution
+
+After receiving a large sum, an attacker may transfer the funds from the main wallet to dozens or even hundreds of intermediary addresses. For example, a single transaction worth 100,000 USDT might be split into 50 transfers of roughly 2,000 USDT each, with each address further splitting and sending out funds. This creates a complex “fan-shaped transfer structure” intended to confuse investigators, obscure transaction paths, dilute the original source of funds, delay investigative response time, and avoid having the entire sum frozen at once. On blockchain visualization tools, this appears as a large central address radiating multiple layers of outward fund flows—a classic early-stage laundering pattern.
+
+
+### Multi-Hop Transfers
+
+Attackers often move funds through rapid, multi-hop transfers, where each address is used only once before quickly sending funds onward, and most do not interact with any on-chain dApps. This intermediary structure, by increasing path length and nesting, disrupts behavior-model detection and delays risk-control responses—especially when executed intensively in the first few minutes after an incident, in order to sever the trail before monitoring systems react.
+
+
+### Mixer Usage
+
+Mixers are a classic tool for attackers to break on-chain traceability. The principle is to pool funds with those of other users, process them together, and output assets that cannot be directly matched to their original inputs. Common protocols include Tornado Cash and Wasabi. Mixer transactions often follow standardized patterns, such as uniform deposit sizes, specific waiting times, and synchronized withdrawals. If an address exhibits such characteristics, it is reasonable to suspect laundering activity. Mixers typically obscure paths by using uniform entry points, delayed outputs, and fragmented withdrawals, making “fund in” and “fund out” relationships visually unlinked. When combined with privacy coins (such as XMR) or other anonymity protocols, tracking becomes significantly more difficult.
+
+### Cross-Chain Bridge Hops
+
+To evade monitoring and tracing on a given blockchain, attackers may use cross-chain bridges to transfer assets to another network before continuing the movement. Common bridges include THORChain, LayerZero, and Across, with target chains often being networks with weaker investigative coverage (such as TRON). These cross-chain transfers often occur shortly after the attack, and the process may involve asset token changes, path interruptions, and reconstruction of destination addresses, further increasing the difficulty of tracing.
+
+
+### Many-to-One Consolidation
+
+In Ponzi schemes or rug-pull events, attackers often consolidate victim assets into one or a few “core wallets” within a short time, and then use those addresses to execute cross-chain transfers, mixer deposits, or withdrawals. This behavior often occurs when early signs of collapse emerge, representing an emergency asset transfer. In transaction paths, this produces clear consolidation peaks. Under the mode of fund gathering, the source of funds may be from the assets stolen from multiple wallets at one time. In this case, the source of funds account is the victim and should not be included in the gang. In this case, assets transferred from different accounts will be more chaotic and irregular.
+
+
+### P2P / OTC
+
+After obscuring the origin of illicit assets via mixers, cross-chain bridges, or fragmented transfers, attackers may turn to P2P platforms, OTC brokers, or offshore non-KYC exchanges to perform “off-chain” operations—converting cryptocurrency into fiat currency or privacy coins. For example, Huione Guarantee, a Southeast Asia–centered escrow platform, is frequently used for this purpose. This process often relies on off-chain deals and identity-masking methods, further breaking the link between on-chain funds and real-world identities.
+
+P2P platforms allow direct user-to-user trades between cryptocurrency and fiat. Examples include Paxful, Bitquick, and LocalBitcoins (now defunct). Attackers can match with other users and accept bank transfers, Alipay/WeChat Pay, PayPal, or even gift cards as payment, using rented accounts or fake identity documents to evade controls. Such off-chain payments often lack robust identity verification, making post-transaction tracing extremely difficult.
+
+OTC (Over-The-Counter) trading involves large off-chain cryptocurrency transactions via intermediaries, often conducted over Telegram, Discord, or similar platforms. Many OTC brokers do not check the source of funds or require KYC from either party, providing attackers with an “anonymous, fast, unregulated” cash-out channel. Some OTC intermediaries maintain laundering networks, payment account resources, or even their own gray-market platforms, offering “one-stop cash-out” services.
+
+If immediate off-ramping is not possible, illicit funds may be routed into small exchanges in loosely regulated jurisdictions—such as certain Caribbean, African, or Eastern European platforms—with weak KYC/AML policies, completing the final conversion. Eventually, the funds may be withdrawn via third-party payment processors, underground banking systems, e-commerce accounts, or converted into privacy coins like Monero or Zcash for long-term hiding, making on-chain tracing and law enforcement action significantly more difficult.
+

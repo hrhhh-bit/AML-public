@@ -1,0 +1,9 @@
+{
+  "operation": "Transfer",
+  "parent_ids": [
+    "node_0"
+  ],
+  "target_role": "Intermediate",
+  "target_chain": "Chain_A",
+  "parameters": {}
+}

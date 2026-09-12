@@ -1,0 +1,9 @@
+{
+  "operation": "Bridge",
+  "parent_ids": [
+    "node_4"
+  ],
+  "target_role": "Cross_Chain",
+  "target_chain": "Chain_B",
+  "parameters": {}
+}

@@ -1,0 +1,27 @@
+# Stage-1 阶段性展示产物索引
+
+> 由 `demo/showcase_stage1.py` 生成（确定性脚本化 LLM，离线可复现）。
+
+- [00_知识库总览.md](00_知识库总览.md)
+- [01_蒸馏管线/README.md](01_蒸馏管线/README.md)
+- [01_蒸馏管线/distillation_prompt.txt](01_蒸馏管线/distillation_prompt.txt)
+- [01_蒸馏管线/mock_llm_reply.txt](01_蒸馏管线/mock_llm_reply.txt)
+- [01_蒸馏管线/parsed_motif.json](01_蒸馏管线/parsed_motif.json)
+- [02_双轨检索.md](02_双轨检索.md)
+- [03_先验提示词压缩.md](03_先验提示词压缩.md)
+- [04_决策循环/README.md](04_决策循环/README.md)
+- [04_决策循环/step_00_action.json](04_决策循环/step_00_action.json)
+- [04_决策循环/step_00_prompt.txt](04_决策循环/step_00_prompt.txt)
+- [04_决策循环/step_01_action.json](04_决策循环/step_01_action.json)
+- [04_决策循环/step_01_prompt.txt](04_决策循环/step_01_prompt.txt)
+- [04_决策循环/step_02_action.json](04_决策循环/step_02_action.json)
+- [04_决策循环/step_02_prompt.txt](04_决策循环/step_02_prompt.txt)
+- [04_决策循环/step_03_action.json](04_决策循环/step_03_action.json)
+- [04_决策循环/step_03_prompt.txt](04_决策循环/step_03_prompt.txt)
+- [04_决策循环/step_04_action.json](04_决策循环/step_04_action.json)
+- [04_决策循环/step_04_prompt.txt](04_决策循环/step_04_prompt.txt)
+- [04_决策循环/step_05_action.json](04_决策循环/step_05_action.json)
+- [04_决策循环/step_05_prompt.txt](04_决策循环/step_05_prompt.txt)
+- [04_决策循环/trajectory.json](04_决策循环/trajectory.json)
+- [05_最终行为图.md](05_最终行为图.md)
+- [graph.json](graph.json)

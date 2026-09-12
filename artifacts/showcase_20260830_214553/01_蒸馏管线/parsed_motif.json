@@ -1,0 +1,90 @@
+[
+  {
+    "motif_id": "Rapid_Peeling_Single_Chain",
+    "pattern_type": "Peeling_Chain",
+    "description": "Rapid linear peeled transfers along a single chain through three fresh intermediates before the final target.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": null,
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Transfer"
+      },
+      {
+        "source": "I1",
+        "target": "I2",
+        "operation": "Transfer"
+      },
+      {
+        "source": "I2",
+        "target": "I3",
+        "operation": "Transfer"
+      },
+      {
+        "source": "I3",
+        "target": "T",
+        "operation": "Transfer"
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "peeling",
+      "linear",
+      "single_chain"
+    ]
+  }
+]

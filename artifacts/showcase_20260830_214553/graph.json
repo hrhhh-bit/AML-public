@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "node_count": 7,
+    "edge_count": 7,
+    "steps": 5,
+    "max_level": 5,
+    "d_max": 4,
+    "L_max": 8,
+    "terminated": true,
+    "terminated_by": "agent_terminate",
+    "seed_chain": "Chain_A",
+    "initial_role": "Source"
+  },
+  "nodes": [
+    {
+      "id": "node_0",
+      "role": "Source",
+      "chain": "Chain_A",
+      "level": 0
+    },
+    {
+      "id": "node_1",
+      "role": "Intermediate",
+      "chain": "Chain_A",
+      "level": 1
+    },
+    {
+      "id": "node_2",
+      "role": "Intermediate",
+      "chain": "Chain_A",
+      "level": 2
+    },
+    {
+      "id": "node_3",
+      "role": "Intermediate",
+      "chain": "Chain_A",
+      "level": 2
+    },
+    {
+      "id": "node_4",
+      "role": "Aggregator",
+      "chain": "Chain_A",
+      "level": 3
+    },
+    {
+      "id": "node_5",
+      "role": "Cross_Chain",
+      "chain": "Chain_B",
+      "level": 4
+    },
+    {
+      "id": "node_6",
+      "role": "Target",
+      "chain": "Chain_B",
+      "level": 5
+    }
+  ],
+  "edges": [
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "operation": "Transfer"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "operation": "Split"
+    },
+    {
+      "source": "node_1",
+      "target": "node_3",
+      "operation": "Split"
+    },
+    {
+      "source": "node_2",
+      "target": "node_4",
+      "operation": "Merge"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4",
+      "operation": "Merge"
+    },
+    {
+      "source": "node_4",
+      "target": "node_5",
+      "operation": "Bridge"
+    },
+    {
+      "source": "node_5",
+      "target": "node_6",
+      "operation": "Transfer"
+    }
+  ]
+}

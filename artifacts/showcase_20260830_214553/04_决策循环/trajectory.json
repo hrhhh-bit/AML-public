@@ -1,0 +1,694 @@
+{
+  "scenario_name": "showcase-跨链分层归集",
+  "steps": [
+    {
+      "step_index": 0,
+      "action": {
+        "operation": "Transfer",
+        "parent_ids": [
+          "node_0"
+        ],
+        "target_role": "Intermediate",
+        "target_chain": "Chain_A",
+        "parameters": {}
+      },
+      "result": {
+        "state": {
+          "current_level": 1,
+          "current_chain": "Chain_A",
+          "active_nodes": [
+            {
+              "temp_id": "node_0",
+              "role": "Source",
+              "chain": "Chain_A",
+              "level": 0
+            },
+            {
+              "temp_id": "node_1",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 1
+            }
+          ],
+          "graph_history": [
+            {
+              "source": "node_0",
+              "target": "node_1",
+              "operation": "Transfer"
+            }
+          ]
+        },
+        "reward": 0.0,
+        "done": false,
+        "info": {
+          "accepted": true,
+          "node_id": [
+            "node_1"
+          ]
+        }
+      },
+      "prior_motif_ids": [
+        "DEX_Liquidity_Pool_Swap",
+        "Peeling_Chain_Single_Chain"
+      ],
+      "prior_scores": [
+        0.7307,
+        0.6946
+      ],
+      "retry_reasons": [],
+      "prior_soft_fallback": false,
+      "llm_calls": 1
+    },
+    {
+      "step_index": 1,
+      "action": {
+        "operation": "Split",
+        "parent_ids": [
+          "node_1"
+        ],
+        "target_role": "Intermediate",
+        "target_chain": "Chain_A",
+        "parameters": {
+          "num_children": 2
+        }
+      },
+      "result": {
+        "state": {
+          "current_level": 2,
+          "current_chain": "Chain_A",
+          "active_nodes": [
+            {
+              "temp_id": "node_0",
+              "role": "Source",
+              "chain": "Chain_A",
+              "level": 0
+            },
+            {
+              "temp_id": "node_1",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 1
+            },
+            {
+              "temp_id": "node_2",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_3",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            }
+          ],
+          "graph_history": [
+            {
+              "source": "node_0",
+              "target": "node_1",
+              "operation": "Transfer"
+            },
+            {
+              "source": "node_1",
+              "target": "node_2",
+              "operation": "Split"
+            },
+            {
+              "source": "node_1",
+              "target": "node_3",
+              "operation": "Split"
+            }
+          ]
+        },
+        "reward": 0.0,
+        "done": false,
+        "info": {
+          "accepted": true,
+          "node_id": [
+            "node_2",
+            "node_3"
+          ]
+        }
+      },
+      "prior_motif_ids": [
+        "Cross_Chain_Swap_Bridge",
+        "Single_Chain_Multi_Swap_Layering",
+        "Multi_Split_Obfuscation"
+      ],
+      "prior_scores": [
+        0.7489,
+        0.6728,
+        0.6284
+      ],
+      "retry_reasons": [],
+      "prior_soft_fallback": false,
+      "llm_calls": 1
+    },
+    {
+      "step_index": 2,
+      "action": {
+        "operation": "Merge",
+        "parent_ids": [
+          "node_2",
+          "node_3"
+        ],
+        "target_role": "Aggregator",
+        "target_chain": "Chain_A",
+        "parameters": {}
+      },
+      "result": {
+        "state": {
+          "current_level": 3,
+          "current_chain": "Chain_A",
+          "active_nodes": [
+            {
+              "temp_id": "node_0",
+              "role": "Source",
+              "chain": "Chain_A",
+              "level": 0
+            },
+            {
+              "temp_id": "node_1",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 1
+            },
+            {
+              "temp_id": "node_2",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_3",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_4",
+              "role": "Aggregator",
+              "chain": "Chain_A",
+              "level": 3
+            }
+          ],
+          "graph_history": [
+            {
+              "source": "node_0",
+              "target": "node_1",
+              "operation": "Transfer"
+            },
+            {
+              "source": "node_1",
+              "target": "node_2",
+              "operation": "Split"
+            },
+            {
+              "source": "node_1",
+              "target": "node_3",
+              "operation": "Split"
+            },
+            {
+              "source": "node_2",
+              "target": "node_4",
+              "operation": "Merge"
+            },
+            {
+              "source": "node_3",
+              "target": "node_4",
+              "operation": "Merge"
+            }
+          ]
+        },
+        "reward": 0.0,
+        "done": false,
+        "info": {
+          "accepted": true,
+          "node_id": [
+            "node_4"
+          ]
+        }
+      },
+      "prior_motif_ids": [
+        "Mixer_Anonymization_Split_Merge",
+        "Multi_Split_Obfuscation",
+        "Aggregation_Merge_To_Target"
+      ],
+      "prior_scores": [
+        0.6321,
+        0.6284,
+        0.6223
+      ],
+      "retry_reasons": [],
+      "prior_soft_fallback": false,
+      "llm_calls": 1
+    },
+    {
+      "step_index": 3,
+      "action": {
+        "operation": "Bridge",
+        "parent_ids": [
+          "node_4"
+        ],
+        "target_role": "Cross_Chain",
+        "target_chain": "Chain_B",
+        "parameters": {}
+      },
+      "result": {
+        "state": {
+          "current_level": 4,
+          "current_chain": "Chain_B",
+          "active_nodes": [
+            {
+              "temp_id": "node_0",
+              "role": "Source",
+              "chain": "Chain_A",
+              "level": 0
+            },
+            {
+              "temp_id": "node_1",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 1
+            },
+            {
+              "temp_id": "node_2",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_3",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_4",
+              "role": "Aggregator",
+              "chain": "Chain_A",
+              "level": 3
+            },
+            {
+              "temp_id": "node_5",
+              "role": "Cross_Chain",
+              "chain": "Chain_B",
+              "level": 4
+            }
+          ],
+          "graph_history": [
+            {
+              "source": "node_0",
+              "target": "node_1",
+              "operation": "Transfer"
+            },
+            {
+              "source": "node_1",
+              "target": "node_2",
+              "operation": "Split"
+            },
+            {
+              "source": "node_1",
+              "target": "node_3",
+              "operation": "Split"
+            },
+            {
+              "source": "node_2",
+              "target": "node_4",
+              "operation": "Merge"
+            },
+            {
+              "source": "node_3",
+              "target": "node_4",
+              "operation": "Merge"
+            },
+            {
+              "source": "node_4",
+              "target": "node_5",
+              "operation": "Bridge"
+            }
+          ]
+        },
+        "reward": 0.0,
+        "done": false,
+        "info": {
+          "accepted": true,
+          "node_id": [
+            "node_5"
+          ]
+        }
+      },
+      "prior_motif_ids": [
+        "Multi_Split_Cross_Chain_Bridge",
+        "Cross_Chain_Layered_Integration",
+        "Mixer_Anonymization_Split_Merge"
+      ],
+      "prior_scores": [
+        0.6922,
+        0.6616,
+        0.6321
+      ],
+      "retry_reasons": [],
+      "prior_soft_fallback": false,
+      "llm_calls": 1
+    },
+    {
+      "step_index": 4,
+      "action": {
+        "operation": "Transfer",
+        "parent_ids": [
+          "node_5"
+        ],
+        "target_role": "Target",
+        "target_chain": "Chain_B",
+        "parameters": {}
+      },
+      "result": {
+        "state": {
+          "current_level": 5,
+          "current_chain": "Chain_B",
+          "active_nodes": [
+            {
+              "temp_id": "node_0",
+              "role": "Source",
+              "chain": "Chain_A",
+              "level": 0
+            },
+            {
+              "temp_id": "node_1",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 1
+            },
+            {
+              "temp_id": "node_2",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_3",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_4",
+              "role": "Aggregator",
+              "chain": "Chain_A",
+              "level": 3
+            },
+            {
+              "temp_id": "node_5",
+              "role": "Cross_Chain",
+              "chain": "Chain_B",
+              "level": 4
+            },
+            {
+              "temp_id": "node_6",
+              "role": "Target",
+              "chain": "Chain_B",
+              "level": 5
+            }
+          ],
+          "graph_history": [
+            {
+              "source": "node_0",
+              "target": "node_1",
+              "operation": "Transfer"
+            },
+            {
+              "source": "node_1",
+              "target": "node_2",
+              "operation": "Split"
+            },
+            {
+              "source": "node_1",
+              "target": "node_3",
+              "operation": "Split"
+            },
+            {
+              "source": "node_2",
+              "target": "node_4",
+              "operation": "Merge"
+            },
+            {
+              "source": "node_3",
+              "target": "node_4",
+              "operation": "Merge"
+            },
+            {
+              "source": "node_4",
+              "target": "node_5",
+              "operation": "Bridge"
+            },
+            {
+              "source": "node_5",
+              "target": "node_6",
+              "operation": "Transfer"
+            }
+          ]
+        },
+        "reward": 0.0,
+        "done": false,
+        "info": {
+          "accepted": true,
+          "node_id": [
+            "node_6"
+          ]
+        }
+      },
+      "prior_motif_ids": [
+        "Multi_Split_Cross_Chain_Bridge",
+        "Cross_Chain_Layered_Integration",
+        "Aggregation_Merge_To_Target"
+      ],
+      "prior_scores": [
+        0.6922,
+        0.6616,
+        0.6223
+      ],
+      "retry_reasons": [],
+      "prior_soft_fallback": false,
+      "llm_calls": 1
+    },
+    {
+      "step_index": 5,
+      "action": {
+        "operation": null,
+        "parent_ids": [],
+        "target_role": null,
+        "target_chain": null,
+        "parameters": {}
+      },
+      "result": {
+        "state": {
+          "current_level": 5,
+          "current_chain": "Chain_B",
+          "active_nodes": [
+            {
+              "temp_id": "node_0",
+              "role": "Source",
+              "chain": "Chain_A",
+              "level": 0
+            },
+            {
+              "temp_id": "node_1",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 1
+            },
+            {
+              "temp_id": "node_2",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_3",
+              "role": "Intermediate",
+              "chain": "Chain_A",
+              "level": 2
+            },
+            {
+              "temp_id": "node_4",
+              "role": "Aggregator",
+              "chain": "Chain_A",
+              "level": 3
+            },
+            {
+              "temp_id": "node_5",
+              "role": "Cross_Chain",
+              "chain": "Chain_B",
+              "level": 4
+            },
+            {
+              "temp_id": "node_6",
+              "role": "Target",
+              "chain": "Chain_B",
+              "level": 5
+            }
+          ],
+          "graph_history": [
+            {
+              "source": "node_0",
+              "target": "node_1",
+              "operation": "Transfer"
+            },
+            {
+              "source": "node_1",
+              "target": "node_2",
+              "operation": "Split"
+            },
+            {
+              "source": "node_1",
+              "target": "node_3",
+              "operation": "Split"
+            },
+            {
+              "source": "node_2",
+              "target": "node_4",
+              "operation": "Merge"
+            },
+            {
+              "source": "node_3",
+              "target": "node_4",
+              "operation": "Merge"
+            },
+            {
+              "source": "node_4",
+              "target": "node_5",
+              "operation": "Bridge"
+            },
+            {
+              "source": "node_5",
+              "target": "node_6",
+              "operation": "Transfer"
+            }
+          ]
+        },
+        "reward": 1.0,
+        "done": true,
+        "info": {
+          "accepted": true,
+          "terminated_by": "agent_terminate"
+        }
+      },
+      "prior_motif_ids": [
+        "Cross_Chain_Swap_Bridge",
+        "Multi_Split_Cross_Chain_Bridge",
+        "Single_Chain_Multi_Swap_Layering"
+      ],
+      "prior_scores": [
+        0.5823,
+        0.5255,
+        0.5062
+      ],
+      "retry_reasons": [],
+      "prior_soft_fallback": true,
+      "llm_calls": 1
+    }
+  ],
+  "terminated_by": "agent_terminate",
+  "success": true,
+  "failed": false,
+  "unmet_goals": [],
+  "total_reward": 1.0,
+  "total_llm_calls": 6,
+  "graph": {
+    "meta": {
+      "node_count": 7,
+      "edge_count": 7,
+      "steps": 5,
+      "max_level": 5,
+      "d_max": 4,
+      "L_max": 8,
+      "terminated": true,
+      "terminated_by": "agent_terminate",
+      "seed_chain": "Chain_A",
+      "initial_role": "Source"
+    },
+    "nodes": [
+      {
+        "id": "node_0",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "id": "node_1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "id": "node_2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "id": "node_3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "id": "node_4",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "id": "node_5",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 4
+      },
+      {
+        "id": "node_6",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 5
+      }
+    ],
+    "edges": [
+      {
+        "source": "node_0",
+        "target": "node_1",
+        "operation": "Transfer"
+      },
+      {
+        "source": "node_1",
+        "target": "node_2",
+        "operation": "Split"
+      },
+      {
+        "source": "node_1",
+        "target": "node_3",
+        "operation": "Split"
+      },
+      {
+        "source": "node_2",
+        "target": "node_4",
+        "operation": "Merge"
+      },
+      {
+        "source": "node_3",
+        "target": "node_4",
+        "operation": "Merge"
+      },
+      {
+        "source": "node_4",
+        "target": "node_5",
+        "operation": "Bridge"
+      },
+      {
+        "source": "node_5",
+        "target": "node_6",
+        "operation": "Transfer"
+      }
+    ]
+  },
+  "mermaid": "flowchart LR\n    node_0[\"Source<br/>Chain_A · L0\"]\n    node_1[\"Intermediate<br/>Chain_A · L1\"]\n    node_2[\"Intermediate<br/>Chain_A · L2\"]\n    node_3[\"Intermediate<br/>Chain_A · L2\"]\n    node_4[\"Aggregator<br/>Chain_A · L3\"]\n    node_5[\"Cross_Chain<br/>Chain_B · L4\"]\n    node_6[\"Target<br/>Chain_B · L5\"]\n    node_0 -->|Transfer| node_1\n    node_1 -->|Split| node_2\n    node_1 -->|Split| node_3\n    node_2 -->|Merge| node_4\n    node_3 -->|Merge| node_4\n    node_4 -->|Bridge| node_5\n    node_5 -->|Transfer| node_6"
+}

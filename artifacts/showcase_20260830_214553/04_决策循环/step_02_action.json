@@ -1,0 +1,10 @@
+{
+  "operation": "Merge",
+  "parent_ids": [
+    "node_2",
+    "node_3"
+  ],
+  "target_role": "Aggregator",
+  "target_chain": "Chain_A",
+  "parameters": {}
+}

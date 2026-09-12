@@ -1,0 +1,11 @@
+{
+  "operation": "Split",
+  "parent_ids": [
+    "node_1"
+  ],
+  "target_role": "Intermediate",
+  "target_chain": "Chain_A",
+  "parameters": {
+    "num_children": 2
+  }
+}
