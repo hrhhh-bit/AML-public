@@ -16,6 +16,9 @@ dependencies = [
 dev = [
     "pytest>=8.0",
 ]
+dense = [
+    "sentence-transformers>=2.7",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -1,18 +1,19 @@
-"""Dual-track motif retriever.
+"""Two-stage hierarchical motif retriever (Stage-3 Part A).
 
-Implements the two-stage retrieval strategy required by the data contract:
+Implements the dual-track retrieval strategy with a pluggable dense
+semantic front-end:
 
-**Track 1 — Hard rule / precondition gate**
-    Rejects any candidate whose :class:`Preconditions` are violated by the
-    current :class:`CurrentState` (``min_level``, active node roles, chain
-    compatibility, active branch count).  Violations are *fatal* for the
-    candidate: it never reaches Track 2.
+**Stage 1 — Coarse dense-semantic pre-ranking**
+    The query and every motif's flattened text are encoded by the injected
+    embedding provider (:class:`aml_rag.embedding.EmbeddingProvider`), then
+    candidates are pre-ranked by cosine similarity.
 
-**Track 2 — Dense semantic matching**
-    Encodes ``QueryContext`` (scenario + tactic goal) and each surviving
-    motif's flattened text, then ranks by cosine similarity.
-
-Final score (per the background doc):
+**Stage 2 — Fine topological hard gate + fused weighting**
+    The hard precondition gate (``min_level``, active node roles, chain
+    compatibility, active branch count) rejects candidates whose
+    :class:`Preconditions` are violated by the current
+    :class:`CurrentState`.  Violations are *fatal* for the candidate in
+    strict mode; survivors are scored by the fused formula:
 
 .. math::
     Score(g_{motif} | State_t) =
@@ -23,21 +24,28 @@ where :math:`\\text{RuleSat}` is the fraction of imposed precondition checks
 satisfied (always 1.0 for survivors of the hard gate; it only differs when
 ``strict=False`` soft fallback is active).
 
-Embeddings are pluggable: OpenAI, sentence-transformers, or the bundled
-:class:`DeterministicHashEmbedder` (zero-dependency deterministic mock).
+Zero-breaking change: the public constructor / ``retrieve`` signatures are
+unchanged from the legacy implementation.  By default (``coarse_k=None``)
+the coarse screen keeps every candidate, reproducing the classic
+gate-then-rank behaviour *exactly*; ``coarse_k`` optionally caps the dense
+pre-screen to the top-N semantic candidates before the hard gate runs.
+
+Embeddings are pluggable: ``sentence-transformers`` dense models, the
+discrete lexical/hash baseline, or any duck-typed object exposing
+``embed_query``/``embed_texts`` (or the legacy ``embed`` batch method).
 """
 
 from __future__ import annotations
 
-import hashlib
-import math
-import random
-import re
 from collections.abc import Sequence
-from typing import Protocol
 
 from pydantic import BaseModel, Field
 
+from .embedding import (  # canonical home; re-exported for backwards compat
+    DeterministicHashEmbedder,
+    EmbeddingProvider,
+    cosine_similarity,
+)
 from .schema import CurrentState, PatternType, QueryContext, TopologicalMotif
 from .storage import MotifKnowledgeBase
 
@@ -48,87 +56,6 @@ __all__ = [
     "DualTrackMotifRetriever",
     "cosine_similarity",
 ]
-
-
-# ---------------------------------------------------------------------------
-# Embedding backends
-# ---------------------------------------------------------------------------
-class EmbeddingProvider(Protocol):
-    """Minimal embedding contract: text batch -> dense vectors (row-major)."""
-
-    def embed(self, texts: Sequence[str]) -> list[list[float]]: ...
-
-
-class DeterministicHashEmbedder:
-    """Deterministic bag-of-hashed-tokens embedder (mock, zero dependencies).
-
-    Tokens are hashed (BLAKE2b) into a fixed number of sparse dimensions and
-    the result is L2-normalised.  Identical text always produces identical
-    vectors, and lexically overlapping texts produce correlated vectors —
-    enough to exercise and test the semantic track without any ML stack.
-    """
-
-    def __init__(self, dim: int = 256, fan_out: int = 3, seed: int = 20260829) -> None:
-        if dim < 1:
-            raise ValueError("dim must be >= 1")
-        if fan_out < 1:
-            raise ValueError("fan_out must be >= 1")
-        self.dim = dim
-        self.fan_out = fan_out
-        self.seed = seed
-
-    # -- tokenisation -------------------------------------------------------
-    _WORD_RE = re.compile(r"[a-z0-9_]+")
-    _CJK_RE = re.compile(r"[\u4e00-\u9fff\u3400-\u4dbf]")
-
-    @classmethod
-    def _tokenize(cls, text: str) -> list[str]:
-        lowered = text.lower()
-        tokens: list[str] = []
-        for match in cls._WORD_RE.finditer(lowered):
-            token = match.group()
-            cjk = cls._CJK_RE.findall(token)
-            if cjk:
-                tokens.extend(cjk)  # CJK: character-level tokens
-            else:
-                tokens.append(token)
-        return tokens
-
-    # -- embedding ----------------------------------------------------------
-    def embed(self, texts: Sequence[str]) -> list[list[float]]:
-        vectors: list[list[float]] = []
-        for text in texts:
-            vec = [0.0] * self.dim
-            for token in self._tokenize(text):
-                digest = hashlib.blake2b(
-                    token.encode("utf-8"), digest_size=16, person=b"aml-rag-m1"
-                ).digest()
-                rng = random.Random(int.from_bytes(digest, "big") ^ self.seed)
-                for _ in range(self.fan_out):
-                    vec[rng.randrange(self.dim)] += 1.0
-            vectors.append(self._l2_normalise(vec))
-        return vectors
-
-    @staticmethod
-    def _l2_normalise(vec: list[float]) -> list[float]:
-        norm = math.sqrt(sum(x * x for x in vec))
-        if norm == 0.0:
-            return vec
-        return [x / norm for x in vec]
-
-
-def cosine_similarity(a: Sequence[float], b: Sequence[float]) -> float:
-    """Cosine similarity between two equal-length dense vectors."""
-    if len(a) != len(b):
-        raise ValueError(f"Vector length mismatch: {len(a)} vs {len(b)}")
-    dot = na = nb = 0.0
-    for x, y in zip(a, b):
-        dot += x * y
-        na += x * x
-        nb += y * y
-    if na == 0.0 or nb == 0.0:
-        return 0.0
-    return dot / (math.sqrt(na) * math.sqrt(nb))
 
 
 # ---------------------------------------------------------------------------
@@ -166,10 +93,14 @@ class DualTrackMotifRetriever:
         top_k: int = 5,
         strict: bool = True,
         cache_embeddings: bool = True,
+        coarse_k: int | None = None,
     ) -> None:
         """Args:
         knowledge_base: source of candidate motifs.
         embedder: embedding backend; defaults to DeterministicHashEmbedder.
+            Any pluggable :class:`aml_rag.embedding.EmbeddingProvider` (dense
+            or discrete) works, as do legacy duck-typed objects exposing
+            ``embed(texts)``.
         alpha: weight of the semantic score (1-alpha = rule score weight).
         top_k: default number of results to return.
         strict: when True, motifs failing the hard gate are excluded entirely;
@@ -177,18 +108,40 @@ class DualTrackMotifRetriever:
                 fraction of satisfied checks (soft fallback, e.g. for
                 cold-start debugging).
         cache_embeddings: cache per-motif vectors keyed by motif_id.
+        coarse_k: optional size of the Stage-1 dense semantic pre-screen
+            (top-N candidates by similarity reach the hard gate).  ``None``
+            (default) keeps every candidate — the legacy gate-then-rank
+            behaviour, preserved exactly for zero-breaking compatibility.
         """
         if not 0.0 <= alpha <= 1.0:
             raise ValueError("alpha must be in [0, 1]")
         if top_k < 1:
             raise ValueError("top_k must be >= 1")
+        if coarse_k is not None and coarse_k < 1:
+            raise ValueError("coarse_k must be >= 1 or None")
         self.knowledge_base = knowledge_base
         self.embedder: EmbeddingProvider = embedder or DeterministicHashEmbedder()
         self.alpha = alpha
         self.top_k = top_k
         self.strict = strict
         self.cache_embeddings = cache_embeddings
+        self.coarse_k = coarse_k
         self._motif_vec_cache: dict[str, list[float]] = {}
+
+    # ------------------------------------------- embedding backend adapters
+    def _embed_query(self, text: str) -> list[float]:
+        """Embed one query text via the provider (rich API preferred)."""
+        fn = getattr(self.embedder, "embed_query", None)
+        if callable(fn):
+            return fn(text)
+        return self.embedder.embed([text])[0]  # legacy duck-typed backend
+
+    def _embed_batch(self, texts: Sequence[str]) -> list[list[float]]:
+        """Embed a batch via the provider (rich API preferred)."""
+        fn = getattr(self.embedder, "embed_texts", None)
+        if callable(fn):
+            return fn(texts)
+        return self.embedder.embed(texts)  # legacy duck-typed backend
 
     # ------------------------------------------------------- Track 1: gate
     def hard_gate(
@@ -277,7 +230,7 @@ class DualTrackMotifRetriever:
                 pending_idx.append(i)
                 pending_texts.append(motif.semantic_text())
         if pending_idx:
-            embedded = self.embedder.embed(pending_texts)
+            embedded = self._embed_batch(pending_texts)
             for i, vec in zip(pending_idx, embedded):
                 result[i] = vec
                 if self.cache_embeddings:
@@ -292,29 +245,48 @@ class DualTrackMotifRetriever:
         *,
         top_k: int | None = None,
         strict: bool | None = None,
+        coarse_k: int | None = None,
     ) -> list[RetrievalResult]:
-        """Run both tracks and return the top-K ranked motifs.
+        """Run the two-stage hierarchical pipeline; return the top-K motifs.
 
-        ``strict`` overrides the instance default per call (soft fallback for
-        the planner's prior guarantee). Semantic ties (and pattern bias from
+        Stage 1 (coarse): dense semantic pre-ranking of every candidate
+        motif against the query via the injected embedding provider.
+        Stage 2 (fine): topological hard gate over the pre-ranked candidates
+        followed by fused weighting ``alpha * sim + (1-alpha) * rule``.
+
+        ``strict`` overrides the instance default per call (soft fallback
+        for the planner's prior guarantee); ``coarse_k`` overrides the
+        instance default and caps the Stage-1 screen (``None`` = keep all,
+        the legacy behaviour). Semantic ties (and pattern bias from
         ``query.target_pattern_type``) are resolved deterministically.
         """
         k = top_k or self.top_k
+        ck = coarse_k if coarse_k is not None else self.coarse_k
+        if ck is not None and ck < 1:
+            raise ValueError("coarse_k must be >= 1 or None")
 
-        # ---- Track 1: hard gate over all candidates ----------------------
+        # ---- Stage 1: coarse dense-semantic pre-ranking -------------------
+        all_motifs = list(self.knowledge_base)
+        query_vec = self._embed_query(query.embedding_text)
+        motif_vecs = self._motif_vectors(all_motifs)
+        sim_by_id = {
+            m.motif_id: cosine_similarity(query_vec, mv)
+            for m, mv in zip(all_motifs, motif_vecs)
+        }
+        # deterministic pre-rank: similarity desc -> motif_id asc
+        pre_ranked = sorted(all_motifs, key=lambda m: (-sim_by_id[m.motif_id], m.motif_id))
+        candidates = pre_ranked if ck is None else pre_ranked[:ck]
+
+        # ---- Stage 2: topological hard gate + fused weighting ------------
         gated: list[tuple[TopologicalMotif, float, list[str]]] = []
-        for motif in self.knowledge_base:
+        for motif in candidates:
             passed, rule_score, reasons = self.hard_gate(motif, state, strict=strict)
             if passed:
                 gated.append((motif, rule_score, reasons))
 
-        # ---- Track 2: semantic scoring -----------------------------------
-        query_vec = self.embedder.embed([query.embedding_text])[0]
-        motif_vecs = self._motif_vectors([m for m, _, _ in gated])
-        semantic_scores = [cosine_similarity(query_vec, mv) for mv in motif_vecs]
-
         results: list[RetrievalResult] = []
-        for (motif, rule_score, reasons), sem in zip(gated, semantic_scores):
+        for motif, rule_score, reasons in gated:
+            sem = sim_by_id[motif.motif_id]
             # optional pattern-type bias: small deterministic tie-break bonus
             bias = 1e-6 if query.target_pattern_type is not None and \
                 motif.pattern_type == query.target_pattern_type else 0.0
@@ -339,5 +311,12 @@ class DualTrackMotifRetriever:
         return results[:k]
 
     def invalidate_cache(self) -> None:
-        """Drop cached motif vectors (call after mutating the knowledge base)."""
+        """Drop cached motif vectors (call after mutating the knowledge base).
+
+        Also clears the embedding provider's internal text cache so stale
+        vectors can never survive a knowledge-base mutation.
+        """
         self._motif_vec_cache.clear()
+        clear = getattr(self.embedder, "clear_cache", None)
+        if callable(clear):
+            clear()

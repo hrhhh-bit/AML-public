@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "node_count": 14,
+    "edge_count": 17,
+    "steps": 9,
+    "max_level": 6,
+    "d_max": 4,
+    "L_max": 8,
+    "terminated": true,
+    "terminated_by": "agent_terminate",
+    "seed_chain": "Chain_A",
+    "initial_role": "Source",
+    "scale_tier": "Whale",
+    "estimated_value_usd": 2000000.0,
+    "strategy_narrative": "Whale-scale laundering topology; the executed pattern sequence was direct transfers, fan-out splits, converging merges, cross-chain bridge hops, direct transfers, cross-chain bridge hops, fan-out splits, converging merges, direct transfers; funds traversed chains in the order Chain_A -> Chain_C -> Chain_B -> Chain_C -> Chain_B -> Chain_C; settling into 2 final target sink(s); with cross-chain obfuscation."
+  },
+  "nodes": [
+    {
+      "id": "node_0",
+      "role": "Source",
+      "chain": "Chain_A",
+      "level": 0
+    },
+    {
+      "id": "node_1",
+      "role": "Intermediate",
+      "chain": "Chain_A",
+      "level": 1
+    },
+    {
+      "id": "node_10",
+      "role": "Intermediate",
+      "chain": "Chain_C",
+      "level": 4
+    },
+    {
+      "id": "node_11",
+      "role": "Intermediate",
+      "chain": "Chain_C",
+      "level": 4
+    },
+    {
+      "id": "node_12",
+      "role": "Aggregator",
+      "chain": "Chain_C",
+      "level": 5
+    },
+    {
+      "id": "node_13",
+      "role": "Target",
+      "chain": "Chain_C",
+      "level": 6
+    },
+    {
+      "id": "node_2",
+      "role": "Intermediate",
+      "chain": "Chain_A",
+      "level": 2
+    },
+    {
+      "id": "node_3",
+      "role": "Intermediate",
+      "chain": "Chain_A",
+      "level": 2
+    },
+    {
+      "id": "node_4",
+      "role": "Intermediate",
+      "chain": "Chain_A",
+      "level": 2
+    },
+    {
+      "id": "node_5",
+      "role": "Aggregator",
+      "chain": "Chain_A",
+      "level": 3
+    },
+    {
+      "id": "node_6",
+      "role": "Cross_Chain",
+      "chain": "Chain_B",
+      "level": 4
+    },
+    {
+      "id": "node_7",
+      "role": "Target",
+      "chain": "Chain_B",
+      "level": 5
+    },
+    {
+      "id": "node_8",
+      "role": "Cross_Chain",
+      "chain": "Chain_C",
+      "level": 3
+    },
+    {
+      "id": "node_9",
+      "role": "Intermediate",
+      "chain": "Chain_C",
+      "level": 4
+    }
+  ],
+  "edges": [
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "operation": "Transfer",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "operation": "Split",
+      "flow_share": 0.6
+    },
+    {
+      "source": "node_1",
+      "target": "node_3",
+      "operation": "Split",
+      "flow_share": 0.25
+    },
+    {
+      "source": "node_1",
+      "target": "node_4",
+      "operation": "Split",
+      "flow_share": 0.15
+    },
+    {
+      "source": "node_2",
+      "target": "node_5",
+      "operation": "Merge",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_3",
+      "target": "node_5",
+      "operation": "Merge",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_4",
+      "target": "node_5",
+      "operation": "Merge",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_5",
+      "target": "node_6",
+      "operation": "Bridge",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_6",
+      "target": "node_7",
+      "operation": "Transfer",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_2",
+      "target": "node_8",
+      "operation": "Bridge",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_8",
+      "target": "node_9",
+      "operation": "Split",
+      "flow_share": 0.34
+    },
+    {
+      "source": "node_8",
+      "target": "node_10",
+      "operation": "Split",
+      "flow_share": 0.33
+    },
+    {
+      "source": "node_8",
+      "target": "node_11",
+      "operation": "Split",
+      "flow_share": 0.33
+    },
+    {
+      "source": "node_9",
+      "target": "node_12",
+      "operation": "Merge",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_10",
+      "target": "node_12",
+      "operation": "Merge",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_11",
+      "target": "node_12",
+      "operation": "Merge",
+      "flow_share": 1.0
+    },
+    {
+      "source": "node_12",
+      "target": "node_13",
+      "operation": "Transfer",
+      "flow_share": 1.0
+    }
+  ]
+}

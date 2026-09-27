@@ -1,0 +1,454 @@
+{
+  "experiment": "phase3_partA_dense_vs_discrete_retrieval_correlation",
+  "generated_at": "2026-09-20T08:14:08+00:00",
+  "config": {
+    "alpha": 0.5,
+    "top_k": 18,
+    "min_rank_depth": 6,
+    "coarse_k": null,
+    "dense_model_name": "all-MiniLM-L6-v2",
+    "dense_backend": "sentence_transformers:all-MiniLM-L6-v2",
+    "discrete_backend": "discrete_hash"
+  },
+  "kb_source": {
+    "path": "D:\\projects\\AML\\experiments\\phase2_distillation_empirical\\distilled_kb.json",
+    "n_motifs": 18,
+    "sha256": "26ffd0370be8a82ef149ee1b14a39665c2b5ac91d4dd861f826180359779e701"
+  },
+  "queries": [
+    {
+      "query_id": "cross_chain_hop",
+      "scenario": "Operator moves proceeds across multiple chains to escape monitoring.",
+      "tactic_goal": "bridge assets through several chains before consolidation",
+      "state": {
+        "level": 2,
+        "chain": "Chain_A",
+        "roles": [
+          "Asset_Conversion"
+        ]
+      },
+      "strict_gate_survivors": 5,
+      "corpus": "soft_fallback",
+      "n": 18,
+      "spearman_rho": 0.861713,
+      "p_value": 4e-06,
+      "top1_agree": false,
+      "dense_ranking": [
+        "motif_chain_hopping_bridge_evasion",
+        "Cross_Chain_Swap_Bridge",
+        "Single_Chain_Multi_Swap_Layering",
+        "DEX_Liquidity_Pool_Swap",
+        "Mixer_Anonymization_Split_Merge",
+        "Multi_Chain_Hop_Layering",
+        "Peeling_Chain_Multi_Layer",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "otc_p2p_integration_merge",
+        "many_to_one_consolidation",
+        "Multi_Split_Obfuscation",
+        "Aggregation_Merge_To_Target",
+        "Cross_Chain_Bridge_And_Back",
+        "multi_layering_split_fanout_v1",
+        "Peeling_Chain_Single_Chain",
+        "Cross_Chain_Layered_Integration",
+        "Multi_Split_Cross_Chain_Bridge",
+        "mixer_pooling_obfuscation"
+      ],
+      "discrete_ranking": [
+        "Cross_Chain_Swap_Bridge",
+        "motif_chain_hopping_bridge_evasion",
+        "Single_Chain_Multi_Swap_Layering",
+        "Mixer_Anonymization_Split_Merge",
+        "DEX_Liquidity_Pool_Swap",
+        "Multi_Chain_Hop_Layering",
+        "Multi_Split_Obfuscation",
+        "otc_p2p_integration_merge",
+        "multi_layering_split_fanout_v1",
+        "Aggregation_Merge_To_Target",
+        "many_to_one_consolidation",
+        "Cross_Chain_Bridge_And_Back",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "Peeling_Chain_Multi_Layer",
+        "Peeling_Chain_Single_Chain",
+        "mixer_pooling_obfuscation",
+        "Multi_Split_Cross_Chain_Bridge",
+        "Cross_Chain_Layered_Integration"
+      ],
+      "dense_top1_margin": 0.0649,
+      "discrete_top1_margin": 0.0275
+    },
+    {
+      "query_id": "large_split_fanout",
+      "scenario": "Bulk funds need fragmentation into many small parallel streams.",
+      "tactic_goal": "split into many branches across successive layers",
+      "state": {
+        "level": 1,
+        "chain": "Chain_A",
+        "roles": [
+          "Intermediate"
+        ]
+      },
+      "strict_gate_survivors": 8,
+      "corpus": "strict_gate",
+      "n": 8,
+      "spearman_rho": 0.238095,
+      "p_value": 0.570156,
+      "top1_agree": false,
+      "dense_ranking": [
+        "multi_layering_split_fanout_v1",
+        "Multi_Split_Obfuscation",
+        "Peeling_Chain_Single_Chain",
+        "Aggregation_Merge_To_Target",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "many_to_one_consolidation",
+        "otc_p2p_integration_merge",
+        "motif_chain_hopping_bridge_evasion"
+      ],
+      "discrete_ranking": [
+        "Multi_Split_Obfuscation",
+        "motif_chain_hopping_bridge_evasion",
+        "multi_layering_split_fanout_v1",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "Peeling_Chain_Single_Chain",
+        "otc_p2p_integration_merge",
+        "many_to_one_consolidation",
+        "Aggregation_Merge_To_Target"
+      ],
+      "dense_top1_margin": 0.0361,
+      "discrete_top1_margin": 0.0331
+    },
+    {
+      "query_id": "dex_swap_obfuscation",
+      "scenario": "Proceeds routed through liquidity pools to break origin traceability.",
+      "tactic_goal": "swap through a decentralized exchange pool",
+      "state": {
+        "level": 0,
+        "chain": "Chain_A",
+        "roles": [
+          "Source"
+        ]
+      },
+      "strict_gate_survivors": 8,
+      "corpus": "strict_gate",
+      "n": 8,
+      "spearman_rho": 0.404762,
+      "p_value": 0.319889,
+      "top1_agree": true,
+      "dense_ranking": [
+        "DEX_Liquidity_Pool_Swap",
+        "otc_p2p_integration_merge",
+        "motif_chain_hopping_bridge_evasion",
+        "Peeling_Chain_Single_Chain",
+        "mixer_pooling_obfuscation",
+        "multi_layering_split_fanout_v1",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "many_to_one_consolidation"
+      ],
+      "discrete_ranking": [
+        "DEX_Liquidity_Pool_Swap",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "motif_chain_hopping_bridge_evasion",
+        "Peeling_Chain_Single_Chain",
+        "mixer_pooling_obfuscation",
+        "multi_layering_split_fanout_v1",
+        "otc_p2p_integration_merge",
+        "many_to_one_consolidation"
+      ],
+      "dense_top1_margin": 0.0294,
+      "discrete_top1_margin": 0.1255
+    },
+    {
+      "query_id": "iterative_peeling",
+      "scenario": "Small rapid transfers through fresh single-use intermediaries.",
+      "tactic_goal": "peel value along a linear chain of hops",
+      "state": {
+        "level": 0,
+        "chain": "Chain_A",
+        "roles": [
+          "Source"
+        ]
+      },
+      "strict_gate_survivors": 8,
+      "corpus": "strict_gate",
+      "n": 8,
+      "spearman_rho": 0.833333,
+      "p_value": 0.010176,
+      "top1_agree": true,
+      "dense_ranking": [
+        "Peeling_Chain_Single_Chain",
+        "motif_chain_hopping_bridge_evasion",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "otc_p2p_integration_merge",
+        "DEX_Liquidity_Pool_Swap",
+        "mixer_pooling_obfuscation",
+        "multi_layering_split_fanout_v1",
+        "many_to_one_consolidation"
+      ],
+      "discrete_ranking": [
+        "Peeling_Chain_Single_Chain",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "DEX_Liquidity_Pool_Swap",
+        "motif_chain_hopping_bridge_evasion",
+        "mixer_pooling_obfuscation",
+        "otc_p2p_integration_merge",
+        "multi_layering_split_fanout_v1",
+        "many_to_one_consolidation"
+      ],
+      "dense_top1_margin": 0.087,
+      "discrete_top1_margin": 0.0719
+    },
+    {
+      "query_id": "mixer_anonymization",
+      "scenario": "Many sources pooled and mixed then redistributed to hide linkage.",
+      "tactic_goal": "merge streams then split into anonymised withdrawals",
+      "state": {
+        "level": 2,
+        "chain": "Chain_A",
+        "roles": [
+          "Aggregator"
+        ]
+      },
+      "strict_gate_survivors": 0,
+      "corpus": "soft_fallback",
+      "n": 18,
+      "spearman_rho": 0.902993,
+      "p_value": 0.0,
+      "top1_agree": false,
+      "dense_ranking": [
+        "Mixer_Anonymization_Split_Merge",
+        "Multi_Split_Obfuscation",
+        "many_to_one_consolidation",
+        "Aggregation_Merge_To_Target",
+        "mixer_pooling_obfuscation",
+        "otc_p2p_integration_merge",
+        "Multi_Chain_Hop_Layering",
+        "multi_layering_split_fanout_v1",
+        "Single_Chain_Multi_Swap_Layering",
+        "Peeling_Chain_Multi_Layer",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "Cross_Chain_Swap_Bridge",
+        "DEX_Liquidity_Pool_Swap",
+        "Cross_Chain_Layered_Integration",
+        "Cross_Chain_Bridge_And_Back",
+        "motif_chain_hopping_bridge_evasion",
+        "Peeling_Chain_Single_Chain",
+        "Multi_Split_Cross_Chain_Bridge"
+      ],
+      "discrete_ranking": [
+        "Aggregation_Merge_To_Target",
+        "Mixer_Anonymization_Split_Merge",
+        "Multi_Chain_Hop_Layering",
+        "otc_p2p_integration_merge",
+        "Multi_Split_Obfuscation",
+        "many_to_one_consolidation",
+        "mixer_pooling_obfuscation",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "multi_layering_split_fanout_v1",
+        "Cross_Chain_Swap_Bridge",
+        "Peeling_Chain_Multi_Layer",
+        "Single_Chain_Multi_Swap_Layering",
+        "DEX_Liquidity_Pool_Swap",
+        "motif_chain_hopping_bridge_evasion",
+        "Peeling_Chain_Single_Chain",
+        "Cross_Chain_Bridge_And_Back",
+        "Cross_Chain_Layered_Integration",
+        "Multi_Split_Cross_Chain_Bridge"
+      ],
+      "dense_top1_margin": 0.0489,
+      "discrete_top1_margin": 0.0243
+    },
+    {
+      "query_id": "many_to_one_consolidation",
+      "scenario": "Scattered inflows from many accounts converge into a few exit points.",
+      "tactic_goal": "consolidate streams into a single target",
+      "state": {
+        "level": 2,
+        "chain": "Chain_A",
+        "roles": [
+          "Aggregator"
+        ]
+      },
+      "strict_gate_survivors": 0,
+      "corpus": "soft_fallback",
+      "n": 18,
+      "spearman_rho": 0.614035,
+      "p_value": 0.006711,
+      "top1_agree": false,
+      "dense_ranking": [
+        "many_to_one_consolidation",
+        "Aggregation_Merge_To_Target",
+        "Mixer_Anonymization_Split_Merge",
+        "Multi_Split_Obfuscation",
+        "otc_p2p_integration_merge",
+        "Multi_Chain_Hop_Layering",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "Peeling_Chain_Multi_Layer",
+        "multi_layering_split_fanout_v1",
+        "Cross_Chain_Swap_Bridge",
+        "mixer_pooling_obfuscation",
+        "Single_Chain_Multi_Swap_Layering",
+        "Peeling_Chain_Single_Chain",
+        "motif_chain_hopping_bridge_evasion",
+        "DEX_Liquidity_Pool_Swap",
+        "Cross_Chain_Bridge_And_Back",
+        "Cross_Chain_Layered_Integration",
+        "Multi_Split_Cross_Chain_Bridge"
+      ],
+      "discrete_ranking": [
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "Cross_Chain_Swap_Bridge",
+        "Multi_Chain_Hop_Layering",
+        "Multi_Split_Obfuscation",
+        "DEX_Liquidity_Pool_Swap",
+        "Aggregation_Merge_To_Target",
+        "Mixer_Anonymization_Split_Merge",
+        "mixer_pooling_obfuscation",
+        "many_to_one_consolidation",
+        "otc_p2p_integration_merge",
+        "multi_layering_split_fanout_v1",
+        "Single_Chain_Multi_Swap_Layering",
+        "Peeling_Chain_Multi_Layer",
+        "motif_chain_hopping_bridge_evasion",
+        "Peeling_Chain_Single_Chain",
+        "Cross_Chain_Bridge_And_Back",
+        "Multi_Split_Cross_Chain_Bridge",
+        "Cross_Chain_Layered_Integration"
+      ],
+      "dense_top1_margin": 0.0183,
+      "discrete_top1_margin": 0.0413
+    },
+    {
+      "query_id": "bridge_round_trip",
+      "scenario": "Assets leave and return through bridges to launder between chains.",
+      "tactic_goal": "round-trip bridge movement with an intermediary stop",
+      "state": {
+        "level": 3,
+        "chain": "Chain_A",
+        "roles": [
+          "Cross_Chain"
+        ]
+      },
+      "strict_gate_survivors": 4,
+      "corpus": "soft_fallback",
+      "n": 18,
+      "spearman_rho": 0.772962,
+      "p_value": 0.000169,
+      "top1_agree": true,
+      "dense_ranking": [
+        "Cross_Chain_Bridge_And_Back",
+        "Multi_Chain_Hop_Layering",
+        "Multi_Split_Cross_Chain_Bridge",
+        "Cross_Chain_Layered_Integration",
+        "Cross_Chain_Swap_Bridge",
+        "otc_p2p_integration_merge",
+        "motif_chain_hopping_bridge_evasion",
+        "Peeling_Chain_Multi_Layer",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "Single_Chain_Multi_Swap_Layering",
+        "Peeling_Chain_Single_Chain",
+        "Mixer_Anonymization_Split_Merge",
+        "Aggregation_Merge_To_Target",
+        "many_to_one_consolidation",
+        "multi_layering_split_fanout_v1",
+        "DEX_Liquidity_Pool_Swap",
+        "Multi_Split_Obfuscation",
+        "mixer_pooling_obfuscation"
+      ],
+      "discrete_ranking": [
+        "Cross_Chain_Bridge_And_Back",
+        "Multi_Chain_Hop_Layering",
+        "Multi_Split_Cross_Chain_Bridge",
+        "Cross_Chain_Layered_Integration",
+        "otc_p2p_integration_merge",
+        "Cross_Chain_Swap_Bridge",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "Single_Chain_Multi_Swap_Layering",
+        "Multi_Split_Obfuscation",
+        "multi_layering_split_fanout_v1",
+        "Mixer_Anonymization_Split_Merge",
+        "Aggregation_Merge_To_Target",
+        "Peeling_Chain_Multi_Layer",
+        "many_to_one_consolidation",
+        "motif_chain_hopping_bridge_evasion",
+        "Peeling_Chain_Single_Chain",
+        "mixer_pooling_obfuscation",
+        "DEX_Liquidity_Pool_Swap"
+      ],
+      "dense_top1_margin": 0.0851,
+      "discrete_top1_margin": 0.0307
+    },
+    {
+      "query_id": "multi_swap_layering",
+      "scenario": "Repeated same-chain conversions to blur the audit trail.",
+      "tactic_goal": "sequence of swaps across conversion nodes",
+      "state": {
+        "level": 1,
+        "chain": "Chain_A",
+        "roles": [
+          "Asset_Conversion"
+        ]
+      },
+      "strict_gate_survivors": 4,
+      "corpus": "soft_fallback",
+      "n": 18,
+      "spearman_rho": 0.940144,
+      "p_value": 0.0,
+      "top1_agree": true,
+      "dense_ranking": [
+        "Single_Chain_Multi_Swap_Layering",
+        "motif_chain_hopping_bridge_evasion",
+        "DEX_Liquidity_Pool_Swap",
+        "Cross_Chain_Swap_Bridge",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "otc_p2p_integration_merge",
+        "Mixer_Anonymization_Split_Merge",
+        "many_to_one_consolidation",
+        "Multi_Split_Obfuscation",
+        "Aggregation_Merge_To_Target",
+        "multi_layering_split_fanout_v1",
+        "Peeling_Chain_Single_Chain",
+        "Multi_Chain_Hop_Layering",
+        "Cross_Chain_Bridge_And_Back",
+        "mixer_pooling_obfuscation",
+        "Peeling_Chain_Multi_Layer",
+        "Cross_Chain_Layered_Integration",
+        "Multi_Split_Cross_Chain_Bridge"
+      ],
+      "discrete_ranking": [
+        "Single_Chain_Multi_Swap_Layering",
+        "Cross_Chain_Swap_Bridge",
+        "motif_chain_hopping_bridge_evasion",
+        "DEX_Liquidity_Pool_Swap",
+        "Multi_Split_Obfuscation",
+        "otc_p2p_integration_merge",
+        "Aggregation_Merge_To_Target",
+        "peeling_chain_iterative_asymmetric_split_v1",
+        "many_to_one_consolidation",
+        "Mixer_Anonymization_Split_Merge",
+        "multi_layering_split_fanout_v1",
+        "Multi_Chain_Hop_Layering",
+        "Cross_Chain_Bridge_And_Back",
+        "Peeling_Chain_Single_Chain",
+        "mixer_pooling_obfuscation",
+        "Cross_Chain_Layered_Integration",
+        "Peeling_Chain_Multi_Layer",
+        "Multi_Split_Cross_Chain_Bridge"
+      ],
+      "dense_top1_margin": 0.0619,
+      "discrete_top1_margin": 0.0622
+    }
+  ],
+  "summary": {
+    "n_queries": 8,
+    "mean_rho": 0.696005,
+    "min_rho": 0.238095,
+    "max_rho": 0.940144,
+    "n_significant_p_lt_005": 6,
+    "top1_agreement_rate": 0.5,
+    "corpora_used": {
+      "soft_fallback": 5,
+      "strict_gate": 3
+    },
+    "kb_read_only_verified": true,
+    "note": ""
+  }
+}

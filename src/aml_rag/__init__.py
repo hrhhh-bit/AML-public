@@ -22,6 +22,16 @@ from .distiller import (
     MotifDistiller,
     TextChunker,
 )
+from .embedding import (
+    DEFAULT_DENSE_MODEL,
+    DenseEmbeddingProvider,
+    DeterministicHashEmbedder,
+    DiscreteEmbeddingProvider,
+    EmbeddingProvider,
+    cosine_similarity,
+    is_sentence_transformers_available,
+    make_embedding_provider,
+)
 from .evaluation import (
     CrossSourceConsistencyEvaluator,
     CrossSourceReport,
@@ -48,10 +58,8 @@ from .json_utils import (
 )
 from .mock_data import SEED_MOTIFS, build_seed_motifs
 from .retriever import (
-    DeterministicHashEmbedder,
     DualTrackMotifRetriever,
     RetrievalResult,
-    cosine_similarity,
 )
 from .schema import (
     AbstractEdge,
@@ -68,7 +76,7 @@ from .schema import (
 )
 from .storage import IngestReport, MotifKnowledgeBase, build_default_knowledge_base
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     # schema
@@ -119,9 +127,16 @@ __all__ = [
     "load_json_robust",
     "extract_json_list",
     # retriever
-    "DeterministicHashEmbedder",
     "DualTrackMotifRetriever",
     "RetrievalResult",
+    # embedding providers (Stage-3 Part A)
+    "EmbeddingProvider",
+    "DeterministicHashEmbedder",
+    "DiscreteEmbeddingProvider",
+    "DenseEmbeddingProvider",
+    "make_embedding_provider",
+    "is_sentence_transformers_available",
+    "DEFAULT_DENSE_MODEL",
     "cosine_similarity",
     # context builder
     "PromptContextCompressor",
