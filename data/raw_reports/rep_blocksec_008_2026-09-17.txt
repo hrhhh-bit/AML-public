@@ -1,0 +1,85 @@
+During the past week (2026/09/14 - 2026/09/20), we observed 2 security incidents with a total estimated loss of approximately $11.3M.
+Weekly Highlight: Unknown Multicall Router
+This incident was selected because a subtle caller-identity change across nested router calls defeated authorization on a Safe wallet that ran custom modules and enabled a substantial asset withdrawal.
+On September 15, 2026, an MEV bot operating under the name Yoink front-ran an attempted exploit against a Safe wallet that managed its assets through custom strategy modules, resulting in an estimated loss of approximately $7.8M [1]. Requests reached those modules through a multicall router, where a nested-call authorization error allowed untrusted instructions to pass into the module chain, while a reusable permission provided additional support for the unauthorized operation.
+Background
+A Safe wallet can enable a Safe module. Once enabled, the module can call execTransactionFromModule() to instruct the wallet to execute operations without multisig approval, so an enabled module is a standing privilege over the wallet's assets. The victim Safe wallet had enabled two strategy components, the Gateway module and the LP module.
+The Gateway module defined reusable command templates, each describing an operation the victim Safe wallet was permitted to perform, with the concrete values filled in at execution time. It accepted commands only from callers on its own authorized-caller list. Each execution also had to carry a Merkle proof, checked against a stored root, that authenticated the command template being invoked. Some templates instructed the wallet to call the LP module, which performed Uniswap v4 liquidity operations using the wallet's assets. Control therefore returned through the wallet itself rather than passing straight from one module to the next:
+Authorized Caller
+|
+v
+Gateway module -- verify(command, Merkle proof, root)
+|
+| execTransactionFromModule(...)
+v
+Safe wallet context
+|
+v
+LP module --> mintPosition(...)
+The operators in this incident did not call the Gateway module directly. Requests arrived through a multicall router, which dispatched batched calls on their behalf. Because the router was the direct caller whenever it forwarded a legitimate request, the Gateway module's authorized-caller list included the router itself.
+Through this path the victim Safe wallet could deposit aEthrsETH, the Aave receipt token for supplied rsETH, into a Uniswap v4 pool, minting a position NFT back to the wallet. Any holder of aEthrsETH could burn it through Aave to withdraw the underlying rsETH.
+The victim Safe wallet had also borrowed against that Aave collateral. Aave therefore tracked a health factor for it, the ratio of its collateral value to its debt, and rejects a collateral transfer that would leave the factor below 1.
+Vulnerability Analysis
+The router at 0x4f00...8ebC is not source-verified. The following account therefore relies on its deployed bytecode, decompiled logic, transaction traces, and a public fork-test reconstruction rather than authoritative source-level names.
+The router's dispatch logic accepted a target that was either on its allowlist or the router's own address, then checked that target's authorized-caller list against the current invocation's msg.sender. Nothing preserved the original external caller's identity across a call the router made to itself.
+When the router called itself, the inner invocation observed the router as msg.sender. The authorization helper accepted the router in the self-target case and otherwise checked whether the current msg.sender appeared in the next target's authorized-caller list. Consequently, an inner call targeting the Gateway module was evaluated as originating from the already-authorized router rather than from the external caller. This allowed instructions from an untrusted origin to satisfy the Gateway's caller authorization through the nested route.
+A second defect sat in the proof check itself. The proof authenticated the command template, but no check bound the runtime parameters supplied with it. A valid proof issued for an earlier legitimate command therefore remained usable after its concrete execution values were changed. The reused proof supplied a usable permission, but it was the nested authorization bypass that let an untrusted caller reach the Gateway module at all.
+Attack Analysis
+A previously issued Merkle proof for the same command template remained usable with different runtime values. This property did not independently bypass the Gateway's caller authorization, but it provided a usable permission after the nested router path satisfied that authorization check.
+The following analysis is based on the transaction 0x0e7680...a8705.
+Before the successful transaction, the original attacker deployed an attack contract, an attacker-controlled PAT token, and a second contract that would later carry out the PAT swap.
+In the following block, the attacker called prepare() to create and initialize a PAT/aEthrsETH Uniswap v4 pool.
+The Yoink MEV bot detected the pending exploit and front-ran the original attacker by invoking the prepared attack contract. The resulting call entered the router, caused the router to call itself, and then reached the Gateway module with the router as msg.sender. Being an enabled module, the Gateway could then have the victim Safe wallet execute the supplied operation without multisig approval.
+The instruction caused the victim Safe wallet to supply approximately 2,900 aEthrsETH as liquidity to the attacker-controlled PAT/aEthrsETH pool, within the tick range [10, 20]. The transaction also minted the associated Uniswap v4 position NFT to the wallet, making the operation appear within the expected liquidity flow. This did not take the wallet's entire aEthrsETH balance: the amount was capped so that Aave's health factor check would still pass, leaving the wallet at a health factor of 1.001182484056805114.
+The attack contract then exchanged attacker-controlled PAT for almost all of the deposited aEthrsETH through that second contract. It burned the acquired receipt tokens through Aave and withdrew the corresponding amount of rsETH. Of the approximately 2,900 rsETH that reached the Yoink bot, approximately 2,882.37 rsETH went to its profit recipient, while approximately 17.63 rsETH was exchanged for ETH, and nearly all of the resulting ETH was paid to the block builder.
+Conclusion
+The root cause was an authorization defect in custom infrastructure attached to a single Safe wallet, compounded by a permission that did not bind all execution parameters. It should not be attributed to the core contracts of Safe, Aave, Uniswap v4, or Kelp.
+A component that forwards calls on behalf of others should decide authorization from the original external caller, not from an identity the call chain picks up along the way, and it should not be reachable as its own target. A permission should likewise bind the concrete values an operation will execute with, not only the template that operation belongs to.
+More Incidents This Week
+Nostra Finance
+On September 17, 2026, Nostra's Starknet money market was exploited through an inflated NSTR oracle price, enabling approximately $3.5M in assets to be borrowed against overvalued collateral. The root cause was an oracle integration configuration that accepted too few pricing sources, allowing a manipulated thin-pool quote to materially affect the aggregated price. Nostra paused its markets [2], while Pragma reported that the attacker's address had been frozen and recovery work was ongoing [3]. The final loss and potential recoveries remained unknown.
+Background
+Nostra operated a money market on Starknet where users could supply supported collateral and borrow other assets according to the collateral's oracle-derived value.
+Nostra obtained NSTR pricing through its own price-feed contract, which delegated to a main oracle contract that read from Pragma, an oracle that publishes aggregated prices on Starknet. Publishers submitted observations to Pragma under named sources, including AVNU and GECKOTERMINAL, and its documented NSTR configuration described a median over three of them [4][5]. Each oracle response included a price, decimal precision, timestamp, and contributing-source count [6]. The main oracle contract stored MinAggregatedSources, a configurable minimum number of contributing sources.
+The deployed aggregation implementation was not read directly. Two independent indications nonetheless point the same way: Pragma's open-source code returns the average of the two middle entries whenever the entry count is even [6], and the MEDIAN response observed in this incident equaled the arithmetic average of its two contributing observations.
+The numbers behind those sources came from the market. A GECKOTERMINAL observation could be derived from on-chain pools, and one such venue on Starknet is Ekubo, a decentralized exchange that uses concentrated liquidity, similar to Uniswap v3. Liquidity providers place assets within selected tick ranges, and swaps move the pool price through active ranges, while gaps without active liquidity can separate positions placed at materially different prices.
+Nostra used the NSTR price obtained through this oracle path to value deposited collateral and calculate the account's borrowing capacity.
+Vulnerability Analysis
+Nostra's money market read NSTR prices from 0x6838...5bf0, the contract its documentation lists as the NSTR price feed [7]. That contract delegated to the main oracle it designated, 0x7b05...f0ab, which had MinAggregatedSources configured to 1. Pragma recommends at least three pricing sources, and reported after the incident that an enforced three-source minimum would have rejected the response accepted here [3].
+A response containing two valid observations therefore exceeded the configured threshold. Because the MEDIAN calculation for two observations resolved to their arithmetic average, a single extreme quote could substantially distort the result even when the other observation remained near the prevailing market price.
+This was an integration configuration weakness rather than a decimal-scaling or median-implementation error. Pragma found no defect in either calculation [3]. The insufficient source threshold allowed the correctly calculated output from an inadequately diversified input set to determine collateral value and borrowing capacity.
+Attack Analysis
+The attack relied on the manipulability of a newly created, thinly funded concentrated-liquidity pool. Available evidence indicates that the attacker's pool seeding and repeated activity may have influenced the pool used for the GECKOTERMINAL observation, although the exact pool-selection causality has not been established.
+The following analysis is based on the transaction 0x2460fd...cdf00e.
+The attacker first created an Ekubo NSTR/SolvBTC pool and supplied 1.5 SolvBTC as one-sided liquidity in a lower, inactive price range. The attacker then added approximately 1,900 NSTR and 0.0001514751 SolvBTC around the normal market price and performed repeated swaps in the pool.
+Next, the attacker placed 190 NSTR as single-sided liquidity in a narrow range far above the normal price. After removing the liquidity around the normal market price, the attacker left an empty-liquidity gap before this high-price position.
+A swap containing only 0.00000001 SolvBTC crossed the empty range and moved the pool to tick -6645400, at the boundary of the high-price position. The manipulated pool value was subsequently submitted as a GECKOTERMINAL NSTR/USD observation of $99.02439975.
+The other contributing observation, submitted under AVNU, valued NSTR at $0.00596118. No observation from the third configured source appears in that response, leaving these two as the only values that reached the aggregation [4].
+With two values, the MEDIAN response was their arithmetic average, approximately $49.51518046 per NSTR. Nostra accepted the resulting valuation and treated the attacker's NSTR deposit as sufficient collateral for substantial borrowing.
+In the first identified extraction, the attacker used a separate account holding NSTR collateral to borrow approximately 939.386010 ETH at the inflated valuation [4]. Nostra reported that the complete borrowing sequence also involved STRK, USDC, USDT, WBTC, and DAIv1, with an aggregate borrowed value of approximately $3.5M [2].
+Conclusion
+The incident resulted from an insufficient oracle-source threshold in Nostra's integration, not from an error in Pragma's decimal handling or aggregation calculation. A two-source response remained valid even though one observation came from a highly manipulable pool.
+Nostra should enforce a minimum of at least three contributing pricing sources and reject any oracle response whose source count falls below that threshold before using the price for collateral valuation or borrowing. Collateral eligibility and exposure limits should also reflect the available market liquidity and the depth required to manipulate each asset's underlying price sources.
+References
+[1] https://x.com/Phalcon_xyz/status/2099741447776096270
+[2] https://x.com/nostrafinance/status/2100577538053493076
+[3] https://www.pragma.build/updates/nostra-nstr-incident
+[4] https://x.com/Phalcon_xyz/status/2100818035082952751
+[5] https://www.pragma.build/asset/NSTR-USD?network=mainnet
+[6] https://github.com/Astraly-Labs/pragma-oracle
+[7] https://docs.nostra.finance/lend-and-borrow/deployed-contracts/money-market-mainnet
+About BlockSec
+BlockSec is a full-stack blockchain security and crypto compliance provider. We build products and services that help customers to perform code audit (including smart contracts, blockchain and wallets), intercept attacks in real time, analyze incidents, trace illicit funds, and meet AML/CFT obligations, across the full lifecycle of protocols and platforms.
+BlockSec has published multiple blockchain security papers in prestigious conferences, reported several zero-day attacks of DeFi applications, blocked multiple hacks to rescue more than 20 million dollars, and secured billions of cryptocurrencies.
+-
+Official website: https://blocksec.com/
+-
+Official Twitter account: https://twitter.com/BlockSecTeam
+-
+🔗 BlockSec Auditing Service : Submit a request
+-
+🔗 Phalcon Security APP: Book a demo
+-
+🔗 Phalcon Compliance
+Best Security Auditor for Web3
+Validate design, code, and business logic before launch

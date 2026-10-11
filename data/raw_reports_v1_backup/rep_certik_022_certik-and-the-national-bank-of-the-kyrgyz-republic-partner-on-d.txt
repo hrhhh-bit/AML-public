@@ -1,0 +1,23 @@
+Central banks don't get a second chance to get digital currency security right. That's exactly why we're glad to announce that CertiK has signed a Memorandum of Understanding (MoU) with the National Bank of the Kyrgyz Republic (NBKR), establishing a long-term strategic partnership to advance cooperation on Digital Som security and digital asset oversight.
+This engagement is a framework for sustained collaboration between a sovereign central bank and a security-focused organization, at a moment when CBDCs and digital asset oversight are becoming core infrastructure priorities rather than experimental side projects.
+Why This Partnership Matters
+The NBKR is the primary authority responsible for monetary policy, financial stability, and payment infrastructure in Kyrgyzstan, and it's actively advancing Digital Som, its central bank digital currency initiative aimed at modernizing payments and expanding financial inclusion. Bringing security expertise into that process early, rather than retrofitting it later, is exactly the kind of engagement CertiK was built for.
+What the Partnership Covers
+Under the MoU, CertiK and the NBKR intend to exchange expertise and explore cooperation across:
+- Blockchain and digital asset security: including security assessments, formal verification, cybersecurity, and operational resilience.
+- Digital asset oversight and regulatory advisory: spanning AML/CFT, digital asset custody, security standards, and licensing requirements.
+- Ongoing supervision: exploring deployment of CertiK's Supervision and Compliance solutions to strengthen risk monitoring and regulatory oversight.
+- Training and knowledge transfer: building technical and regulatory capacity within the NBKR over time.
+Part of a Broader Pattern
+CertiK has increasingly become a technical partner to regulators navigating digital asset oversight, including providing advisory support to regulators in the United States and responding to regulatory consultations issued by the Monetary Authority of Singapore (MAS). The NBKR partnership extends that track record into a central-bank environment shaped by some of the most stringent security, compliance, and operational requirements anywhere in finance, and serves as a model for how similar engagements with other highly regulated institutions can take shape.
+FAQs
+What did CertiK and the National Bank of the Kyrgyz Republic sign?
+CertiK and the NBKR signed a Memorandum of Understanding (MoU) establishing a long-term strategic partnership on Digital Som security and digital asset oversight.
+What is Digital Som?
+Digital Som is the National Bank of the Kyrgyz Republic's central bank digital currency (CBDC) initiative, aimed at modernizing payments, expanding financial inclusion, and strengthening the resilience of Kyrgyzstan's financial ecosystem.
+What areas does the partnership cover?
+The MoU covers blockchain and digital asset security, security assessments, formal verification, cybersecurity, operational resilience, AML/CFT, digital asset custody, security standards, licensing, ongoing supervision, and training/knowledge transfer.
+Is this CertiK's first engagement with a central bank or regulator?
+No, CertiK has previously provided technical advisory support to regulators in the United States and responded to regulatory consultations from the Monetary Authority of Singapore (MAS). The NBKR partnership builds on that track record in a central-bank context.
+Will CertiK provide ongoing monitoring tools to the NBKR?
+The parties intend to explore deployment of CertiK's Supervision and Compliance solutions to strengthen ongoing risk monitoring and regulatory oversight, alongside training and knowledge transfer.

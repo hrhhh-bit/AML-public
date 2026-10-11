@@ -1,0 +1,11 @@
+Started at Jun-25–2021 12:07:25 AM +UTC, xWin Finance was exploited and the attacker gained about $270k. This incident was due to an invalid slippage control in the protocol, which is exploited in a flashloan to obtain extra xWin rewards. In the following, we elaborate the technical details.
+This incident was due to a bug in the internal _swapBNBToTokens() function of xWinFund contract which implements a price slippage control. However, the logic of slippage control is invalid. The hacker made use of this bug and gained rewards (in terms of 303,998.86 xWin tokens) from the contract to swap for BNB. Below we will take one of the exploited transactions as an example and elaborate the details.
+We started the analysis from the transaction behind the hack: ba0f…5c1d. This hack is initialized from this attacker address (located at 0xb63f) and works as follows:
+Step 1: Flashloan 76000 BNB from Fortube Bank.
+Step 2: Swap 37999.99 BNB for 95.409 xWin tokens via PancakeSwap V1 BNB+xWin Pool due to an invalid slippage control in the xWinFundP::_swapBNBToTokens() function.
+Step 3: Deposit 37999.99 BNB and 0.003 xWin tokens into PancakeSwap V1 BNB+xWin Pool as liquidity and mint in return 11.28 PancakeSwap LP tokens. Moreover, the attacker gets an extra amount of xWin tokens as a reward from xWin Finance.
+Step 4: Swap 95.406 xWin tokens for 75995.77 BNB via the above PancakeSwap V1 BNB+xWin Pool and burn 11.28 PancakeSwap V1 LP tokens to get 4.19 BNB.
+Step 5: Repeat Step 1 to Step 4 twenty times, the attacker gets about extra 303,998.86 xWin tokens reward from xWin Finance for this attack.
+Step 6: Swap 303,998.86 xWin tokens for 903.92 BNB via PancakeSwap V2 BNB+xWin Pool and return the flashloan in Step 1.
+The incident leads to the reward of 607,998 xWin tokens transferred to the attacker, and then it was used to swap for BNB. Note the attacker’s funds from the above exploitations were initially held in this wallet: 0xB63F. We are actively monitoring this wallet for any movement.
+PeckShield Inc. is an industry leading blockchain security company with the goal of elevating the security, privacy, and usability of the current blockchain ecosystem. For any business or media inquiries (including the need for smart contract auditing), please contact us at telegram, twitter, or email.

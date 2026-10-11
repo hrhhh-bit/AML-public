@@ -170,10 +170,10 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _e("S", "I1", P, 0.60),
                 _e("S", "I2", P, 0.25),
                 _e("S", "I3", P, 0.15),
-                # converging merge with graded contributions
-                _e("I1", "AGG", M, 0.45),
-                _e("I2", "AGG", M, 0.30),
-                _e("I3", "AGG", M, 0.25),
+                # converging merge: each stream forwards 100% of its flow
+                _e("I1", "AGG", M),
+                _e("I2", "AGG", M),
+                _e("I3", "AGG", M),
                 _e("AGG", "T", T),
             ],
             post_state_effect=PostStateEffect(
@@ -240,9 +240,9 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_A, 2),
             ],
             edges=[
-                _e("S1", "AGG", M, 0.40),
-                _e("S2", "AGG", M, 0.35),
-                _e("S3", "AGG", M, 0.25),
+                _e("S1", "AGG", M),
+                _e("S2", "AGG", M),
+                _e("S3", "AGG", M),
                 _e("AGG", "T", T),
             ],
             post_state_effect=PostStateEffect(
@@ -382,8 +382,8 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 # equal-slice anonymisation split (symmetric prototype)
                 _e("AC", "I1", P, 0.50),
                 _e("AC", "I2", P, 0.50),
-                _e("I1", "AGG", M, 0.50),
-                _e("I2", "AGG", M, 0.50),
+                _e("I1", "AGG", M),
+                _e("I2", "AGG", M),
                 _e("AGG", "T", T),
             ],
             post_state_effect=PostStateEffect(
@@ -449,8 +449,8 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_B, 4),
             ],
             edges=[
-                _e("S1", "AGG1", M, 0.60),
-                _e("S2", "AGG1", M, 0.40),
+                _e("S1", "AGG1", M),
+                _e("S2", "AGG1", M),
                 _e("AGG1", "CC", B),
                 _e("S3", "AGG2", M),
                 _e("CC", "AGG2", T),

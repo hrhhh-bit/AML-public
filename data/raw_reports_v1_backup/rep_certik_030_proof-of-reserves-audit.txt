@@ -1,0 +1,68 @@
+Demonstrate transparency and build lasting trust with CertiK's Proof of Reserves audit. Our independent, Skynet-enabled solution verifies your reserves in real time, protecting users, investors, and stakeholders while helping you meet regulatory expectations. Offer the public verifiable assurance backed by continuous monitoring and industry-leading security standards.
+Request a PoR Audit
+Verify Reserves with the Trusted Auditor at the Forefront of Security
+The Standard for Transparency
+As the leading auditor in Web3, CertiK sets the standard for Proof of Reserves transparency.
+Backed by Security Experts
+Our PoR service is managed by the leading security experts trusted across the ecosystem.
+Showcase Your Credibility
+We provide a unique way to demonstrate your reserves accountability and credibility with Skynet.
+Deep Compliance and Regulatory Expertise
+Globally Recognized Standards
+Our Proof of Reserves services are built on a robust foundation of security, privacy, and transparency, fully aligning with globally recognized standards such as ISO 27001 and SOC 2. This alignment ensures the highest benchmarks for compliance, data protection, and operational integrity.
+Strong Partnerships with Global Policymakers
+Backed by strong partnerships with global policymakers, we bring deep regulatory expertise to every Proof of Reserves engagement. Our approach not only strengthens user trust but also positions your platform to confidently navigate evolving compliance landscapes and future regulatory requirements.
+Monetary Authority of Singapore
+Hong Kong Web3 Task Force
+Financial Services Agency of Japan
+MiCA European Union
+MOUs with Seoul and Busan Gov
+FSRA of the Abu Dhabi Global Market
+The CertiK Advantage: More Than a Report, A Live Trust Signal
+A CertiK Proof of Reserves audit is a dynamic asset for your project's growth. We provide what no other platform can: a direct showcase of your transparency to the entire Web3 security ecosystem via Skynet.
+Auditor-Led ExpertiseOur PoR service is managed by the same security engineers who conduct CertiK's world-class audits. We bring a deep understanding of your security posture, ensuring a more rigorous and context-aware verification process.
+Unmatched Community Trust With SkynetA CertiK PoR provides a public showcase of your reserves directly on your Skynet profile. This gives you direct access to the entire Web3 ecosystem, millions of users, investors, and researchers, building broad community trust in your reserves posture and Skynet Score.
+Offerings for Exchanges and Projects of all SizesProof of Reserves is a key milestone in your security journey. We support exchanges, Stablecoins, RWA projects, and DeFi protocols of all sizes with tailored PoR solutions.
+Proof of Reserves Audit Methodology
+Our Proof of Reserves approach provides assurance through a multi-phase process. Each phase is designed to transparently verify your reserves, culminating in a clear and credible showcase of trust.
+Strategic Scoping & Onboarding
+Privacy-Preserving Liability Verification
+Complete Asset & Ownership Verification
+Integrated Analysis & Reporting
+Phase 1
+Strategic Scoping & Onboarding
+The process begins with a kickoff to establish a clear foundation for the audit. This initial phase is critical for aligning on objectives and ensuring a smooth, predictable process.
+Define PoR Audit Scope: We partner with your team to define a clear audit scope, timeline, and a precise list of all in-scope assets and networks.
+Plan Skynet Integration: We establish the plan for integrating the final verification results with your public Skynet profile to provide maximum community visibility.
+Phase 2
+Privacy-Preserving Liability Verification
+Next, our engineers focus on the first side of the ledger: your user liabilities. This phase is dedicated to cryptographically proving the total value of user funds with a process that prioritizes accuracy and user privacy.
+Client Liability Report: Under our supervision, your team generates a Client Liability Report, which is a snapshot calculating all user balances for the in-scope assets.
+Data Privacy & Hashing: To protect user privacy, we collect only the minimum necessary data. For confidentiality, each user is assigned a unique user hash, ensuring auditors cannot link specific balances to identifiable individuals.
+Merkle Tree Integrity: This privacy-protected data is used to construct a Merkle Tree, allowing us to aggregate all user liabilities into a single Merkle Root Hash, which serves as a cryptographic proof of the total liability amount.
+Phase 3
+Complete Asset & Ownership Verification
+Simultaneously, we verify the assets held in reserve. This track focuses on providing undeniable proof that your organization has complete control over all wallets holding the assets.
+Wallet Address Collection: Our team obtains a complete list of all public keys and addresses from your management that hold the in-scope assets.
+Ownership Proofs: We conclusively prove your control over these addresses using secure and verifiable on-chain methods, including:
+"Send-to-Self" Transactions: Verifying control by monitoring a small, pre-defined transaction sent from each address.
+Custom Digital Signatures: Establishing ownership by having you sign a custom message with each private key.
+Phase 4
+Integrated Analysis & Reporting
+In the final phase, we bring the two verification tracks together to provide a clear picture of your reserve status, translating technical verification into a powerful, public showcase of your commitment to transparency.
+Collateralization Analysis: We conduct a meticulous one-to-one comparison of your total verified assets against your total verified liabilities.
+Valuation & Reporting: To ensure accuracy, we standardize asset values using a common currency (e.g., USD) and pull prices from multiple leading data sources. We then calculate the collateral ratio for each asset, ensuring it exceeds 100%.
+Skynet Showcase & Attestation: The results are delivered in a detailed attestation report and activated on your public Skynet profile, turning your PoR audit into a live showcase of trust for the entire Web3 ecosystem.
+A one-time Proof of Reserves audit is typically completed in 2 weeks, depending on the scope and complexity. The engagement concludes with two key deliverables: a detailed attestation report for your records and the public activation of your verification status on your Skynet profile.
+Choose Your Level of Assurance
+We offer two distinct services tailored to your project's goals.
+One-Time PoR Audit
+Ideal for regulatory filings, investor due diligence, and user transparency.
+Deliverable: A comprehensive, signed attestation report detailing our findings.
+Skynet Integration: A Verified Reserves badge displayed on your Skynet profile with the audit date, along with the PoR report available for public viewing.
+Continuous Living PoR
+The premier solution for exchanges and projects requiring ongoing, real-time assurance.
+Deliverable: Includes the PoR audit plus a dedicated, real-time Reserves dashboard on your public Skynet profile.
+PoR API: A client-side API for secure data updates and a public interface for your users to verify their balances.
+Request a PoR Audit
+Ready to Setup Your PoR Audit? Contact our team to learn how a CertiK Proof of Reserves audit can build unshakable trust in your platform and provide unparalleled visibility across the Web3 ecosystem.

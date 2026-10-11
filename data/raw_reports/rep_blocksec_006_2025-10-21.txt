@@ -1,0 +1,14 @@
+A new academic study, co-authored by a BlockSec intern, reveals how “Drainer-as-a-Service” industrialized crypto phishing — stealing over $135M. Explore how these profit-sharing scams work and the security blind spots they expose.
+A new academic paper, “Unmasking the Shadow Economy: A Deep Dive into Drainer-as-a-Service Phishing on Ethereum,” has provided the first systematic look into a sophisticated criminal enterprise plaguing the Web3 space. This joint research by Zhejiang University and Mohamed bin Zayed University of Artificial Intelligence (MBZUAI) uncovers the mechanics of “Drainer-as-a-Service” (DaaS) — a thriving underground economy that has stolen over 💲135 million from 76,582 victims.
+We at BlockSec are especially proud that the paper’s first author, Bowen He, conducted part of this pivotal research during his internship with our team.
+Unlike traditional, ad-hoc phishing, DaaS operates like a structured B2B software company. The paper details a clear operational pipeline:
+To quantify this shadow economy, the researchers developed an innovative “snowball sampling” approach. Starting from a seed set of known phishing addresses, they traced on-chain profit-sharing transactions to recursively discover new operators, affiliates, and contracts.
+The findings from March 2023 to April 2025 are staggering:
+The attacks are technically sophisticated. The paper reveals that drainers use different methods depending on the asset:
+The DaaS landscape is not a fragmented market. The research identifies nine major “families,” with three groups dominating the network and capturing 93.9% of all illicit profits:
+Using toolkit file fingerprints and monitoring Certificate Transparency logs for suspicious domain names, the researchers actively hunted for DaaS websites. They successfully identified and reported 32,819 phishing sites.
+However, the most alarming discovery was the inadequacy of current industry defenses. The study found that only 10.8% of the DaaS-related addresses in their dataset were previously flagged on public trackers like Etherscan. This reveals a vast blind spot, allowing these criminal networks to operate with relative impunity.
+The DaaS phenomenon proves that Web3 phishing has evolved from a simple scam into an industrialized, service-based criminal economy. It expertly exploits the permissionless and composable nature of DeFi for malicious ends.
+This research underscores an urgent need for multi-layered security:
+This research marks a turning point. Phishing on Ethereum is no longer a side hustle — it’s an industrialized, revenue-sharing economy operating in plain sight. At BlockSec, we will continue to leverage cutting-edge research to build the next generation of security tools that can effectively counter these evolving, professionalized threats.
+See the paper: https://yajin.org/papers/imc26_daas.pdf

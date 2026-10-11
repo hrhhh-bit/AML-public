@@ -1,0 +1,25 @@
+Technical Insights
+Tolk Security Explained: From FunC’s Engineering Pain Points to New Audit Considerations
+This article compares FunC and Tolk through code, explains how typed schemas, automatic serialization, and lazy loading change TON contract security, and identifies the risks developers and auditors still need to review.
+Breaking Down Proof Construction in Plonky3: The Fibonacci Example Unveiled
+This article examines the inner workings of Polygon’s Plonky3, a state-of-the-art prover utilized in zero-knowledge Virtual Machines (zkVMs).
+EVM – Cosmos Convergence Research From Security Base: Part 3
+This in-depth analysis will illuminate how the judicious separation of concerns between these layers can engender enhanced scalability, flexibility, and interoperability within the blockchain domain, ultimately shaping the future trajectory of decentralized applications and networks.
+Threshold Cryptography V: Auxiliary Zero-knowledge Proofs
+In this post, we analyze the specific ZKP constructions implemented in Binance’s tss-lib [1]. These proofs address previously identified weaknesses in the Multiplicative-to-Additive (MtA) protocol, Paillier encryption parameters, and auxiliary RSA modulus generation. Our discussion is grounded in the improvements formalized by the specifications in CGGMP21 [4], which strengthen the robustness of threshold ECDSA against known attacks.
+Lottie File Incidents: Case Studies of Third-Party Supply Chain Risks
+This post details two security incidents involving the Lottie animation format and its ecosystem, highlighting the persistent and evolving nature of third-party dependency and supply chain risks in the modern web landscape.
+Threshold Cryptography IV: Multiplicative-to-Additive (MtA) Protocol and Paillier Encryption Scheme
+In this post, we provide a detailed examination of the MtA protocol, which utilizes the additively homomorphic properties of the Paillier encryption scheme to facilitate the exchange of encrypted secret shares among the participating parties.
+Threshold Cryptography III: Binance tss-lib’s 9-Round Threshold ECDSA
+This third post in the Threshold Cryptography series provides a bird’s-eye view of the 9-round threshold ECDSA protocol implemented in tss-lib [1]. Detailed exposition of the underlying MtA secret share conversion protocol and zero-knowledge proofs will follow in the next two posts.
+Security Risks of Stablecoins
+Stablecoins are a type of crypto-asset designed to maintain a stable price by linking each token to an external reference asset, most often a national currency like the U.S. dollar, but sometimes commodities like gold. In theory, every coin in circulation should be redeemable for an equal amount of that reference asset, protecting holders from the sharp price fluctuations typical of unpegged digital currencies.
+Private Key, Public Risk
+In Web3, private keys are critical for controlling assets, governance, and trust, but their mismanagement poses significant risks, including financial loss and reputational damage. This article explores secure private key generation, storage, and usage to mitigate these vulnerabilities.
+Move for Solidity Developers: Token Standard II — Advanced Fungible Token Extensions
+Building on our previous analysis of basic token functionalities across Solidity, Sui Move, and Aptos Move, this report focuses on the advanced features of fungible tokens. We specifically explore how these platforms implement fungible token standards, with extensions such as whitelisting/blacklisting, fee mechanisms, pausing, and whitelisting/blacklisting.
+Threshold Cryptography II: Unidentifiability in Decentralized FROST Implementation
+The second post in our Threshold Cryptography series explores the FROST threshold signing protocol, as proposed in FROST: Flexible Round-Optimized Schnorr Threshold Signatures [1], and highlights a potential issue that arises when implementing the protocol in a decentralized setting. This issue allows a malicious participant to send inconsistent nonce commitments, leading to honest participants to be falsely accused of misbehavior.
+EVM – Cosmos Convergence Research From Security Base: Part 2
+In Part 1 of this blog series, we examined the integration of EVM and Cosmos at the application layer, and the risks associated with merging these stacks. Part 2 introduces a novel method for interacting with Cosmos through EVM transactions. Specifically, it details the workflow of specialized precompiled contracts engineered to overcome functional limitations and establish a connection between the two ecosystems.

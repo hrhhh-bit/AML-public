@@ -1,0 +1,37 @@
+On Mar-22–2026 07:21:24 UTC, An attack exploits a flaw in the CyrusTreasury withdrawal logic to extract disproportionate value from a Pancake V3 LP position in Cyrus Finance project.
+The attacker manipulates the pool price and then triggers a withdrawal (exit) that incorrectly releases both sides of LP assets while only accounting for USDT.
+Initial funding from Tornado Cash to exploiter wallet
+Jan-17–2026 06:19:50
+https://bscscan.com/tx/0xae2858a2038b653b3b07dc6b48c235ed48ebe23b9b85263feca1bf048db07fc8
+Attack transaction. Loss ~500K USD
+Mar-22–2026 07:21:24
+https://bscscan.com/tx/0x2b7efdac5f052ee9a8f6de8f966b948027b76f7cc183e4868c98c7afc2d69524
+First Tornado Cash deposit
+Mar-22–2026 07:28:55
+https://bscscan.com/tx/0x3fb71a026e34f6d12d9a8ede48a7019e72e33049189c41bcea685c75c746cc3a
+CyrusTreasury (Impacted contract)
+https://bscscan.com/address/0xb042ea7b35826e6e537a63bb9fc9fb06b50ae10b
+Attacker EoA
+https://bscscan.com/address/0xf96eb14171b71ac16200013753dff3e91043b63b
+Mar-22–2026 19:21:24
+1. In transaction 0x2b7efdac5f052ee9a8f6de8f966b948027b76f7cc183e4868c98c7afc2d69524, attacker EOA 0xf96eb14171b71ac16200013753dff3e91043b63b invoked helper contract 0x938DBbB69e71D00f52d5eD5D69Ba892Fa1448a7B
+2. The helper contract received a flash loan of 1,798 ETH from 0xD0e226F674bBf064F54ab47f42473fF80dB98CBA (Pancakeswap), providing the temporary capital used to manipulate the pool and execute the exploit.
+3. During the same transaction, the helper contract pulled Cyrus position NFT #15505 from 0x01737d386bfFBBeA81daB7BfD32d4C796B76Ffa3 into itself. This transfer allowed the helper to satisfy the ownership check in CyrusTreasury.exit(15505).
+4. The helper then traded against the PancakeSwap V3 ETH/USDT pool 0x9F599F3D64a9D99eA21e68127Bb6CE99f893DA61, temporarily distorting the pool price immediately before triggering the Cyrus withdrawal flow.
+5. While the pool price was distorted, the helper called exit(15505) on CyrusTreasury. This reached withdrawUSDTFromAny() and decreaseLiquidity(), which removed treasury-controlled Pancake V3 liquidity.
+6. Due to the treasury bug, the liquidity withdrawal did not pay only USDT. Instead, the treasury’s Pancake V3 collection forwarded both LP assets to the withdrawal recipients while accounting only for the USDT side. In this transaction:
+7. The total treasury-controlled LP outflow during the exploit was therefore approximately 1290.538899649880673917 ETH and 1708.5 USDT.
+8. After obtaining those assets, the helper unwound the flash-loan path and repaid 1799.0788 ETH to the flash source within the same transaction.
+9. The helper then transferred the remaining proceeds to the attacker EOA, which ended the transaction with net receipts of approximately 28.139762187797007447 ETH and 454,169.217037384770086438 USDT.
+The exploit has been caused by two issues in the code:
+1. withdrawUSDTFromAny() is meant to satisfy a USDT withdrawal, but instead of paying only USDT, it removes treasury-controlled LP liquidity and sends both tokens of the position to the withdrawing user. In practice, this means that when a user closes a position, they can receive USDT and ETH.
+2. The amount of liquidity to remove is computed using the pool’s current spot price. Because that price can be manipulated temporarily, an attacker can first move the pool price and then trigger the withdrawal so that the treasury removes liquidity under distorted conditions. Although it is related to the exploit, it is not the primary vulnerability, because without the incorrect transfer of the second LP leg to the user, the same price manipulation would not have been directly exploitable in this way.
+Token Breakdown:
+30.4 ETH
+454,170.66 USDT
+Total: $516,840.02
+All loss have been sent to Tornado Cash in 8 batches of 100 BNB and 1 batch of 10 BNB.
+THIS REPORT IS FOR INFORMATIONAL PURPOSES ONLY AND IS PROVIDED TO THE USER ON AN “AS IS” BASIS AT USER’S SOLE RISK. THIS REPORT IS BASED ON INFORMATION AVAILABLE TO CERTIK AT THE TIME OF PREPARATION AND IS SUBJECT TO CHANGE.
+CERTIK MAKES NO WARRANTIES OR GUARANTEES OF ANY KIND AS TO THE ACCURATENESS, QUALITY, TIMELINESS, OR COMPLETENESS OF THE REPORT OR THAT IT IS FREE FROM ERROR, AND CERTIK SHALL NOT BE RESPONSIBLE OR LIABLE FOR ANY ERRORS, OMISSIONS, OR INACCURACIES IN THE INFORMATION OR FOR ANY USER’S RELIANCE ON THE INFORMATION.
+THIS REPORT SHALL NOT BE DEEMED OR RELIED UPON FOR FINANCIAL, LEGAL, REGULATORY, TAX, OR INVESTMENT ADVICE. USERS REMAIN SOLELY RESPONSIBLE FOR ANY DECISIONS MADE BASED ON THE CONTENTS OF THIS REPORT.
+ALL RIGHTS, TITLE, AND INTEREST IN AND TO THIS REPORT, THE FINDINGS, AND RELATED MATERIALS ARE OWNED EXCLUSIVELY BY CERTIK. CERTIK GRANTS THE USER A LIMITED, NON-TRANSFERABLE, NON-EXCLUSIVE LICENSE TO USE THIS REPORT INTERNALLY FOR ITS OWN BUSINESS PURPOSES. REDISTRIBUTION, DISCLOSURE, OR PUBLICATION OF THIS REPORT, IN WHOLE OR IN PART, TO ANY THIRD PARTY WITHOUT CERTIK’S PRIOR WRITTEN CONSENT IS STRICTLY PROHIBITED.

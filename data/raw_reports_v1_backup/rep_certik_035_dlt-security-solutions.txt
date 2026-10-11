@@ -1,0 +1,43 @@
+DLT Security Solutions
+Strategy, architecture design, and security assessments for institutions building distributed ledger technologies (DLT), covering on-chain systems, off-chain infrastructure, and regulatory readiness.
+Advisory
+DLT strategy & integration advisory
+Guidance for institutions adopting DLT, covering secure on-chain architecture, resilient off-chain infrastructure, and the boundaries between them.
+Covers: Chain selection and design tradeoffs, consensus and finality requirements, node/validator topology, and data privacy & sovereignty constraints.
+Covers: Tokenization, cross-chain flows, upgradeability patterns, institutional-grade governance design, token economics and incentive risks.
+Covers: Crypto custody, key management and signing workflows, backend system hardening, and integration boundary reviews.
+Environments: Public blockchains (e.g., Ethereum, Solana), private blockchains (e.g., Quorum, Besu), and institutional contract environments like the Canton Network.
+Layer: L1/L2, side chains, bridges, identity, oracles, nodes, and wallets.
+Languages: Solidity, DAML, Rust, Move, Go, Java, JS/TS, C++, CosmWasm, Haskell, and OCaml.
+Supported Environments
+Public, private, & permissioned ledger support
+CertiK supports diverse DLT environments based on institutional privacy and operational requirements.
+Security Assessments
+DLT security audits & reviews
+Security validation for smart contract, protocols, and chain-level components with clear remediation outcomes.
+DLT Audit Workflow
+Risk Coverage
+Web portals, mobile apps (Android and iOS), backend APIs, and cloud infrastructure.
+Secrets and key management, wallet signing procedures, and simulated phishing campaigns.
+Penetration Testing
+Penetration testing for applications & infrastructure
+Offensive security testing across customer-facing apps, backend services, and core infrastructure.
+Designed in line with security best practices including OWASP Top 10, NIST SP 800-115, and CREST.
+Compliance
+Compliance advisory enabled by technology
+A practical bridge between technical implementation and regulatory expectations. Including Vara, MiCA & DORA, HKSFC, MAS, SOC 2, ISO 27001 and more.
+Regulatory mapping:
+Frameworks by jurisdiction/entity type + requirements matrix
+Gap analysis:
+Controls review + prioritized remediation roadmap
+License readiness:
+Submission review, supporting policy pack guidance, regulator Q&A support
+Continuous Security & Compliance
+Extend assurance post-launch
+Leverage ongoing protection through real-time intelligence for proactive security.
+Institutional Implementation
+Technical execution & managed infrastructure
+Turning DLT strategy into production-ready environments through engineering excellence and managed services.
+Architect and manage the underlying network layers to ensure high availability and technical resilience through custom chain deployment, validator management, and automated failover planning.
+Our team executes the secure launch of institutional financial products and governance systems, including stablecoins, RWAs, and DEXs, using battle-tested smart contract patterns and upgradeability controls.
+Bridge the gap between traditional backend systems and decentralized ledgers by developing secure APIs, block explorers, and privacy-preserving tools such as Zero-Knowledge proofs.

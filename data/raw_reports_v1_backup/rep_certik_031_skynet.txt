@@ -1,0 +1,96 @@
+Skynet for Web3 Projects
+Turn Your Security Posture
+into Web3 Visibility
+Skynet helps Web3 projects showcase verified security signals, build user trust, and get discovered across CertiK, wallets, exchanges, data platforms, and ecosystem leaderboards.
+Why It Matters
+Security Is Now a
+Distribution Signal
+In Web3, users rarely evaluate projects from a single source. They see project profiles, wallet warnings, exchange pages, token data platforms, audit badges, leaderboard rankings, and community signals before they decide whether to interact.
+For growing projects, security is no longer only a technical requirement. It is part of how the market decides who to trust, who to list, who to partner with, and who to discover.
+Skynet helps projects turn fragmented security, token, audit, and transparency data into structured trust signals that can be understood across the ecosystem.
+Trust Is Hard to Prove
+New projects need clear, verified signals before users, investors, and partners decide to engage.
+Risk Signals Are Fragmented
+Audit status, token risks, KYC, on-chain behavior, community health, and market signals often live across disconnected systems.
+Discovery Is Data-Driven
+Wallets, exchanges, data platforms, and ecosystem leaderboards increasingly surface projects through structured trust and security data.
+Skynet Product Suite
+One Platform for Discovery, Trust,
+Risk, and Growth
+Skynet brings together security ratings, token risk intelligence, profile visibility, leaderboards, and API integrations to help projects build credibility and reach users at the point of decision.
+Discovery
+Leaderboards and project listings help users, investors, wallets, exchanges, and ecosystems discover projects by category, stage, ecosystem, and security posture.
+Trust Signals
+Skynet Score, KYC Badge, and Contract Verification Badge help projects translate security and transparency into visible trust markers.
+Risk Intelligence
+Token Scan helps projects identify token-level risks. For complex results, teams can talk to a CertiK expert to understand what to fix, explain, or disclose.
+Growth
+Skynet Boost helps qualified projects showcase verified security and transparency signals across Skynet surfaces, profile placements, and co-marketing moments.
+How Projects Use Skynet
+From Security Signals to
+Ecosystem Visibility
+Skynet helps project teams understand how they appear to the market, improve the signals users care about, and create more opportunities for discovery.
+Measure Trust with Skynet Score
+Your Skynet Score gives users, investors, and partners a real-time view of your project's security standing. It combines security, operational, community, market, and governance signals into a public rating that is easy to understand.
+- See your current public security rating
+- Understand the dimensions behind the score
+- Show the market that security is part of your project's operating standard
+Review Token Risk with Token Scan
+Token Scan helps project teams identify risks before users, partners, or the market discover them. For complex results, teams can talk to a CertiK expert to review the findings and understand whether to fix, explain, or disclose specific risks.
+- Scan token contracts for user-facing risks
+- Understand warnings before they affect trust
+- Review results with a CertiK expert
+Amplify Verified Signals with Skynet Boost
+Skynet Boost helps qualified projects make verified security and transparency signals more visible across Skynet surfaces. It is designed for teams that want to showcase audit progress, profile completeness, KYC, badges, and other trust-building milestones.
+- Improve how verified signals are presented
+- Support launch, growth, and campaign moments
+- Pair security credibility with co-marketing opportunities
+Get Discovered on Leaderboards
+Skynet Leaderboards help projects appear in discovery surfaces organized by project type, ecosystem, stage, and security posture.
+- Help users and partners compare projects
+- Give projects category and ecosystem discovery paths
+- Make security and transparency part of project discovery
+Platform Integrations
+Powering Security Ratings
+Across Leading Web3 Platforms
+Skynet's security intelligence reaches beyond CertiK. Through API and partner integrations, Skynet Score, Token Scan, and CertiK audit badges can appear across wallets, exchanges, data platforms, and project pages where users make decisions.
+For project teams, this means your verified security signals can become part of a wider Web3 trust and discovery layer.
+# GET PROJECT SECURITY SCORE
+"securityScore": {
+"score": 43.67,
+"rank": 9266,
+"tier": "C",
+"rankPercentile": 0.7341,
+"codeSecurity": 30,
+"communityTrust": 93.45,
+"fundamentalHealth": 30,
+"governanceStrength": 30,
+"marketStability": 62.4,
+"operationalResilience": 40.77
+},
+Your signals travel beyond your CertiK profile.
+Skynet helps security data show up closer to user decision points, including wallets, token pages, exchange surfaces, and data platforms.
+High-traffic platforms rely on CertiK intelligence.
+Skynet has integrations with leading Web3 platforms including Binance Wallet, Binance DappBay, OKX Wallet, CoinMarketCap, CoinGecko, and Rootdata.
+API integrations make security intelligence usable at scale.
+Partners can use Skynet Score API, Token Scan API, and audit badge integrations to surface real-time project security signals inside their own products.
+Skynet Rating Integrated With
+Common Questions About Skynet
+Learn how Skynet helps Web3 projects build trust, understand risk signals, and increase visibility across CertiK and the broader Web3 ecosystem.
+Skynet is CertiK's Web3 security intelligence platform. It combines real-time security ratings, token risk analysis, project profiles, leaderboards, and platform integrations to help users and partners understand project security signals.
+For Web3 projects, Skynet helps turn verified security and transparency data into public trust, ecosystem visibility, and platform-level discoverability.
+Skynet helps projects present security and transparency signals in a format that users, investors, wallets, exchanges, and ecosystem partners can understand. These signals may include Skynet Score, audit status, KYC, contract verification, token risk indicators, market signals, and community health.
+The Skynet Score is a real-time security rating that helps users evaluate a project's security posture. It reflects multiple dimensions, including code security, fundamental health, operational resilience, community trust, market stability, and governance strength.
+For projects, the score provides a public trust signal that can support user confidence, partner conversations, and security-focused discovery.
+Token Scan is a tool that helps identify token-level risks such as honeypots, malicious permissions, owner privileges, dangerous code patterns, and hidden risks.
+Project teams can use Token Scan to understand potential user-facing concerns before they affect trust. For complex scan results, teams can talk to a CertiK expert to review what should be fixed, explained, or disclosed.
+Skynet Boost helps qualified projects showcase verified security and transparency signals across Skynet surfaces and selected co-marketing moments.
+It should be positioned as a visibility and profile-enhancement product, not as a guaranteed ranking or paid placement product.
+Skynet Leaderboards help users and partners discover projects by category, ecosystem, stage, and security posture. Leaderboard surfaces can include pre-token launch boards, exchange leaderboards, wallet leaderboards, ecosystem leaderboards, and category leaderboards such as DeFi, Gaming, Meme, AI, RWA, and L2.
+Skynet API and partner integrations allow security intelligence such as Skynet Score, Token Scan results, and CertiK audit badges to appear across wallets, exchanges, data platforms, and project pages.
+This means a project's verified security signals can travel beyond CertiK and appear closer to where users make decisions.
+Skynet security intelligence has been integrated with high-traffic Web3 platforms including Binance Wallet, Binance DappBay, OKX Wallet, CoinMarketCap, CoinGecko, and RootData.
+Final logo usage, screenshots, and exact integration claims should be reviewed by CertiK brand and legal teams before publication.
+Skynet is especially useful for Web3 projects that want to improve trust, explain security signals, prepare for launch, support community confidence, strengthen partner conversations, or increase ecosystem visibility.
+It is relevant for pre-token projects, launched token projects, exchanges, wallets, DeFi protocols, gaming projects, AI projects, RWA projects, L2s, and other Web3 teams.
+No. A Skynet Score is a security intelligence signal, not a guarantee that a project is risk-free. It helps users and partners evaluate available security, operational, market, community, and governance signals, but Web3 projects can still face changing risks over time.

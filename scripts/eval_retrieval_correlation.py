@@ -52,9 +52,7 @@ from aml_rag import (  # noqa: E402
 )
 
 #: 生产物理知识库（只读加载，评测后校验未被污染）。
-DEFAULT_KB_PATH = (
-    PROJECT_ROOT / "experiments" / "phase2_distillation_empirical" / "distilled_kb.json"
-)
+DEFAULT_KB_PATH = PROJECT_ROOT / "data" / "distilled_kb.json"
 #: 实验资产归档目录（阶段 3 Part A 专用）。
 DEFAULT_OUT_PATH = (
     PROJECT_ROOT

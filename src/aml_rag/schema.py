@@ -66,13 +66,26 @@ class NodeRole(str, Enum):
 
 
 class OperationType(str, Enum):
-    """Abstract edge operations :math:`E_{abstract}`."""
+    """Abstract edge operations :math:`E_{abstract}`.
+
+    Case-insensitive parsing is enabled via :meth:`_missing_` so that
+    ``"bridge"`` / ``"BRIDGE"`` resolve to :attr:`BRIDGE` defensively.
+    """
 
     TRANSFER = "Transfer"
     SWAP = "Swap"
     BRIDGE = "Bridge"
     SPLIT = "Split"
     MERGE = "Merge"
+
+    @classmethod
+    def _missing_(cls, value: object) -> "OperationType | None":
+        """Case-insensitive lookup: ``'bridge'`` -> :attr:`BRIDGE`."""
+        if isinstance(value, str):
+            for member in cls:
+                if member.value.lower() == value.lower():
+                    return member
+        return None
 
 
 class PatternType(str, Enum):
@@ -108,11 +121,13 @@ class AbstractNode(BaseModel):
 class AbstractEdge(BaseModel):
     """A directed abstract operation edge between two motif-local nodes.
 
-    ``flow_share`` is the normalised relative flow carried by this edge
-    (backward compatible default ``1.0``). It lets the knowledge base
-    distinguish geometrically identical sub-graphs behaviourally — e.g. a
-    Peeling Chain with asymmetric main/strip ratios vs. an equal-slice
-    Layering Split. Pure relative prior: no absolute amounts allowed.
+    ``flow_share`` is STRICTLY the local out-degree distribution ratio of the
+    edge's SOURCE node: for every node :math:`u`,
+    :math:`\\sum_{e \\in Out(u)} flow\\_share(e) = 1.0 \\pm 0.01`.  A single
+    out-edge therefore always carries ``1.0`` (the node forwards 100% of the
+    flow).  In-flow weights of a downstream merge target must NEVER be
+    written onto upstream edges.  Pure relative prior: no absolute amounts
+    allowed.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -357,29 +372,35 @@ class TopologicalMotif(BaseModel):
                     f"max_branching_factor={self.constraints.max_branching_factor}."
                 )
 
-        # 6) motif-level flow conservation (relative priors must be physical)
-        split_groups: dict[str, list[AbstractEdge]] = {}
-        merge_groups: dict[str, list[AbstractEdge]] = {}
+        # 6) cross-chain ledger invariant: ledger state cannot leap across
+        #    chains via an ordinary same-chain transfer — cross-chain edges
+        #    MUST use the Bridge primitive (case-robust comparison).
+        chain_of = {n.temp_id: n.chain for n in nodes}
         for e in edges:
-            if e.operation == OperationType.SPLIT:
-                split_groups.setdefault(e.source, []).append(e)
-            elif e.operation == OperationType.MERGE:
-                merge_groups.setdefault(e.target, []).append(e)
-        for nid, group in split_groups.items():
-            total = sum(e.flow_share for e in group)
-            if abs(total - 1.0) > FLOW_TOLERANCE:
+            src_chain = chain_of[e.source]
+            tgt_chain = chain_of[e.target]
+            if src_chain != tgt_chain and e.operation.value.lower() != "bridge":
                 raise ValueError(
-                    f"Motif '{self.motif_id}': Split out-edges of node '{nid}' "
-                    f"violate flow conservation (sum={total:.4f}, tolerance "
-                    f"{FLOW_TOLERANCE})."
+                    f"Motif '{self.motif_id}': cross-chain edge {e.source}->{e.target} "
+                    f"({src_chain} -> {tgt_chain}) violates the cross-chain ledger "
+                    f"invariant: operation must be Bridge, got '{e.operation.value}'."
                 )
-        for nid, group in merge_groups.items():
+
+        # 7) out-flow conservation per node: flow_share is the local
+        #    OUT-degree distribution.  Single out-edges (Transfer / Swap /
+        #    Bridge / Merge) must therefore carry exactly 1.0 — the node
+        #    forwards 100% of the flow; nothing evaporates or inflates.
+        out_groups: dict[str, list[AbstractEdge]] = {}
+        for e in edges:
+            out_groups.setdefault(e.source, []).append(e)
+        for nid, group in out_groups.items():
             total = sum(e.flow_share for e in group)
             if abs(total - 1.0) > FLOW_TOLERANCE:
                 raise ValueError(
-                    f"Motif '{self.motif_id}': Merge in-edges of node '{nid}' "
-                    f"violate flow conservation (sum={total:.4f}, tolerance "
-                    f"{FLOW_TOLERANCE})."
+                    f"Motif '{self.motif_id}': out-flow conservation violated at "
+                    f"node '{nid}' (sum={total:.4f}, tolerance {FLOW_TOLERANCE}). "
+                    f"Single out-edges must carry flow_share 1.0; downstream "
+                    f"in-flow weights must not overwrite upstream out-shares."
                 )
 
         return self

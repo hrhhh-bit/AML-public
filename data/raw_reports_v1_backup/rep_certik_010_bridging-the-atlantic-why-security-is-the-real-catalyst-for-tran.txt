@@ -1,0 +1,21 @@
+By Stefan Muehlbauer, Head of U.S. Government Affairs at CertiK
+As I wrap up a three-day DC roadshow coordinating Capitol Hill and agency roundtables for the US/UK Crypto Alliance, one conclusion stands out above the rest: the narrative surrounding digital asset policy in Washington has fundamentally shifted.
+While headline-driven reporting often focuses on political debate, the discussions taking place behind closed doors reveal a mature consensus. Across Capitol Hill, the White House Council of Economic Advisers, and federal regulatory bodies, the baseline premise is no longer whether crypto has a future in the U.S. and UK, but how to construct a durable framework that protects markets without stifling innovation.
+The Congressional Reality vs. The Regulatory Shift
+During our meetings with key lawmakers—including leadership and members from the House Financial Services Committee—we engaged directly on the future of market structure legislation.
+It is no secret that election-year dynamics have created friction for major legislative pushes like the CLARITY Act. While bipartisan support for legislative clarity remains strong, passing comprehensive market structure bills through Congress in the immediate term is a tall order.
+However, congressional gridlock does not equal policy stagnation.
+Our subsequent meetings with the SEC Crypto Task Force and the OCC Stablecoin Team highlighted where the real momentum currently sits. In the absence of immediate statutory changes, regulatory agencies are stepping up to build functional rules of the road on their own timeline:
+- Joint agency harmonization: Emerging framework initiatives between the SEC and CFTC signal a shift toward actionable oversight for market intermediaries.
+- Stablecoin implementation: The OCC and banking regulators are actively shaping operational standards for payment stablecoin issuers and bank integration.
+For institutions waiting on the sidelines, the takeaway is simple: regulatory development is moving forward rapidly through administrative channels, even while legislation sits in committee.
+Why Security Is the Missing Link in Policy Debates
+As lawmakers and regulators establish these frameworks, they face a practical reality: policy rules are only as strong as the technical infrastructure beneath them.
+For institutional capital—from traditional asset managers to bank-backed stablecoin issuers—regulatory permission is only half the equation. The other half is technical assurance. Policy cannot prevent smart contract exploits, code vulnerabilities, or cross-chain security breaches on its own.
+This is where technical compliance intersects with government affairs. As transatlantic regulators work to harmonize standards between the UK’s FCA model and U.S. agency frameworks, security standards must be treated as core financial infrastructure:
+- Auditing as a Regulatory Baseline: Comprehensive smart contract code audits are becoming as fundamental to Web3 compliance as traditional financial audits are to Wall Street.
+- Real-Time Security Architecture: Static checks are no longer enough; policy frameworks increasingly rely on active threat monitoring and automated risk mitigation.
+- Rigorous Compliance Rails: Merging on-chain security with robust Anti-Money Laundering (AML) and Know Your Customer (KYC) protocols is essential for seamless institutional cross-border activity.
+Building an Immutable Transatlantic Bridge
+At CertiK, we aren't just watching transatlantic alignment take shape—we are actively helping build its foundation. By connecting UK Members of Parliament and crypto leaders directly with U.S. policy architects, we are helping ensure that emerging regulatory frameworks are grounded in real-world technical realities.
+Crypto is in the U.S. and UK to stay. The policy path forward may be complex, but with rigorous security and clear standards at its core, the transatlantic digital asset market is well-positioned for sustainable institutional growth.

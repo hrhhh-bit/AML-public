@@ -1,0 +1,77 @@
+Incident summary
+On 3 November 2025, Balancer and its forks Beets and Bex were exploited, resulting in a combined initial loss of approximately $130M. The exploit stemmed from a precision flaw in Balancer’s batch swap logic. The attacker was able to amplify this vulnerability to manipulate the LP pricing model, artificially increasing the internal token balance held by their contract. After inflating these balances through repeated swaps, they withdrew the funds using manageUserBalance().
+In total, Balancer suffered around 113M dollars in losses, while Beets and Bex were impacted by 3.8M dollars and 12.4M dollars respectively.
+Though initial losses reached about 130M the figure has so far been reduced to ~96.4M dollars after freezes and white hat returns.
+Background Knowledge
+Balancer vaults hold assets, distribute batches of swap requests to corresponding pools and aggregate swap results.
+swaps.sol: Specific single swapping is handled by the Balancer Pool contract
+→ Vault.batchSwap()
+→ Vault.swapWithPools()
+→ Vault._swapWithPool()
+→ Vault._processGeneralPoolSwapRequest()
+→ 'pool'.onSwap()
+Balancer: ComposableStablePool
+In the Composable pool the calculation is based on the curve stable swap model.
+ComposableStablePool.onSwap()
+→ ComposableStablePool._swapGivenOut()
+→ ComposableStablePool._onSwapGivenOut()
+→_onRegularSwap()
+→ _calcInGivenOut()
+→ _getTokenBalanceGivenInvariantAndAllOtherBalances()
+or
+swapWithBpt()
+→ _joinSwapExactBptOutForTokenIn()
+→ _calcTokenInGivenExactBptOut()
+stablemath.sol First, the contract computes the invariant (D) using the current pool balances. This calculation takes into account the amplification coefficient (A), the sum of balances (S), and the product of balances (P) to model the stable-swap curve. Once D is established, the contract determines the swap amount by solving a polynomial equation numerically (via Newton–Raphson approximation). The goal of this step is to find the input or output amount that maintains the invariant, ensuring the pricing model remains consistent.
+Vulnerability
+Before the swap calculation runs in ComposableStablePool._onSwapGivenOut(), the requested output amount is first scaled to match the pool’s internal precision format and then rounded down. This rounding step is normally negligible, as the stable-swap invariant (D) and the Newton–Raphson solver depend on high precision to ensure the pricing curve remains smooth.
+However, the exploiter repeatedly performed swaps using very small amounts of a high-precision token (wstETH). At this scale, the rounding step introduced a measurable deviation between the theoretical output (as expected from the invariant equation) and the value actually used in the calculation. As the invariant solver treated the rounded value as exact, each swap created a tiny accounting mismatch. By batching and repeating this process, the attacker was able to amplify the rounding error into a meaningful price imbalance, allowing them to withdraw more than they deposited.
+ComposableStablePool.onSwap()
+→ ComposableStablePool._swapGivenOut()
+→ ComposableStablePool._onSwapGivenOut()
+Attack Flow
+The basic attack pattern involves calling batchSwap() to do multiple swaps amongst a trio of LP, token0, token1 to inflate the internal balance of the attack contract on the Balancer vault before withdrawal.
+The following breakdown follows the second iteration (starting line 35517) in this transaction.
+- Asset0: wstETH (Wrapped liquid staked Ether 2.0)
+- Asset1: wstETH-WETH-BPT (Balancer wstETH-WETH Stable Pool)
+- Asset2: WETH (Wrapped Ether) The swaps resulted in a net negative delta which were all added to the attacker’s internal balance as follows:
+- 4,259.843451780587743322 wstETH
+- 20.413668455251157822 wstETH-WETH-BPT
+- 1,963.838806164214870519 WETH
+Step by Step
+- Swap LP for wstETH and WETH (line 35564) until the balance of wstETH and WETH are both exactly 100,000,000,000. In total the attacker swapped 6825.615595072611391598 LP for 4270.84 wstETH and 1977.05 WETH.
+Current Balances:
+a. 4,270,841,022,451,395,518,160 wstETH
+b. 2,596,148,429,267,825,815,119,599,282,622,812
+c. 1,977,057,709,608,602,150,017 WETH 2. Swap wstETH and WETH back and forth to whittle down the wstETH and WETH balances a. Swap 221,844,531,789,055 wei WETH for 99,999,999,995 wei wstETH (line 42878). Updated vault balance:
+Before
+100,000,000,000 WETH
+100,000,000,000 wstETH
+After
+5 wstETH
+221,944,531,789,055 WETH b. Swap 162,427,217,924,000 wei WETH for 4 wei wstETH (line 43103) Vault.batchSwap()
+→ Vault._swapWithPools()
+→ Vault._swapWithPool()
+→ Vault._processGeneralPoolSwapRequest()
+→ ComposableStablePool.onSwap()
+→ ComposableStablePool._swapGivenOut()
+→ ComposableStablePool._onSwapGivenOut()
+Before the swap is handled by ComposableStablePool._onSwapGivenOut(), the requested (output) amount is multiplied by a scaling factor then rounded down Specifically 4 is multiplied by 1.218116415279760760 then divided by 1e18 and rounded down to 4, which gives -19% error. c. Swap 6,669 wei wstETH for 380,000,000,000,000 WETH (line 43628) which restored the wstETH and WETH vault balance from (1 | 384,371,749,713,055 ) back to (6,670 | 4,371,749,713,055).
+The above swaps netted 4,271,749,713,055 wei WETH for 99,999,993,330 wstETH at a minor loss. By repeating the above tactic 25 times the precision loss whittled down the current asset0 and asset1 balance from (100,000,000,000 | 100,000,000,000) to (299 | 6,551,708,809).
+- Swap wstETH and WETH back to wstETH-WETH-BPT (line 74780)
+Both the sum and product are much smaller compared to before the manipulation. The smaller invariant as a multiplier resulted in a price drop and let the attacker swap back LP tokens at a much lower rate. In total 10.997570670807774539 wstETH and 13.218903437835570689 was swapped for 6846.02926352786254942 LP which is substantially less assets for more LPs.
+The difference(delta) was added to attacker’s internal balance
+wstETH: 4270.84102235139551816 - 10.997570670807774539 = 4259.843451680587743621 LP: 6846.02926352786254942- 6825.615595072611391598 = 20.413668455251157822 WETH: 1977.057709508602150017-13.218903437835570689 = 1963.838806070766579328
+Fund Flow
+On 15 November, the exploiter sent 3,711 ETH (~$11.7M) to Tornado Cash in 39 transactions (37 batches of 100 ETH, 1 batch of 10 ETH and 1 of 1 ETH).
+- Wallets still holding funds
+0xf19FD5c683a958ce9210948858B80d433F6BfaE2 ~$540k
+0x87A1638239A404487ADE18800D2c8f1eA641E0fd ~$77k
+0xB973e729CB22875F3f211C226da814192cBc167C ~$21.4M
+0x1C7dA4E9740f99279c193540328314c04E2Edc00 ~$21.4M
+- Polygon - $1.4M frozen
+- Sonic - $3.3M Initially frozen but the block was circumvented and funds laundered to ETH.
+- The ~$12M on Berachain was intercepted by a white-hat bot operator, who has committed to returning the funds. Berachain also halted the network and blacklisted the wallet to prevent movement, allowing withdrawals only to a designated foundation recovery address.
+- Stakewise, a liquid staking protocol, burned ~$19M of osETH from exploit wallets 0xAa760D53541d8390074c61DEFeaba314675b8e3f and 0xf19FD5c683a958ce9210948858B80d433F6BfaE2.
+- Another white hat bot, 0x5af00b073aBb9F88832353Bd4C919caAa114c972, returned ~$1M to Balancer.
+- 0x310EBC4ffE858Ab40B95343DE0c2431B95892962 returned ~$100k to Balancer. To keep up to date on the latest incident alerts and statistics follow @certikalert on X, or read our latest analysis on certik.com.

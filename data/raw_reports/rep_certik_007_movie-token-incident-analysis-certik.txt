@@ -1,0 +1,21 @@
+Incident Summary
+On 10 March 2026, the Movie Token (MT) contract was exploited for approximately $242,000 due to a critical flaw in its 'sell' logic. The vulnerability stemmed from a double-counting error: when a user sold MT tokens, the contract simultaneously transferred them to the liquidity pair for the swap and added that same balance to a pendingBurnAmount variable. When distributeDailyRewards() subsequently burned those pending tokens, it created an artificial supply shock, inflating the MT price and allowing the attacker to drain value from the pool.
+Attack Flow
+Addresses:
+Exploiter:
+- Wallet: 0xDB0901A3254f47c0CE57fFFCE2C730Bc33A1c0e1
+- Contract: 0xDf7eD22d1FA65eAc11A0806b7bb5F35d4A1e957D
+Victim:
+- 0xb32979f3A5b426a4A6Ae920f2B391D885Abf4C18
+Step by Step Event Flow: Transaction
+- The attacker flash loaned 358,681.54 WBNB, the entire WBNB balance of Moolah proxy.
+- The attacker then swapped 0.000004339 WBNB for 0.2 MT and added liquidity to the Pancake liquidity pool to mint 0.0009535 CAKE-LP.
+- 496 WBNB swapped for 10M MT tokens, which were sent to the Pancake router. Then, by removing the liquidity added in step 2, the 10M MT tokens are taken back. Doing the swap this way avoided swap fees as well as bypassing a restriction on !deflationStopped, which would have stopped a buy transaction straight to the attacker.
+- Flash swap 397 WBNB. In the callback, 90% (after tax) of the amount was transferred to the pair; the same value (90%) was also accounted to pendingBurnAmount.
+- Next the attacker swapped 717 WBNB for ~10,000,000 MT tokens from the pool which reduced the MT reserves to 6,756,516 MT. They then called public function distributeDailyRewards() which executed extractFromPoolForLpMining() → executePendingBurn() and burned ~6.74M of the remaining MT from the Pair, leaving reserves of 21,000 MT vs ~1,201 WBNB.
+- With 0% tax and distorted reserves, the attacker swapped ~10,000,000 MT for 1,198.628 WBNB. After repaying the initial flash loan of 358,681.54 WBNB, the attacker was left with a profit of 381.7468 WBNB.
+Vulnerability
+The root cause was due to double-counting in the sell logic. On sells, transfer() sends the net tokens (90%) to the Pair for the swap, but also added the same amount to pendingBurnAmount. The tokens are later burned from the Pair's balance via distributeDailyRewards() → extractFromPoolForLpMining() → executePendingBurn(). The indentation of the pendingBurnAmount may indicate the logic was overlooked and wasn’t intended as is.
+Fund Flow
+The attacker swapped 381.7468 WBNB for ~242k USDC which was bridged from BSC to Ethereum networ before being swapped for ~242k DAI and shielded with Railgun.
+To keep up to date on the latest incident alerts and statistics follow @certikalert on X, or read our latest analysis on certik.com.

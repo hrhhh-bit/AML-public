@@ -83,21 +83,23 @@ def test_edge_flow_share_rejects_out_of_range(bad: float) -> None:
 # ---------------------------------------------------------------------------
 def test_seed_motifs_respect_flow_conservation() -> None:
     for motif in SEED_MOTIFS:
-        split_groups: dict[str, list[AbstractEdge]] = {}
-        merge_groups: dict[str, list[AbstractEdge]] = {}
+        out_groups: dict[str, list[AbstractEdge]] = {}
         for e in motif.edges:
-            if e.operation == SPLIT:
-                split_groups.setdefault(e.source, []).append(e)
-            elif e.operation == MERGE:
-                merge_groups.setdefault(e.target, []).append(e)
-        for nid, group in split_groups.items():
+            out_groups.setdefault(e.source, []).append(e)
+        for nid, group in out_groups.items():
             assert abs(sum(e.flow_share for e in group) - 1.0) <= FLOW_TOLERANCE, (
-                f"{motif.motif_id} node {nid} split shares unconserved"
+                f"{motif.motif_id} node {nid} out-flow unconserved"
             )
-        for nid, group in merge_groups.items():
-            assert abs(sum(e.flow_share for e in group) - 1.0) <= FLOW_TOLERANCE, (
-                f"{motif.motif_id} node {nid} merge shares unconserved"
-            )
+        # single out-edges forward 100% of the flow (ledger invariant)
+        out_degree: dict[str, int] = {}
+        for e in motif.edges:
+            out_degree[e.source] = out_degree.get(e.source, 0) + 1
+        for nid, degree in out_degree.items():
+            if degree == 1:
+                edge = next(e for e in motif.edges if e.source == nid)
+                assert edge.flow_share == 1.0, (
+                    f"{motif.motif_id} node {nid} single out-edge must be 1.0"
+                )
 
 
 def test_archetypes_are_behaviourally_distinct() -> None:

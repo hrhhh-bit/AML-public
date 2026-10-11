@@ -1,0 +1,53 @@
+Incident Summary
+On 08 January 2026, Truebit was exploited for approximately $26.6M as a result of an integer overflow vulnerability in Solidity versions below 0.8.0, which lack built-in overflow checks. A malicious actor used this overflow to mint tokens for zero ETH that they then swapped for a total of 8,535 ETH in the same transaction. The exploit was followed up by a second attacker who was able to extract a further 224k.
+Attack Flow
+Addresses:
+Exploiter 1:
+- Wallet: 0x6C8EC8f14bE7C01672d31CFa5f2CEfeAB2562b50
+- Contract: 0x1De399967B206e446B4E9AeEb3Cb0A0991bF11b8
+Exploiter 2:
+- Wallet: 0xc0454E545a7A715c6D3627f77bEd376a05182FBc
+Truebit Protocol contract: 0x764C64b2A09b09Acb100B80d8c505Aa6a0302EF2
+Step by Step Event Flow:
+Jan-08-2026 16:02:35 - Txn
+- CALL AdminUpgradeadeabilityProxy.getPurchasePrice(amountInWei = 240,442,509,453,545,333,947,284,131) which returned a value of 0 wei to purchase 240M Truebit tokens.
+- CALL AdminUpgradeabilityProxy.buyTRU() to mint 240M tokens for 0 ETH.
+- CALL AdminUpgradeabilityProxy.sellTRU() to sell the tokens and gain 8.33 ETH
+- Repeat the process and mint increasingly larger amounts of TRU which is swapped for ETH. In total the attacker gained 8,535.36 ETH.
+Vulnerability
+getPurchasePrice() is responsible for returning the amount of ETH required to mint TRU which is reliant on function 0x1446(). In this incident the function returned zero allowing the attacker to mint for free.
+0x1446() details the procedure to calculate price from the input amount and Truebit token total supply (v1) while 0x018ef() returns the product of input amount.
+- v2 = total_supply * total_supply = _setParameters which is configured to be 75 at initialization
+- v3 = _setParameters * v2 = 75 * total_supply * total_supply
+- v5 = 100 * total_supply * total_supply
+- v6 = v5 - v3 = 25 * total_supply * total_supply
+- _reserve is the cumulative ETH taken and is 0x1ceec1aef842e54d9ee = 8539(.)408935947150350830 at the moment of exploitation. (SkyLens)
+- v7 = amount * _reserve
+- v8 = total_supply * amount * _reserve
+- v9 = 200 * total_supply * amount * _reserve
+- v10 = amount * _reserve
+- v11 = amount * amount * _reserve
+- v12 = 100 * amount * amount * _reserve
+- v13 = (100 * amount * amount * _reserve + 200 * total_supply * amount * _reserve) / 25 * total_supply * total_supply
+Calculation Example from the Exploit
+- total_supply = 161753242367424992669183203
+- amount = 240442509453545333947284131
+- _reserve = 8539408935947150350830
+v9 = 200 * total_supply * amount * _reserve
+= 66423545631423422609669496562964283492426512017211670495718637486587674438000
+v12 = 100 * amount * amount * _reserve
+= 49368543605892772813901488614323841993278026865420453219869145259082923363000
+While v9 and v12 themselves are smaller than 2^256, their sum is not
+v9 + v12 = 115792089237316195423570985177288125485704538882632123715587782745670597801000 >2^256
+This then caused an overflow to return a smaller number
+v6 = 25 * total_supply * total_supply
+= 654102785409373291178358959808439561635622779433480225
+v9 + v12 -2^256 / v6 = 0.000257757 (rounded down to zero)
+Fund Flow
+0x6C8EC8f14bE7C01672d31CFa5f2CEfeAB2562b50
+As of 9am UTC 9 Jan, the funds have been split into 2 wallets:
+- 0xD12f6E0fa7FBF4e3A1c7996E3F0Dd26AB9031a60 4,267.09 ETH (~$13.2M)
+- 0x273589ca3713e7becf42069f9fb3f0c164ce850a 4,001.0004637 ETH (~$12.4M)
+0xc0454E545a7A715c6D3627f77bEd376a05182FBc
+Sent 71.03 ETH (~$220K) to Tornado Cash.
+To keep up to date on the latest incident alerts and statistics follow @certikalert on X, or read our latest analysis on certik.com.

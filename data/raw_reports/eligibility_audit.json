@@ -1,0 +1,578 @@
+{
+  "rep_slowmist_002": {
+    "has_fund_flow": 1,
+    "hops_detected": 10,
+    "evidence_chain": "0x6d37... -> 0x0A57... / 0x0DF6... / 0x2d53... / 0x111f...; then 0x0A57... -> 0x4c73... -> USDT0 -> TRON TF2hm...; 0x0DF6... -> FixedFloat; 0x2d53... -> KuCoin/FixedFloat; 0x111f... -> FixedFloat/cce.cash/Bridgers->TRON TUi5q...",
+    "reason": "Qualifies: concrete post-exploit on-chain laundering with multiple transfers, cross-chain bridges, swaps, and mixer/exchange deposits; exploit/C2/IOC details excluded.",
+    "method": "llm",
+    "markers": [
+      "fund flow",
+      "money laundering",
+      "laundering",
+      "cross-chain",
+      "bridge"
+    ],
+    "vendor": "SlowMist",
+    "title": "Threat Intelligence | Analysis of FomoPeek App Store Poisoning and iOS Kernel Exploitation"
+  },
+  "rep_slowmist_003": {
+    "has_fund_flow": 1,
+    "hops_detected": 4,
+    "evidence_chain": "Liquid L-BTC consolidation/spend via ex1q7kgx... -> federated peg-out to BTC bc1ql4mfu6aundtkksxklfajs2h3t9nzcd6gyqjlte -> 3,400 BTC transferred to federation peg wallet bc1qdlld6... -> remaining ~598.5 BTC repeatedly self-transferred between Bitcoin blocks 966,052 and 966,199 with OP_RETURN messages.",
+    "reason": "Report provides concrete post-exploit fund movement across Liquid and Bitcoin, including consolidation/spending, cross-chain peg-out, transfer to federation wallet, and repeated BTC self-transfers, meeting the >=2-hop AML fund-flow threshold.",
+    "method": "llm",
+    "markers": ["fund flow", "money laundering", "laundering"],
+    "vendor": "SlowMist",
+    "title": "Analysis of the Liquid Network Cache Key Collision Vulnerability: Nearly 4,000 L-BTC Minted Out of…"
+  },
+  "rep_slowmist_005": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit laundering trail. Described actions are exploit execution: auxiliary contract setup, fCash minting, risk-check bypass, position splitting, settlement, and Escrow withdrawal. No subsequent transfer/swap/bridge/mixer hops are reported.",
+    "reason": "The report covers the exploit mechanics and profit withdrawal, not >=2 post-exploit AML fund-flow hops. Excluded per rules.",
+    "method": "llm",
+    "markers": ["money laundering", "laundering"],
+    "vendor": "SlowMist",
+    "title": "The Vanishing Debt — An Analysis of the Notional Finance Hack"
+  },
+  "rep_blocksec_006": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No concrete post-exploit hop chain. Only general mention of tracing on-chain profit-sharing transactions and aggregate statistics across DaaS families; no specific victim-to-hacker-to-laundering transfers, swaps, bridges, or mixer deposits are detailed.",
+    "reason": "Excluded as a macro academic survey without specific transaction/hop graphs. It does not present a concrete post-exploit laundering trail with at least 2 on-chain hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "BlockSec",
+    "title": "Inside Ethereum’s Shadow Economy: New Research Unmasks the $135M Drainer-as-a-Service Industry"
+  },
+  "rep_peckshield_002": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Excluded: flashloan -> PancakeSwap swaps/deposits -> xWin reward extraction -> swap rewards for BNB -> repay flashloan; these are exploit execution steps, not post-exploit AML hops. No post-exploit transfer/bridge/mixer trail is described.",
+    "reason": "The report documents the exploit and profit extraction, but it does not show at least 2 post-exploit on-chain hops moving stolen funds after the exploit finished.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "xWin Finance Incident: Root Cause Analysis"
+  },
+  "rep_certik_001": {
+    "has_fund_flow": 1,
+    "hops_detected": 4,
+    "evidence_chain": "incident tx f24... output -> 3875a6d6... spent f24...:0 -> two sendtomainchain peg-outs (46f117c9... and ce4caece...) -> Bitcoin tx 8db751a6... paid exact peg-out amounts; later 3,400 BTC returned and 598.5 BTC kept at bc1ql4mfu6aundtkksxklfajs2h3t9nzcd6gyqjlte",
+    "reason": "Post-exploit stolen L-BTC was moved through multiple on-chain transactions and bridged/pegged out to Bitcoin, meeting >=2-hop fund-flow criteria.",
+    "method": "llm",
+    "markers": ["fund flow", "cash out"],
+    "vendor": "CertiK",
+    "title": "Liquid Network Incident Analysis - CertiK"
+  },
+  "rep_certik_002": {
+    "has_fund_flow": 1,
+    "hops_detected": 2,
+    "evidence_chain": "stolen assets -> swap via Relay -> 2,778.8662 ETH -> Tornado Cash deposit",
+    "reason": "Qualifies: report identifies concrete post-exploit laundering hops, including a swap to ETH and a Tornado Cash deposit, satisfying >=2 on-chain hops.",
+    "method": "llm",
+    "markers": ["fund flow", "tornado", "cross-chain", "bridge"],
+    "vendor": "CertiK",
+    "title": "Verus Incident Analysis - CertiK"
+  },
+  "rep_certik_003": {
+    "has_fund_flow": 1,
+    "hops_detected": 2,
+    "evidence_chain": "7hiH.../BK9a... Solana attacker addresses -> Mayan bridge from Solana to Ethereum -> 140 ETH deposited into Railgun; 291,696 DAI + 5 ETH remains static in wallet 0x509B9D094A6C26D716aaC131E8aDee5B16B86d3e.",
+    "reason": "Post-exploit funds were bridged cross-chain and then deposited into Railgun, satisfying at least two laundering hops after profit was locked.",
+    "method": "llm",
+    "markers": ["fund flow", "bridge"],
+    "vendor": "CertiK",
+    "title": "DefiTuna Incident Analysis - CertiK"
+  },
+  "rep_certik_004": {
+    "has_fund_flow": 1,
+    "hops_detected": 4,
+    "evidence_chain": "Attacker drains funds -> swaps USDC/USDT for ETH via DEX -> sends funds to 5 addresses (0x5aF3..., 0x71d4..., 0x74Dc..., 0xe3Da..., 0xd8C1...) -> deposits 3,000 ETH into Tornado Cash -> swaps 1,422 ETH for ~$2.44M DAI held in wallet 0x7B4F...",
+    "reason": "Post-exploit fund flow is explicitly described with multiple active hops: DEX swaps, transfers to new addresses, Tornado Cash deposit, and further ETH-to-DAI swap.",
+    "method": "llm",
+    "markers": ["fund flow", "tornado"],
+    "vendor": "CertiK",
+    "title": "JaredFromSubway MEV bot Incident Analysis - CertiK"
+  },
+  "rep_certik_005": {
+    "has_fund_flow": 1,
+    "hops_detected": 4,
+    "evidence_chain": "0x81BA... -> bridge USDT Ethereum->Hyperliquid -> 0xb183... -> swap to XMR -> XMR split to 0xcce2..., 0x3eb1..., 0x0dda..., 0x31c2...",
+    "reason": "Post-exploit stolen funds actively moved across multiple on-chain hops including a bridge, transfer to new wallet, swap, and further XMR splits; static balance snapshots ignored.",
+    "method": "llm",
+    "markers": ["fund flow", "bridge"],
+    "vendor": "CertiK",
+    "title": "GnosisPay Incident Analysis - CertiK"
+  },
+  "rep_certik_006": {
+    "has_fund_flow": 0,
+    "hops_detected": 1,
+    "evidence_chain": "Proceeds split across 3 addresses: 0x04a288... (wstUSR), 0x8ed8cf... (ETH), 0x9feeea... (wstUSR)",
+    "reason": "排除：仅公布黑客控制地址的获利后静态持币快照(Balance Snapshot)，缺失显式有向交易流转边(PRISMA E3/E1)，无法支撑因果图提取",
+    "markers": ["fund flow"],
+    "method": "llm_verified_exclusion",
+    "llm_doubt": "Only exploit execution and static balance snapshots are reported; no >=2 post-exploit on-chain laundering hops are documented.",
+    "vendor": "CertiK",
+    "title": "Resolv Protocol Incident Analysis - CertiK"
+  },
+  "rep_certik_007": {
+    "has_fund_flow": 1,
+    "hops_detected": 4,
+    "evidence_chain": "381.7468 WBNB -> ~242k USDC -> bridge BSC->Ethereum -> ~242k DAI -> Railgun shield",
+    "reason": "Post-exploit profit was laundered through multiple on-chain hops, including swap, bridge, another swap, and mixer/shield deposit.",
+    "method": "llm",
+    "markers": ["fund flow", "bridge"],
+    "vendor": "CertiK",
+    "title": "Movie Token Incident Analysis - CertiK"
+  },
+  "rep_certik_008": {
+    "has_fund_flow": 1,
+    "hops_detected": 10,
+    "evidence_chain": "SOF exploiter -> FixedFloat: ~$213,617 BSC-USD across 10 transactions; SOF exploiter -> Tornado Cash: 20 BNB as 2 x 10 BNB transfers.",
+    "reason": "Report identifies concrete post-exploit movements of SOF proceeds to FixedFloat and Tornado Cash, satisfying >=2 on-chain laundering hops. LAXO static balances and exploit execution steps are excluded.",
+    "method": "llm",
+    "markers": ["fund flow", "tornado"],
+    "vendor": "CertiK",
+    "title": "SOF/LAXO Incident Analysis - CertiK"
+  },
+  "rep_certik_009": {
+    "has_fund_flow": 0,
+    "hops_detected": 1,
+    "evidence_chain": "deposited a total of 300.2 ETH into Tornado Cash",
+    "reason": "排除：Arbitrum跨链桥接仅为1 wei任意calldata的漏洞利用触发载荷(PRISMA E1)；获利后洗钱仅为单步Tornado Cash存款(PRISMA E3)，缺失多跳拓扑，不满足I1准入规则",
+    "markers": ["tornado"],
+    "method": "llm_verified_exclusion",
+    "llm_doubt": "Excluded: only one explicit post-exploit hop (Tornado Cash deposit); need at least two on-chain hops.",
+    "vendor": "CertiK",
+    "title": "Gyroscope Incident Analysis - CertiK"
+  },
+  "rep_certik_011": {
+    "has_fund_flow": 1,
+    "hops_detected": 3,
+    "evidence_chain": "0x6C8EC8f14bE7C01672d31CFa5f2CEfeAB2562b50 -> 0xD12f6E0fa7FBF4e3A1c7996E3F0Dd26AB9031a60 (4,267.09 ETH); 0x6C8EC8f14bE7C01672d31CFa5f2CEfeAB2562b50 -> 0x273589ca3713e7becf42069f9fb3f0c164ce850a (4,001.0004637 ETH); 0xc0454E545a7A715c6D3627f77bEd376a05182FBc -> Tornado Cash (71.03 ETH)",
+    "reason": "The report shows post-exploit movement of stolen funds to new wallets and Tornado Cash, constituting at least 2 on-chain laundering hops.",
+    "method": "llm",
+    "markers": ["fund flow", "tornado"],
+    "vendor": "CertiK",
+    "title": "Truebit Incident Analysis - CertiK"
+  },
+  "rep_certik_012": {
+    "has_fund_flow": 1,
+    "hops_detected": 2,
+    "evidence_chain": "Exploit wallets -> Tornado Cash: 3,711 ETH in 39 txs; Sonic funds -> launder/circumvent freeze -> ETH (~$3.3M).",
+    "reason": "Post-exploit laundering trail includes a Tornado Cash deposit and separate Sonic-to-ETH laundering, meeting >=2 on-chain hops; static holdings, freezes, whitehat returns, and exploit steps were excluded.",
+    "method": "llm",
+    "markers": ["fund flow", "laundered", "tornado"],
+    "vendor": "CertiK",
+    "title": "Balancer Incident Analysis - CertiK"
+  },
+  "rep_certik_013": {
+    "has_fund_flow": 1,
+    "hops_detected": 9,
+    "evidence_chain": "attacker EOA 0xf96eb14171b71ac16200013753dff3e91043b63b -> Tornado Cash deposits (8 batches 100 BNB + 1 batch 10 BNB; first deposit tx 0x3fb71a026e34f6d12d9a8ede48a7019e72e33049189c41bcea685c75c746cc3a)",
+    "reason": "Post-exploit stolen funds were actively deposited into Tornado Cash in multiple batches, meeting >=2 on-chain hops.",
+    "method": "llm",
+    "markers": ["tornado"],
+    "vendor": "CertiK",
+    "title": "Cyrus Finance Incident Analysis"
+  },
+  "rep_certik_014": {
+    "has_fund_flow": 1,
+    "hops_detected": 2,
+    "evidence_chain": "0x43A9 (rug puller) -> 0xD921 (fund-transfer) -> 0x2836 (fund-holding)",
+    "reason": "Report includes a concrete post-rug-pull fund trail with at least two on-chain transfer hops after the exploit/profit extraction.",
+    "method": "llm",
+    "markers": ["fund flow", "cash out", "cash-out"],
+    "vendor": "CertiK",
+    "title": "Evil in the Shadows: Unveiling the Chaos in Ethereum’s Token Ecosystem"
+  },
+  "rep_blocksec_008": {
+    "has_fund_flow": 0,
+    "hops_detected": 1,
+    "evidence_chain": "exchanged attacker-controlled PAT -> paid to the block builder (MEV bribe)",
+    "reason": "排除：文中动作均为智能合约内部漏洞利用兑换及区块打包贿赂款(MEV Bribe)，缺失获利后的独立链上洗钱多跳轨迹(PRISMA E1)",
+    "markers": ["phalcon"],
+    "method": "llm_verified_exclusion",
+    "llm_doubt": "Report describes exploit execution and payout, not a post-exploit laundering trail with >=2 on-chain hops.",
+    "vendor": "BlockSec",
+    "title": "Sep 24 2026Security Insights~$11.3M Lost: Multicall Router, Nostra | BlockSec WeeklyThis report, covering 2026/09/14 - 2"
+  },
+  "rep_blocksec_009": {
+    "has_fund_flow": 1,
+    "hops_detected": 2,
+    "evidence_chain": "Symbiosis: forged mint to 0x025122...5d3Ba2 (excluded as exploit mint) -> swap via Uniswap v4 syBTC/WBTC pool for 4.38897292 WBTC -> proceeds routed onward to roughly 137 ETH. Liquid: peg-out to BTC and later return to federation not counted as >=2 post-exploit laundering hops.",
+    "reason": "Report qualifies based on Symbiosis post-exploit movement: DEX swap plus onward routing provide at least two on-chain hops for stolen funds.",
+    "method": "llm",
+    "markers": ["cross-chain", "bridge", "phalcon"],
+    "vendor": "BlockSec",
+    "title": "Sep 17 2026Security Insights~$320M Lost: Liquid Network, Symbiosis Exploits | BlockSecThis report, covering 2026/09/07 -"
+  },
+  "rep_blocksec_010": {
+    "has_fund_flow": 0,
+    "hops_detected": 1,
+    "evidence_chain": "Notional: Escrow withdrawal -> 0x8aaf...3be6 only. Injective/Ankr/Aquifer movements are exploit execution or profit withdrawal, not post-exploit laundering.",
+    "reason": "No qualifying post-exploit laundering chain with >=2 on-chain hops; only one post-exploit forwarding is mentioned, so excluded.",
+    "method": "llm",
+    "markers": ["cash-out", "phalcon"],
+    "vendor": "BlockSec",
+    "title": "Sep 11 2026Security Insights~$9.4M Lost: Injective, Aquifer Exploits | BlockSec WeeklyDuring the past week (2026/08/31 -"
+  },
+  "rep_slowmist_001": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit fund-flow chain. On-chain transactions are C2 management heartbeats: zero-value transfers with empty calldata; wallet 0xa322... funding from FixedFloat is mentioned but not linked to stolen proceeds or >=2 laundering hops.",
+    "reason": "The report is about malware C2 infrastructure and credential theft, not post-exploit laundering of stolen crypto funds. The Ethereum transactions are used as a dead-drop/resolver mechanism, so they do not qualify as AML fund-flow hops.",
+    "method": "llm",
+    "markers": ["money laundering", "laundering"],
+    "vendor": "SlowMist",
+    "title": "Threat Intelligence | PolinRider Poisons Nova, Using On-Chain Transactions as a C2 Manager"
+  },
+  "rep_slowmist_004": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Excluded: no exploit and no concrete post-exploit transfer graph. Mentions seized wallets holding ~$12M and 47 restricted wallets, but these are law-enforcement seizures/static balance or restriction actions, not launderer-initiated on-chain hops.",
+    "reason": "No qualifying post-exploit money laundering trail with at least 2 on-chain hops; report is enforcement/marketplace overview without concrete transaction-level fund flow.",
+    "method": "llm",
+    "markers": ["money laundering", "laundering"],
+    "vendor": "SlowMist",
+    "title": "U.S. OFAC and DOJ Join Forces to Crack Down on Xinbi Guarantee, Restricting More Than $52 Million…"
+  },
+  "rep_slowmist_006": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit fund movement identified. Report describes malware delivery, exploitation, and data exfiltration capabilities, not actual stolen fund transfers or laundering hops.",
+    "reason": "Excluded: no post-exploit money laundering trail; no concrete on-chain hops or stolen fund transfers are reported.",
+    "method": "llm",
+    "markers": ["money laundering", "laundering"],
+    "vendor": "SlowMist",
+    "title": "Threat Intelligence | iOS Safari DarkSword Wallet Asset Theft"
+  },
+  "rep_slowmist_007": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No exploit execution, no stolen funds, no concrete post-exploit transaction trail; article is a macro AML/KYT discussion with hypothetical/static risk-control examples.",
+    "reason": "Excluded: no specific exploit and no >=2 post-exploit on-chain hops moving stolen funds.",
+    "method": "llm",
+    "markers": [
+      "fund flow",
+      "money laundering",
+      "laundering",
+      "mixer",
+      "cross-chain",
+      "bridge"
+    ],
+    "vendor": "SlowMist",
+    "title": "On-Chain Fund Source Risks Behind OKX’s Risk Control Strategy"
+  },
+  "rep_blocksec_001": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No exploit, no stolen funds, and no post-exploit transfer hops; content is an explorer/blockchain tooling announcement.",
+    "reason": "Excluded because it contains no exploit or active post-exploit money laundering trail.",
+    "method": "llm",
+    "markers": ["fund flow", "cross-chain", "phalcon"],
+    "vendor": "BlockSec",
+    "title": "Analyze 10,000 TPS: Phalcon Explorer Now Supports Monad"
+  },
+  "rep_blocksec_002": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No exploit, no stolen funds, no post-exploit transfers or laundering hops. Report is promotional/marketing content about transaction analysis tooling on Plasma.",
+    "reason": "Excluded: no exploit and no post-exploit fund-flow trail.",
+    "method": "llm",
+    "markers": ["bridge", "phalcon"],
+    "vendor": "BlockSec",
+    "title": "Track Stablecoin Payments on Plasma with Phalcon Explorer"
+  },
+  "rep_blocksec_003": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No exploit or post-exploit fund-flow trail. Report only describes security monitoring features, examples of past rescues, and product capabilities.",
+    "reason": "Does not qualify: no hack/laundering trail, no stolen funds, and no >=2 on-chain post-exploit hops.",
+    "method": "llm",
+    "markers": ["fund flow", "phalcon"],
+    "vendor": "BlockSec",
+    "title": "BlockSec Phalcon Secures Solana Ecosystem with Enhanced Real-Time Protection"
+  },
+  "rep_blocksec_004": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit AML trail: report only covers exploit mechanics, batchSwap calls, auxiliary contract simulations, and attack transactions, not transfers/swaps/bridges/mixer deposits after profit was locked.",
+    "reason": "Excluded because it is exploit execution/technical analysis, not a post-exploit laundering fund-flow graph with at least 2 active hops.",
+    "method": "llm",
+    "markers": ["phalcon"],
+    "vendor": "BlockSec",
+    "title": "In-Depth Analysis: The Balancer V2 Exploit"
+  },
+  "rep_blocksec_005": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No concrete post-exploit transfer graph or hop chain provided. Mentions only aggregate loss figures and exploit types, not laundering transactions.",
+    "reason": "Excluded because it lacks specific post-exploit fund-flow transactions or >=2 on-chain laundering hops.",
+    "method": "llm",
+    "markers": ["phalcon"],
+    "vendor": "BlockSec",
+    "title": "Phalcon Security: The Proactive Defense Ending Zero-Day Web3 Attacks"
+  },
+  "rep_peckshield_001": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Excluded: report contains exploit mechanics and patch analysis only; no post-exploit fund transfer/deposit/swap/bridge hop graph or transaction trail.",
+    "reason": "No post-exploit AML fund-flow hops; only exploit execution and static contract review are discussed.",
+    "method": "llm",
+    "markers": ["cross-chain"],
+    "vendor": "PeckShield",
+    "title": "PolyNetwork Bug Review And Patch Analysis"
+  },
+  "rep_peckshield_003": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit hop chain. Report references attacker address 0x8b29, attack contracts 0x6ce0/0x87e9/0x01ea, and initial holding wallet 0xc71e, but only states funds were held there and are being monitored for future movement.",
+    "reason": "The report describes the exploit mechanism and initial fund custody, but does not document at least two concrete post-exploit money-laundering transfers/hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "Eleven Finance Incident: Root Cause Analysis"
+  },
+  "rep_peckshield_004": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Exploit -> inflated BOG sold for WBNB -> funds held in 0x4622; no subsequent concrete transfer, swap, bridge, or mixer deposit documented.",
+    "reason": "Report is a root-cause analysis and only notes static holding/monitoring of the attacker wallet after the exploit; it lacks at least two post-exploit laundering hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "Bogged Finance Incident: Root Cause Analysis"
+  },
+  "rep_peckshield_005": {
+    "has_fund_flow": 0,
+    "hops_detected": 1,
+    "evidence_chain": "Flashloan/oracle exploit -> mint 6.97M BUNNY -> attacker sells BUNNY for profit (single post-exploit swap) -> funds initially held in a0ac, with no concrete subsequent transfer/swap/bridge/mixer hop shown.",
+    "reason": "Excluded because the report describes the exploit and only one possible post-exploit sale, not at least 2 concrete post-exploit fund movement hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "PancakeBunny Incident: Root Cause Analysis"
+  },
+  "rep_peckshield_006": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit money flow chain. Report mentions only exploit mechanics and a static holding wallet (47f3) with monitoring; no concrete post-exploit transfers.",
+    "reason": "Does not qualify: no active post-exploit movement across at least 2 on-chain hops; only exploit details and an initial holding wallet are described.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "Bearn.Fi Incident: Inconsistent Asset Denomination Between Vault & Strategy"
+  },
+  "rep_peckshield_007": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit transfer/hop graph. Mentioned wallet b88a is only a current holding address; no Transfer, Swap, Bridge, or Mixer deposit after exploit is described.",
+    "reason": "Excluded: report focuses on exploit mechanics/root cause and a static holding snapshot, not >=2 concrete post-exploit laundering hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "ValueDeFi Incident: Incorrect Weighted Constant Product Invariant Calculation"
+  },
+  "rep_peckshield_008": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit hop chain. Only exploit transaction steps and a static statement that funds are held in 0x3b6e.",
+    "reason": "Excluded: all described transactions are exploit execution/contract operations, and the only fund-location statement is a static balance snapshot with no post-exploit movement.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "The Spartan Incident: Root Cause Analysis"
+  },
+  "rep_peckshield_009": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit transfer graph provided; only exploit analysis and static statement that funds are held in wallet 0xb624.",
+    "reason": "Excluded: exploit execution details and static balance snapshot only; no active post-exploit laundering trail with >=2 on-chain hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "The Furucombo Incident Analysis: Cascading Trust"
+  },
+  "rep_certik_010": {
+    "has_fund_flow": 0,
+    "hops_detected": 1,
+    "evidence_chain": "0xbed26250Db2097318386F540fD546acEDf7bdE25 -> validator 0x573db3aed219efd4d2cdabc0d00366e7b80f910e (276.322 ETH). Static balance of 1,023 ETH in 0xbed... excluded. No second post-exploit hop.",
+    "reason": "Only one post-exploit movement is identified; static holding is excluded and the report lacks >=2 post-exploit on-chain hops.",
+    "method": "llm",
+    "markers": ["fund flow", "cross-chain"],
+    "vendor": "CertiK",
+    "title": "Makina Incident Analysis - CertiK"
+  },
+  "rep_blocksec_007": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No exploit execution or post-exploit transfer chain is provided. The report only describes a tracker for USDT freeze/unfreeze/destroy events and Phalcon tools.",
+    "reason": "Excluded: not an exploit/laundering trail; no concrete post-exploit fund transfers or >=2 on-chain hops.",
+    "method": "llm",
+    "markers": ["phalcon"],
+    "vendor": "BlockSec",
+    "title": "BlockSec USDT Freeze Tracker Is Live"
+  },
+  "rep_blocksec_011": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit hop chain. The document is a macro index of exploit incidents and reproduction tests; it lacks specific fund-flow transactions after exploit completion.",
+    "reason": "Excluded: report is an exploit README/list without post-exploit AML money laundering hops.",
+    "method": "llm",
+    "markers": ["cross-chain", "bridge"],
+    "vendor": "BlockSec",
+    "title": "README.md"
+  },
+  "rep_blocksec_012": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit fund-flow chain provided. The report is a macro incident index and exploit reproduction list, not a transaction-level laundering trail.",
+    "reason": "Excluded: no specific post-exploit laundering hops or transaction graphs; only exploit summaries and test references.",
+    "method": "llm",
+    "markers": ["bridge"],
+    "vendor": "BlockSec",
+    "title": "README.md"
+  },
+  "rep_blocksec_013": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Excluded: README list of exploit incidents with test commands/references only; no concrete post-exploit transfer/swap/bridge/mixer hop graph provided.",
+    "reason": "No active post-exploit laundering trail with at least 2 on-chain hops is documented.",
+    "method": "llm",
+    "markers": ["bridge", "phalcon"],
+    "vendor": "BlockSec",
+    "title": "README.md"
+  },
+  "rep_blocksec_014": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit fund-flow chain present. Only incident list entries (e.g., exploit name, loss amount, forge test command, contract link, reference link); no Transfer, Swap, Bridge, Mixer/Tornado/Railgun deposit, or other post-exploit movement transactions.",
+    "reason": "Excluded: static incident/survey README with no concrete post-exploit laundering trail or >=2 on-chain hops.",
+    "method": "llm",
+    "markers": ["bridge", "phalcon"],
+    "vendor": "BlockSec",
+    "title": "README.md"
+  },
+  "rep_blocksec_015": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No concrete post-exploit fund-flow transaction trail is present; only exploit incident listings and external reference links.",
+    "reason": "Excluded: no specific post-exploit laundering hops or transaction graphs are provided.",
+    "method": "llm",
+    "markers": ["phalcon"],
+    "vendor": "BlockSec",
+    "title": "README.md"
+  },
+  "rep_peckshield_010": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Excluded: only exploit execution and a static post-exploit balance snapshot are described; no concrete post-exploit transfer hops to new EOA, DEX, bridge, or mixer.",
+    "reason": "No documented post-exploit laundering trail with at least 2 on-chain hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_011": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Excluded: only shows exploit execution and final attacker USDC balance snapshot; no post-exploit laundering transfers or hop graph.",
+    "reason": "No concrete post-exploit money laundering trail; only exploit PoC and static balance after attack.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_012": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Excluded: report is an exploit PoC/README with exploit execution and ending attacker balance; no post-exploit fund movement trail.",
+    "reason": "Only exploit execution and static balance snapshot are described; no >=2 post-exploit laundering hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_013": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit AML trail. Only PoC setup, exploit execution, and static balance snapshots; no concrete transfer transactions or hop graph.",
+    "reason": "Excluded: exploit execution/PoC and static balance snapshots, with no >=2 post-exploit on-chain hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_014": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Exploit execution -> attacker BUSD balance snapshot only; no subsequent on-chain transfers or laundering hops.",
+    "reason": "Only exploit execution and static balance output are shown; no >=2 post-exploit fund movement hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_015": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit hop chain. The only described result is a static balance snapshot: attacker xFTM balance changes from 0 to 27808.38 after exploit completion, with no subsequent on-chain laundering transfers.",
+    "reason": "Excluded: reports exploit execution and final balance snapshot, not a post-exploit AML fund-flow trail with at least 2 concrete hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_016": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit fund-flow trail; only attack execution and final WBNB balance snapshot are shown.",
+    "reason": "Excluded because the report does not describe any post-exploit laundering movement across at least 2 on-chain hops; it only documents exploit execution and a static balance increase.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_017": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit hop chain. Evidence only includes exploit contract deployment, exploit transaction 0xc7e58e8da702e25e25fdc8370ab200347ff257466c0493a05885b40c6207f59b, and attacker WETH balance of 0.2; these are exploit execution/static balance data, not AML fund-flow hops.",
+    "reason": "Excluded because the report only documents exploit execution and a resulting balance snapshot, with no active post-exploit movement across at least 2 on-chain hops.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_018": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "No post-exploit money movement shown. Only exploit execution and final attacker USDC balance (0.0 -> 1526751.541726) are provided.",
+    "reason": "The report is an exploit PoC, not a post-exploit laundering trail. It lacks concrete on-chain transfers, swaps, bridges, or mixer deposits after profit is locked.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_019": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Only exploit contract deployment, exploit execution, and post-exploit balance snapshot are shown; no post-exploit laundering transactions or >=2 hops.",
+    "reason": "Excluded because the report describes exploit execution and static balances, not an active post-exploit AML fund-flow trail.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  },
+  "rep_peckshield_020": {
+    "has_fund_flow": 0,
+    "hops_detected": 0,
+    "evidence_chain": "Excluded: processExits() -> startExitWithBurntTokens() -> wait 7 days -> processExits() are exploit execution steps, not post-exploit laundering transfers. Dai balance 0 -> 33000 -> 99000 is a static balance snapshot, not a concrete post-exploit hop chain.",
+    "reason": "No post-exploit AML fund-flow trail with >=2 on-chain hops; report only documents the exploit execution and resulting balances.",
+    "method": "llm",
+    "markers": [],
+    "vendor": "PeckShield",
+    "title": "README.md"
+  }
+}

@@ -1,0 +1,63 @@
+As crypto assets, stablecoin payments, and digital financial services continue to develop, on-chain AML, KYT, and fund risk analysis are becoming practical needs for an increasing number of institutions.
+To this end, MistTrack & SlowMist KYT has officially launched its Partner Program, recruiting individual and institutional partners worldwide with resources in Web3, finance, payments, compliance, security, and local markets.
+By joining the program, you can receive:
+If you are serving trading platforms, OTC providers, payment institutions, virtual card service providers, banks, funds, Web3 projects, or other digital asset-related businesses, you are welcome to join us in bringing mature on-chain compliance and risk analysis capabilities to more customers.
+MistTrack is a crypto asset compliance and tracking platform for users worldwide, mainly providing:
+It mainly helps users solve several common questions:
+Who does this address belong to? Is there any risk? Where do the funds come from, and where are they going?
+Therefore, MistTrack is more suitable for standardized promotion and can serve:
+Currently, MistTrack has served more than 100,000 users worldwide and has earned the trust of more than 500 institutional customers.
+For partners, MistTrack’s advantages lie in its standardized product offering, with customers able to register and experience the product directly, making the overall conversion path clearer:
+Free Registration → 7-Day Free Trial → API Integration → Paid Subscription → Long-Term Renewal
+For large exchanges, banks, funds, and other digital asset service institutions, simply checking whether an address poses a risk is usually not enough.
+They need to truly integrate risk identification and transaction monitoring capabilities into their business processes.
+SlowMist KYT is a professional, real-time, and configurable AML engine for institutional compliance teams and VASPs, providing:
+It mainly addresses:
+Does a transaction trigger any risk rules? Does it require further investigation, interception, or reporting? How should subsequent risk events be handled and traced?
+These customers typically require customization based on their business scale, integration methods, and compliance requirements. Therefore, SlowMist KYT mainly adopts customized pricing and a joint sales cooperation model.
+Simply put:
+MistTrack is suitable for standardized, large-scale promotion.
+SlowMist KYT is designed for more complex, higher-requirement institutional projects.
+Partners can choose the appropriate product to promote based on their customer resources and market conditions.
+For MistTrack, partners will receive an exclusive discount code after passing the partner review.
+When a customer completes a subscription through the discount code, the relevant order will be automatically recorded by the system, including:
+Partners can check orders and commission records through the partner dashboard without having to manually calculate them one by one.
+According to the current Partner Program:
+MistTrack will provide a 10% commission based on the actual amount paid by customers, with a commission validity period of 3 years.
+SlowMist KYT is designed for institutional-level customers and typically involves product demonstrations, requirements communication, solution configuration, and project implementation.
+Therefore, unlike MistTrack’s standardized subscription model, it does not adopt a unified discount code and online subscription logic. Instead, partners and the SlowMist team jointly advance projects.
+According to the current Partner Program, successfully partnered SlowMist KYT projects can receive a partnership commission of up to 20% of the contract amount. Specific cooperation and settlement methods are subject to the actual project arrangements. For customized bidding projects, the cooperation model and revenue-sharing ratio can be discussed separately.
+Partners are mainly responsible for helping us identify and connect with institutional customers with actual needs.
+The subsequent:
+can be jointly advanced by both parties.
+We hope to lower the barriers for partners entering the on-chain compliance business. Therefore, SlowMist will provide corresponding partnership support, including:
+For customers referred by partners who have technical integration needs, we can provide API trial support to help customers conduct quick testing and technical integration.
+Whether it is MistTrack API integration or institutional-level projects involving SlowMist KYT, we can provide product and technical support.
+After passing the partner review, partners can receive an exclusive discount code, backend management capabilities, and relevant promotional materials.
+Orders and commissions generated through the discount code will also be automatically recorded by the system, and partners will be notified in real time.
+As the global digital asset regulatory framework continues to develop, trading platforms, payment institutions, stablecoin-related businesses, custodial institutions, and traditional financial institutions are increasingly focusing on the sources and risks of on-chain funds.
+At the same time, business scenarios such as OTC, cross-border transactions, and virtual cards are also beginning to face more explicit risk management and compliance requirements.
+For partners, this means that on-chain AML, KYT, and fund tracking capabilities are no longer just products for a small number of specialized customers, but are entering more practical business scenarios.
+What SlowMist hopes to do is provide our long-accumulated product, data, and technical capabilities, and work together with partners who truly understand local markets and customer needs to jointly expand this market.
+Step 1: Apply for Partnership
+Log in to the MistTrack Partner System using your email + verification code at https://dashboard.misttrack.io/affiliate and submit the required application materials.
+Step 2: Obtain Partnership Tools
+After approval, you will receive an exclusive discount code, backend management access, and product promotional materials.
+Step 3: Refer Customers
+Recommend MistTrack or SlowMist KYT based on customer needs, and guide customers through free trials, API integration, or project discussions.
+Step 4: Earn Partnership Revenue
+After MistTrack customers complete their subscription using the partner’s exclusive discount code, orders and commissions will be automatically recorded, and partners can submit settlement requests as needed.
+For institutional-level projects such as SlowMist KYT, both parties will jointly advance and settle the project according to the specific cooperation plan.
+We believe that the people who best understand customer needs are often right there in the local market.
+It could be a consulting firm that has been serving Web3 customers for years;
+It could be a team deeply engaged in the OTC, payments, or virtual card sectors;
+It could also be an individual professional with resources across exchanges, banks, funds, or other institutions.
+If you are looking for new business growth opportunities and hope to provide customers with mature on-chain AML, KYT, and fund risk analysis capabilities, we welcome you to join the MistTrack & SlowMist KYT Partner Program.
+We provide products, data, technology, and conversion support.
+You provide an understanding of customers and the market.
+Together, let’s bring more mature on-chain security and compliance capabilities to more users and institutions around the world.
+Partnership inquiries: team@misttrack.io
+For more details and the latest updates: https://misttrack.io/partners.html
+SlowMist is a threat intelligence firm focused on blockchain security, established in January 2018. The firm was started by a team with over ten years of network security experience to become a global force. Our goal is to make the blockchain ecosystem as secure as possible for everyone. We are now a renowned international blockchain security firm that has worked on various well-known projects such as HashKey Exchange, OSL, MEEX, BGE, BTCBOX, Bitget, BHEX.SG, OKX, Binance, HTX, Amber Group, Crypto.com, etc.
+SlowMist offers a variety of services that include but are not limited to security audits, threat information, defense deployment, security consultants, and other security-related services. We also offer AML (Anti-money laundering) software, MistEye (Security Monitoring), SlowMist Hacked (Crypto hack archives), FireWall.x (Smart contract firewall) and other SaaS products. We have partnerships with domestic and international firms such as Akamai, BitDefender, RC², TianJi Partners, IPIP, etc. Our extensive work in cryptocurrency crime investigations has been cited by international organizations and government bodies, including the United Nations Security Council and the United Nations Office on Drugs and Crime.
+By delivering a comprehensive security solution customized to individual projects, we can identify risks and prevent them from occurring. Our team was able to find and publish several high-risk blockchain security flaws. By doing so, we could spread awareness and raise the security standards in the blockchain ecosystem.

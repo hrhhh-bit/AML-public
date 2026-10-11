@@ -19,11 +19,14 @@ dev = [
 dense = [
     "sentence-transformers>=2.7",
 ]
+crawler = [
+    "trafilatura>=1.8",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
 addopts = "-q"

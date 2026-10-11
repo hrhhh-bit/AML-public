@@ -1,0 +1,25 @@
+Company Updates
+Chain Scan: Code and Runtime Assurance for DLT Infrastructure
+Chain Scan brings together automated static code scanning, analyst validation, and controlled runtime testing, with coverage tailored to the agreed scope. It helps identify code-level weaknesses and evaluate how DLT systems behave under adversarial inputs, resource pressure, infrastructure failures, and operational changes.
+Introducing CertiK Hunt, The Invite-Only Security Platform for Web3 Projects and Top Security Researchers
+CertiK Hunt is an invite-only platform connecting elite security researchers with web3 projects through bug bounty programs, audit competitions, and AI challenges.
+CertiK Skills: Bringing Blockchain Security Intelligence Into AI Agents
+Discover CertiK's open-source AI Agent Skills for Claude Code, Codex, and Cursor. Easily plug in SkyInsights, Skylens, and Skynet Score to access real-time Web3 wallet screening, EVM forensics, and project security intelligence directly within your agent workflow.
+Catch Runtime Bugs Before They Become Mainnet Incidents: CertiK Grey Box Chain Audit
+CertiK's Grey Box Chain Audit catches runtime bugs before they become mainnet incidents, using fault injection and live network testing to surface chain-critical failures that static analysis alone cannot detect.
+CertiK Skill Scanner: The Antivirus for the AI Age
+CertiK Skill Scanner establishes a standardized security layer for third-party AI Skills, identifying execution-stage risks before they reach user data, assets, or systems.
+CertiK Expands AI-Native Security with Agent Integrations and AI Auditor
+AI Auditor was originally built as an internal tool for CertiK’s own auditors, but is now available to the public after more than six months of rigorous application. In evaluations against 35 real-world Web3 security incidents from 2026, AI Auditor achieved an 88.6% cumulative exact hit rate, all while being engineered specifically to deliver high detection with exceptionally low noise.
+Top 10 AI Agent Projects on BNB Chain
+The Top10 AI Agent Projects on BNB Chain showcases the most trending AI Agent projects based on Skynet Score. These rankings reflect a comprehensive evaluation of security posture, operational maturity, market presence, and ecosystem traction. As autonomous on-chain agents gain adoption, security and infrastructure reliability remain the primary determinants of sustainable growth and institutional trust.
+CertiK Ventures: 2024 Investment Thesis
+In CertiK Ventures’ 2024 Investment Thesis, we explore CertiK’s roots as a leader in blockchain security, the current state of the venture capital (VC) landscape, developing supportive ecosystem strategies, and crypto market opportunities. We also discuss in detail our investment philosophy, strategic directions, methodologies, and proprietary investment grading and scoring metrics — all in line with our commitment to transparency and providing publicly-accessible resources.
+CertiK Node Service: Powering Blockchain Integrity
+CertiK is advancing its leadership in blockchain security by expanding into node services with its new CertiK SkyNode Service. By becoming validators across multiple public blockchain ecosystems, CertiK aims to enhance network reliability, security, and performance. This strategic initiative builds on our proven expertise in security auditing, ensuring that blockchain operations remain efficient, trustworthy, and secure.
+How to Ace the CertiK KYC Badge
+These five tips will help Web3 teams successfully pass the background investigation and obtain the CertiK KYC Badge for their project.
+Skynet: Empowering Users with Advanced Security Tools
+CertiK’s Skynet is transforming Web3 security by making complex insights accessible to everyone. As a leading user security platform, Skynet empowers users to protect their assets, stay informed, and navigate the decentralized world confidently. Here’s how Skynet’s features are helping to build a safer, more informed Web3 community.
+SkyKnight MemeScan: Securing Solana Memecoins
+The need for speed often overshadows security, especially when it comes to memecoins. Known for their viral nature and rapid market launches, memecoins frequently forgo traditional security audits in the race to launch. Recognizing this critical gap, CertiK has introduced SkyKnight MemeScan, a one-click security solution specifically designed for Solana memecoins.

@@ -1,0 +1,41 @@
+Incident Summary
+On July 23, 2026, an attacker exploited the Verus Protocol’s Ethereum cross-chain bridge, draining approximately $7.44 million in ETH, tBTC, stablecoins, and MKR. The attack relied on a discrepancy in how Verus and Ethereum interpreted notarization data: malicious duplicate state-root entries were included in otherwise legitimate notarizations, signed by Verus notaries, and then relayed to Ethereum, where they overwrote the genuine trusted state root. Using this attacker-controlled root, the attacker submitted a fabricated bridge import proof that authorized inflated withdrawals despite initiating only a 0.01 VRSC export.
+Background
+A Verus “notarization” is a signed, on-chain cross-chain checkpoint. It establishes the root against which later transaction/export proofs will be verified. It contains:
+- which system/currency it represents
+- the notarization height
+- one or more proofRoots:system ID
+- chain height
+- state/proof root
+- block hash
+- accumulated power
+- currency and converter state
+- a pointer to the preceding notarization
+- a hash linking to the previous cross-chain notarization
+- proposer and node information
+The proof roots are derived from public Verus/Ethereum chain data https://github.com/VerusCoin/VerusCoin/blob/a10e2fb39e42a7c31d4e447c9e152090a562a57f/src/pbaas/notarization.cpp. Anyone may submit or relay a candidate notarization, but nodes accept it only if it spends the correct notarization-thread UTXO and supplies the required consensus evidence. https://github.com/VerusCoin/VerusCoin/blob/a10e2fb39e42a7c31d4e447c9e152090a562a57f/src/pbaas/notarization.cpp The CNotarySignature was public evidence inside CNotaryEvidence, published through EVAL_NOTARY_EVIDENCE; the attacker could harvest and relay it.
+Key Transactions (Times in UTC)
+Key Addresses
+Attack Flow
+1. Notarization poisoning on Verus:
+Transaction 1 spent the previous accepted-notarization output 4f4f…:1 and created 0c247…:0. Referencing notarization.cpp, the notarization reads: Referencing notarization.cpp, the notarization reads: Only the two legitimate ones were visible on scan.verus in “Raw Data” Because Verus reads the serialized roots into a vector then inserts them into a map, https://github.com/VerusCoin/VerusCoin/blob/a10e2fb39e42a7c31d4e447c9e152090a562a57f/src/pbaas/pbaas.h
+two successive transactions expends previous notarization output, and secretly submitting 2 and 3 more malicious state-root entries respectively of
+2. State root injection on Ethereum:
+The attacker waited for the notary software to validate the innocent first roots then 11 legitimate notary daemons sign the raw Verus notarization, including the ignored duplicates containing malicious state root.
+New signatures are wrapped in a CNotarySignature, placed inside CNotaryEvidence, and serialized into an EVAL_NOTARY_EVIDENCE CryptoCondition output The attacker calls getnotarizationdata() →…-> GetUnspentEvidence() from Verus RPC to retrieve and extract the signatures and packages them into setLatestData() on Ethereum. On Ethereum, the attacker acts as broadcaster, copying the relevant bytes from Verus and the signatures and placing them in setLastdata() calldata (https://etherscan.io/tx/0x8f21bd8f0fce72ac959caa93a9923d85f902dfc6eddac2785ac5bc49c3b28d8f and https://etherscan.io/tx/0x51b1c8341da4092b7d1e0e4865f7b318de4e96245358b05b2bff2df50adaf0c9)
+Upon deserializeNotarization() The ‘proofRoots’ are processed in a loop, and stateRoot is overwritten for every “system==ID” entry Therefore Entry 1 genuine Verus root → stateRoot = genuine Entry 2 Ethereum root → no Verus assignment Entry 3 malicious Verus root → stateRoot = 20f2…d30a Entry 4 malicious Verus root → stateRoot = 20f2…d30a Entry 5 malicious Verus root → stateRoot = 20f2…d30a The false later entries overwrites the first genuine one, successfully injecting the ‘stateRoot’ attacker’s subsequent bridge import proof would derive to.
+3. Set up bridge export on Verus:
+In transaction 5b5043febfd7f7c089e976d11d0f87a904881266bb96dd118b3d69b0e02aab52 a fresh address initiated a 0.01 VRSC cross-chain request, with a ~12 fee supplied through Bridge.vETH. The request was then processed by the converter and LuckPool exported the batch in transaction e26e270d33543520abf4948980edbe62adf85564e512f43cc6da0808ca4e09a6. Notably the request included the following data, which part of the proof components will be based on:
+hashtransfers: 440787f9114dbb41b7d3d6f6c48980d51221f62ef0a33613d1d305b98ae85053 "sourceheightend": 4162847” "sourceheightstart": 4162638
+4. Call submitImports() to drain bridge on Ethereum:
+Of the 14 CCE fields, the notable changes are hashtransfers, which are fabricated to match the draining transfers hash. ‘numInputs is changed to 8, firstinput is change to 0 Besides totalamounts, totalfees and totalburned are omitted (Version / flags / sourcesystemid / hashtransfers / sourceheightstart / sourceheightend / destinationsystemid / destinationcurrencyid / numinputs / totalamounts / totalfees / totalburned / rewardaddress / firstinput)
+Of the proof components, the reused parts were:
+- Txid: 7bdd56c52376ae63aa2007e1d8e1694d8413bdc95709dfe442f77285765f5938
+- First node: 75f5a00b1f2d9b0d898a4d81b00d417d0123684e05bb4af6813adfe08cce0aee
+and public format/constants (proof version, types and system identifiers) While the rest are arbitrarily constructed the derived final MMR result of which, the attacker had already injected in step 1 and 2 as state root.
+Vulnerability
+The primary failure is due to cross-chain semantic consistency, the attacker caused Verus notaries to authorize bytes that Verus understood as containing the genuine checkpoint.
+Verus reads the serialized roots into a vector then inserts them into a map while Ethereum interpreted the same bytes as containing an attacker-controlled checkpoint. Once Ethereum confirmed 20f2…d30a as its trusted Verus root, a fabricated export proof constructed under that root could be accepted as authentic. An additional factor is a logic flaw in Verus’s Ethereum bridge contract, which did not verify that the payout amount specified in an import request corresponded to the value actually exported on the Verus network. A ‘hashtransfers’ fabricated to match the draining transfers hash is enough to pass the CCE verification.
+Fund Flow
+Following the exploit, the attacker swapped the stolen assets for 2,778.8662 ETH via Relay then deposited the funds into Tornado Cash.
+To keep up to date on the latest incident alerts and statistics, follow @certikalert on X, or read our latest analysis on certik.com.

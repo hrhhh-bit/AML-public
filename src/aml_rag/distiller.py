@@ -57,18 +57,27 @@ DISTILLATION RULES (hard constraints):
    order, sources at level 0).
 7. `pattern_type` MUST be one of: Peeling_Chain, Chain_Hopping,
    Multi_Layering_Split, Token_Obfuscation, Integration_Merge.
-8. FLOW ARCHETYPE normalisation: for every Split node, assign each out-edge a
-   `flow_share` in (0, 1] summing to exactly 1.0 (tolerance 0.01). Model
-   dominant-vs-peel splits asymmetrically (e.g. [0.9, 0.1]); equal slices
-   symmetrically (e.g. [0.5, 0.5]). Merge in-edges must likewise sum to 1.0.
-9. SCALE TIER association: infer the macro fund-volume tier the pattern is
-   suited for and fill `applicable_scale_tiers` with a subset of
-   ["Retail", "Medium", "Whale", "State_Sponsored"] (empty list if unclear).
-10. Every motif MUST carry meaningful `preconditions` (min_level,
+8. FLOW ARCHETYPE normalisation — `flow_share` is ALWAYS the local
+   OUT-degree distribution ratio of its SOURCE node. For EVERY node, the
+   flow_share values of all its out-edges must sum to exactly 1.0
+   (tolerance 0.01):
+   - single out-edges (Transfer / Swap / Bridge / Merge) MUST carry
+     flow_share 1.0 (use the default; the node forwards 100% of funds);
+   - Split out-edges: model dominant-vs-peel splits asymmetrically (e.g.
+     [0.9, 0.1]); equal slices symmetrically (e.g. [0.5, 0.5]).
+   NEVER write a downstream merge target's IN-FLOW weight onto an upstream
+   edge — Merge edges are out-edges of their sources, so each must be 1.0.
+9. CROSS-CHAIN ledger law: any edge whose source and target nodes live on
+   DIFFERENT chains MUST use the Bridge operation. Transfer / Swap / Split /
+   Merge can never cross chains.
+10. SCALE TIER association: infer the macro fund-volume tier the pattern is
+    suited for and fill `applicable_scale_tiers` with a subset of
+    ["Retail", "Medium", "Whale", "State_Sponsored"] (empty list if unclear).
+11. Every motif MUST carry meaningful `preconditions` (min_level,
     allowed_node_roles, required_chains, max_active_branches) and a
     `post_state_effect` (branch_increment, chain_transition, target_chain,
     next_recommended_roles).
-11. If the segment contains several distinct patterns, output ALL of them in
+12. If the segment contains several distinct patterns, output ALL of them in
     one JSON array. If none, output an empty array [].
 
 ## Behavioural normalisation (semantic anchoring)

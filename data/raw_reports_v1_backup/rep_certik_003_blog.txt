@@ -1,0 +1,42 @@
+CertiK Blog
+Security research, regulatory insights, and data-backed analyses for the institutional Web3 era. Turning real-world signals into actionable intelligence.
+Research
+View All Research
+Liquid Network Incident Analysis
+On 6 September 2026, the Liquid Network was exploited through a vulnerability in the Elements codebase used to validate Confidential Transactions. The issue stemmed from an ambiguous cache-key encoding in the rangeproof verification cache, allowing two different validation inputs to produce the same cached entry.
+Verus Incident Analysis
+On July 23, 2026, an attacker exploited the Verus Protocol’s Ethereum cross-chain bridge, draining approximately $7.44 million in ETH, tBTC, stablecoins, and MKR. The attack relied on a discrepancy in how Verus and Ethereum interpreted notarization data: malicious duplicate state-root entries were included in otherwise legitimate notarizations, signed by Verus notaries, and then relayed to Ethereum, where they overwrote the genuine trusted state root.
+DefiTuna Incident Analysis
+On 16 July 2026, DeFiTuna was exploited for approximately $569,601 USDC on Solana. The attackers created a highly illiquid TUNA/USDC pool and used it as the destination for borrowed USDC routed through Jupiter. Because the swap returned only a negligible amount of TUNA, DeFiTuna’s value calculation rounded the position’s total assets down to zero. The protocol then incorrectly treated the position as healthy, allowing the attackers to bypass the solvency check and withdraw the USDC through attacker-controlled liquidity positions.
+Policy Pulse
+View All Policy Pulse
+Bridging the Atlantic: Why Security Is the Real Catalyst for Transatlantic Crypto Policy
+As I wrap up a three-day DC roadshow coordinating Capitol Hill and agency roundtables for the US/UK Crypto Alliance, one conclusion stands out above the rest: the narrative surrounding digital asset policy in Washington has fundamentally shifted.
+Navigating "Regulation Crypto Assets": What the SEC's Proposed Framework Means for Web3 Projects
+The regulatory landscape for Web3 in the U.S. is undergoing a significant transformation, even in the absence of the long awaited CLARITY Act. On August 18, 2026, the U.S. Securities and Exchange Commission (SEC) issued a notice of proposed rulemaking titled Regulation Crypto Assets (Release No. 33-11434; File No. S7-2026-27).
+Inside CertiK's Independent Security Research on Besu
+CertiK independently discovered and disclosed five resource-exhaustion vulnerabilities in Besu (formerly Hyperledger Besu), now patched in version 26.7.1, through a proactive chaos-engineering-style testing methodology now productized as Chain Scan.
+Technical Insights
+View All Technical Insights
+Red Team vs. Pentest vs. Bug Bounty: Building a Complete Web3 Security Program
+Red team vs. pentest vs. bug bounty for Web3 projects: what each one actually tests, when to use which, and how to combine them into one program.
+Tolk Security Explained: From FunC’s Engineering Pain Points to New Audit Considerations
+This article compares FunC and Tolk through code, explains how typed schemas, automatic serialization, and lazy loading change TON contract security, and identifies the risks developers and auditors still need to review.
+Where CIP-56 Security Actually Lives: A Guide for Institutions on Canton
+How Daml views, choices, factories, client-side construction, and operational permissions determine the security of CIP-56 assets.
+Company Updates
+View All Company Updates
+CertiK Joins LF Decentralized Trust to Advance Security Standards for Enterprise Blockchain
+CertiK joins LF Decentralized Trust to bring formal verification and security expertise into the open-source infrastructure enterprises are building on amid intensifying global regulation.
+CertiK and the National Bank of the Kyrgyz Republic Partner on Digital Som Security
+CertiK signs an MoU with the National Bank of the Kyrgyz Republic to advance Digital Som security, AML/CFT oversight, and digital asset supervision.
+Chain Scan: Code and Runtime Assurance for DLT Infrastructure
+Chain Scan brings together automated static code scanning, analyst validation, and controlled runtime testing, with coverage tailored to the agreed scope. It helps identify code-level weaknesses and evaluate how DLT systems behave under adversarial inputs, resource pressure, infrastructure failures, and operational changes.
+Ecosystem Analysis
+View All Ecosystem Analysis
+Circle’s Arc Mainnet: From a USD 74 Billion USDC Supply to Native Settlement
+Circle’s Arc mainnet is scheduled for September 16, 2026, using USDC for gas and settlement while connecting stablecoin scale with institutional and programmable financial activity.
+As Wallets Expand From Storage to Execution, Can Their Control Layer Keep Up?
+This article examines how crypto wallets must extend security controls across key generation, recovery, transaction review, and incident response as they evolve into execution environments.
+CEX H1 2026 Review: Volume Cools, Balance Sheets Decide
+This H1 2026 review compares centralized exchanges by spot and futures volume, open interest, reserve depth, Bitcoin custody, and expansion into tokenized stocks and traditional financial products.

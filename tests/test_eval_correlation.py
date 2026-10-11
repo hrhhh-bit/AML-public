@@ -126,10 +126,10 @@ class TestAssetConventions:
         assert out.parent.name == "phase3_dense_retrieval"
         assert out.parent.parent.name == "experiments"
 
-    def test_kb_default_is_phase2_distilled_asset(self) -> None:
+    def test_kb_default_is_production_asset(self) -> None:
         kb = eval_mod.DEFAULT_KB_PATH
         assert kb.name == "distilled_kb.json"
-        assert kb.parent.name == "phase2_distillation_empirical"
+        assert kb.parent.name == "data"
 
     def test_module_import_does_not_run_main(self) -> None:
         # the loader ran exec_module without touching the knowledge base:

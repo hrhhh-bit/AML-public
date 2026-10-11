@@ -1,0 +1,51 @@
+Incident Summary
+In February 2026 two separate exploits occurred on the BNB Smart Chain (BSC), affecting SOF and LAXO tokens, leveraging the same class of vulnerability: a flawed token burn mechanism that allowed price manipulation within a single transaction.
+SOF token was exploited on 14 February 2026 for 190,540.
+Both attacks follow a similar playbook: an attacker used a flash loan to acquire a large portion of the token supply, sold it into the pool and exploited an inflated price to extract more BSC-USD than was originally invested.
+Attack Flow
+Addresses:
+Exploiter:
+- SOF Exploiter: 0x29e5F70ebab2B5b830609E0f2b8A357F2295EBfD
+- LAXO Exploiter 1: 0x17f9132E66A78b93195b4B186702Ad18Fdcd6E3D
+- LAXO Exploiter 2: 0xBe5424Ac3FB767A5d4586aB46d9A45Ce8eD03FEB
+- LAXO Exploiter 3: 0x127Ad42933819e508103DEa135f681b36961BD3A
+Victims:
+- SOF token: 0xaeB414d0a64DFCA14fd41B28EfC78f437008dF42
+- LAXO token: 0x62951CaD7659393BF07fbe790cF898A3B6d317CB
+SOF Token Step by Step Event Flow:
+2026-02-14 08:35:03 - Txn
+- Precursor - Claim 875 SOF tokens in mining rewards from purchasing miners.
+2026-02-14 08:45:28 - Txn
+- The attacker executed multiple flash loans totalling over $590M in assets while also transferring the 875 SOF tokens previously accumulated through legitimate SOF mining activity to attack contract 0xc4DB5Bc25B502a366903E93E2229e1386EF9Dd3F.
+- The attacker swapped 313,567,718 BSC-USD for 991,223 SOF tokens. This swap directed the SOF tokens to the SOMining contract rather than to the attacker directly as the mining contract is exempt from fees. This step left the pool with only 787 SOF tokens remaining, while loaded with 313,816,344 BSC-USD.
+- The attacker then sold the 875 SOF mining rewards into the pool. Due to SOF's sell fee mechanism, after fee deductions, an effective 787 SOF was swapped into the pool — matching exactly the remaining. The SOF burn occurs and is then synced BEFORE the BSC-USD return is calculated. As a result the pool price for SOF is inflated at the moment of the price calculation. 875 SOF — worth a few hundred dollars at market price — was exchanged for the entire BSC-USD pool balance of 313,816,344.
+- Repaid all flash loans including fees, keeping 225,936 BSC-USD as profit.
+LAXO Token Step by Step Event Flow:
+2026-02-22 15:32:44 - First Exploiter Txn
+- First exploiter borrowed 350,000 BSC-USD via a flash loan.
+- Swapped the 350,000 BSC-USD for 43,238,694 LAXO tokens. These tokens were sent to the PancakeSwap router, again exempt from fees.
+- The attacker added minimal liquidity (0.0001 BNB + 0.00000000000001 LAXO) then immediately removed it. During the removal, the router transfers its entire LAXO balance (the 43M LAXO from step 2) to the attacker, which avoids a fee on swapping direct.
+- The attacker transferred 52,057,043 LAXO to the PancakeSwap pool and triggered a swap. The contract automatically caps the transfer amount as the attacker’s balance. After a sell fee of 2,161,718 LAXO was transferred to the LAXO contract, 41,072,653 LAXO was burned. The pool then called sync() to update balances before calculating the BSC-USD swap output. With over 41M LAXO burned, the pool's LAXO balance decreased from ~54M to ~13M, while the BSC-USD balance remained the same — inflating the implied price per LAXO.
+- Repay 350,175 BSC-USD (principal + fee) and keep 137,320 BSC-USD profit.
+Copycat Exploits:
+After this first transaction, two additional exploiters (Exploiter 2 and Exploiter 3) identified the same vulnerability and executed their own versions of the attack within 13 minutes:
+- Transaction 2 (15:35:55 UTC): Exploiter 1 ran a second attack, extracting an additional 45,061 BSC-USD.
+- Exploiter 2 (15:45:11 UTC): Executed the same exploit, netting 6,974 BSC-USD.
+- Exploiter 3 (15:45:49 UTC): Gained 1,185 BSC-USD but after paying a 949 BSC-USD MEV bribe, was left with a net gain of only $236.
+Vulnerability
+Both exploits share the exact same root cause: a burn-before-sync architecture that allows any user to artificially inflate the token's price within a single transaction.
+SOF — update() Function
+In the SOF contract, the _update() function processes the sell by burning (amount - taxAmount) tokens and then calls sync(). The sync() function updates the pool's internal balance record to reflect the post-burn supply. Since the BSC-USD return calculation happens after sync(), the pool now believes there are far fewer SOF tokens than before, and thus prices each remaining SOF at a far higher USD value. LAXO — Burn in Transfer to Pair
+For LAXO, the flaw is triggered when the Uniswap/PancakeSwap pool address is the recipient of a transfer. The token contract:
+- caps the transfer amount at (balanceOf[sender] * 9999) / 10000;
+- deducts a sell fee;
+- burns the remainder;
+- calls sync() all before the pool calculates how much BSC-USD to return.
+The result is identical: the attacker can burn a massive amount of LAXO supply and receive BSC-USD at the post-burn, artificially inflated price.
+Fund Flow
+The SOF attacker moved funds rapidly after the exploit:
+- ~$213,617 BSC-USD was deposited to FixedFloat across 10 transactions within 30 minutes of the exploit.
+- 20 BNB (2 x 10 BNB) was sent to Tornado Cash
+LAXO first exploiter funds remain in contract 0x6de0499e347f07582505930498D01A68b8D7ffa5 as of February 23, 2026.
+Second exploiter funds remain in wallet 0xBe5424Ac3FB767A5d4586aB46d9A45Ce8eD03FEB as of February 23, 2026
+To keep up to date on the latest incident alerts and statistics follow @certikalert on X, or read our latest analysis on certik.com.

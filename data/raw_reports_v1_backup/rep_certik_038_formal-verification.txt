@@ -1,0 +1,30 @@
+Formal Verification for Web3 Security
+Mathematically prove your smart contract and blockchain protocol works as intended. No more best effort reviews, leaving undiscovered vulnerabilities. CertiK's pioneering technique of using formal verification as part of its smart contract audits helps uncover all possible vulnerabilities in your code.
+From Startup Launch to Global Enterprise
+Security Spotlights
+CertiK received recognition from over 25 leading global companies for its significant contributions to security.
+Better security for blockchains and smart contracts
+Mathematically proven, effective auditing process for smart contracts and blockchain protocols, delivering more vulnerabilities than what the human eye can find.
+Scale
+Common Security Properties for popular smart contracts such as ERC-20 and ERC-721 have been automatically verified for hundreds of projects during their auditing.
+Precision
+Advanced custom security and correctness properties, such as the increase-K property of AMM, have been specified and proved precisely for complex smart contracts in addition to their regular auditing.
+Coverage
+In addition, CertiK also formally verifies other blockchain building blocks such as consensus protocol, etc. Basic systems infrastructure, such as Enclave Hypervisor, can also been formally verified.
+All Audit Processes Are Not Created Equal
+Depending on the methodology, and experience, smart contract and blockchain protocol audits and process involved can yield different results. Having completed thousands of audits using highly accurate formal verification processes, it's no wonder CertiK is a leader in the industry.
+Manual Code Review
+Most Vendors and CertiK
+A human review to try to spot errors. This is very flexible, but it’s best-effort, as you can never be sure you found all errors.
+Automatic Verification
+Few Vendors and CertiK
+Automatic verification of certain properties and issues e.g., reentrancy, or properties of ERC20 contracts.
+Custom Formal Verification
+CertiK
+Security specialists create machine-readable specification that are mathematically verified by CertiK's Custom Formal Verification system.
+Why CertiK?
+Our in-depth evaluations of Web3 projects, exchanges, and wallets promote transparency and reliability in the industry. Discover how integrating CertiK's Skynet Score API can enhance the security and trustworthiness of your exchange or data services.
+Benefits of CertiK Custom Formal Verification
+Tailored to the native languages running in your project
+Highly customized for the features of your project, protocol, or virtual machine
+Developed by a world-class team of academics, researchers, and engineers

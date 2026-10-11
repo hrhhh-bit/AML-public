@@ -1,0 +1,56 @@
+Web3 Penetration testing
+Take a proactive approach to security. Identify your project's flaws before attackers do. CertiK's Web3 penetration testing service examines and exploits application, network, and cloud infrastructure using the same expertise and tools as black hat hackers, in order to protect against them.
+Our Penetration Testing Solutions
+Pressure test your organization's technical controls and network security by safely applying strategic tactics, techniques and procedures that real threat actors use to gain unauthorized access and maintain a foothold in compromised environments.
+Application
+Assessment covers web, mobile and desktop apps, browser extension, and their APIs to detect vulnerabilities affecting fund safety, sensitive data, and user trust.
+Network
+In-depth pentests across internal and external networks and server infrastructure help secure IT environments, including blockchain RPC.
+Cloud & Infrastructure
+Security reviews identify misconfigurations and vulnerabilities in AWS, Azure, and GCP cloud infrastructure and provide guidance to improve it.
+AI/ML
+Pentesting AI-integrated Dapps to uncover and mitigate risks related to prompt injection and LLM-driven vulnerabilities that threaten fund safety.
+SDK
+Comprehensive reviews identify insecure design and implementation of SDKs, especially those powering blockchain, dApp, and wallet integration.
+Source Code
+Secure apps at the code level to uncover and mitigate hidden risks in business logic, cryptographic, dependencies, and coding practices.
+What is Web3 penetration testing?
+Compared to Web2, Web3 brings unique challenges. Web3 penetration testers must understand blockchain technology, smart contracts, key management, on-chain/off-chain communication, and Web3-specific threats. Applications often combine decentralized contracts with centralized backend services and custody infrastructure. On top of that, financial regulations and compliance frameworks introduce additional requirements around system security, operational resilience, and data protection. Effective testing must account for both technical vulnerabilities and compliance-driven risks across the entire stack.
+Specialized in Securing Web3 Stacks
+Centralized Exchange
+Web3 Wallet
+Custody Solutions
+Decentralized Applications
+Blockchain Infrastructure
+Why Penetration Testing with CertiK: Research-driven, Web2 & Web3 expertise
+As an industry-leading pentest team, our testing methodologies backed by continuous research. Recognized by Web2 giants and leading Web3 projects. Advancing capabilities and techniques to stay at the top of the game.
+In-house professional team
+An expert team of in-house security specialists with rigorous quality control. Certified penetration testers combine offensive and defensive expertise.
+Improve Your Community Trust
+Penetration test records now public on the project profile to boost trust, improving Skynet Score in Code and Operational categories.
+Aligned with Industry standards
+Out penetration testing aligned with industry-recognized standards including OWASP, MASVS & MASTG, CVSS, NIST, PTES, and CREST.
+Compliance Support
+Compliance and regulatory support with tailored assessments and reporting aligned with frameworks and requirements such as SOC 2, ISO 27001, MiCA & DORA, HKSFC, MAS, and more.
+Penetration Testing Process
+Our penetration testing workflow is optimized for the unique architecture, threat models, and attack surfaces of Web3 environments.
+1. PREPARE
+Define engagement parameters CertiK will issue a questionnaire to ensure alignment on scope, timeline, restrictions, limitations, and custom objectives.
+2. EXPLORE
+Reconnaissance and vulnerability analysis Our team will conduct reconnaissance to identify public-facing assets, followed by a vulnerability analysis to uncover potential risks.
+3. EXPLOIT
+Target Exploitation Our team will attempt to exploit vulnerabilities and bypass security controls using a variety of tools and tactics.
+4. ESCALATE
+Privilege Escalation and Lateral Movement Our pentesters will simulate attacker objectives by attempting to escalate privileges and access key material and sensitive data.
+5. IMPROVE
+Deliver Findings and Recommendations CertiK will deliver a detailed report outlining the potential business impact and providing specific, actionable recommendations.
+Here's what we deliver
+Executive summary
+Threat Modeling
+Detailed Technical Report
+Recommendations
+Remediation Steps
+Objective Reporting
+Penetration testing reports are comprehensive and contain the details of all identified vulnerabilities. These are classified by severity, from Critical to Informational. Each finding includes a clear description, reproduction steps, proof-of-concept, and tailored remediation recommendations. Projects that undergo a completed pentest earn a spot on the Skynet Leaderboard. This gives the entire Web3 community a powerful demonstration of a project's commitment to security. A pentest report is evidence that a project takes security seriously and prioritizes the safety of its users' funds. Pentesting helps Web3 projects secure their applications and avoid costly errors.
+Trusted by industry leaders worldwide
+Our Penetration Testing Certifications

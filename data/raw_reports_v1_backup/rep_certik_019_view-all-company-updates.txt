@@ -1,0 +1,25 @@
+Company Updates
+CertiK Joins LF Decentralized Trust to Advance Security Standards for Enterprise Blockchain
+CertiK joins LF Decentralized Trust to bring formal verification and security expertise into the open-source infrastructure enterprises are building on amid intensifying global regulation.
+CertiK and the National Bank of the Kyrgyz Republic Partner on Digital Som Security
+CertiK signs an MoU with the National Bank of the Kyrgyz Republic to advance Digital Som security, AML/CFT oversight, and digital asset supervision.
+Chain Scan: Code and Runtime Assurance for DLT Infrastructure
+Chain Scan brings together automated static code scanning, analyst validation, and controlled runtime testing, with coverage tailored to the agreed scope. It helps identify code-level weaknesses and evaluate how DLT systems behave under adversarial inputs, resource pressure, infrastructure failures, and operational changes.
+From Warning Letters to Working Framework: CertiK and Brazil's Central Bank on Building the VASP Rulebook
+CertiK's Jason Jiang and the Central Bank of Brazil's Nagel Paulino join Veirano Advogados' Marcos Rocha to trace Brazil's journey from cautious crypto warnings to a detailed VASP regulatory framework.
+From Rulebook to Roadmap: CertiK and Coins.ph on Brazil's New Rules for Virtual Asset Service Providers
+CertiK's Jason Jiang and Coins.ph's Daniel Hott join Livecoins to discuss how Brazil's new VASP framework is separating prepared crypto operators from unprepared ones.
+AI Security Must Go Beyond the Model: CertiK Identifies Google EdgeTPU Vulnerabilities, Highlighting New Risks in AI Infrastructure
+CertiK researcher uncovered two vulnerabilities in Google's EdgeTPU, CVE-2026-0150 and CVE-2026-0153, acknowledged in Google's June 2026 Security Bulletin. Here's what the findings reveal about the future of AI security.
+CertiK Named Official Vendor for Hub71, Bringing Security and Compliance Support to Abu Dhabi's Startup Ecosystem
+CertiK has been named an official vendor for Hub71, offering portfolio companies a 20% service discount, a $200K subsidy pool, and free access to the CertiK Compliance Tool for UAE licensing and compliance.
+Introducing CertiK Hunt, The Invite-Only Security Platform for Web3 Projects and Top Security Researchers
+CertiK Hunt is an invite-only platform connecting elite security researchers with web3 projects through bug bounty programs, audit competitions, and AI challenges.
+CertiK Skills: Bringing Blockchain Security Intelligence Into AI Agents
+Discover CertiK's open-source AI Agent Skills for Claude Code, Codex, and Cursor. Easily plug in SkyInsights, Skylens, and Skynet Score to access real-time Web3 wallet screening, EVM forensics, and project security intelligence directly within your agent workflow.
+Catch Runtime Bugs Before They Become Mainnet Incidents: CertiK Grey Box Chain Audit
+CertiK's Grey Box Chain Audit catches runtime bugs before they become mainnet incidents, using fault injection and live network testing to surface chain-critical failures that static analysis alone cannot detect.
+CertiK Skill Scanner: The Antivirus for the AI Age
+CertiK Skill Scanner establishes a standardized security layer for third-party AI Skills, identifying execution-stage risks before they reach user data, assets, or systems.
+CertiK at IDAI Summit 2026: AI Adoption & Digital Asset Cybersecurity
+CertiK joined IDAI Summit 2026 to explore the growing security risks of AI adoption in Web3, analyzing structural agent vulnerabilities like indirection gaps and memory poisoning, and why intelligent, real-time auditing is now essential for protecting digital assets.

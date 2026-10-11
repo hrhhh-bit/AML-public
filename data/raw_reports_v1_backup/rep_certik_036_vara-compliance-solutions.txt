@@ -1,0 +1,41 @@
+VARA Compliance Solutions
+The Virtual Assets Regulatory Authority (VARA) is the official regulator for virtual assets in the Emirate of Dubai, providing comprehensive regulatory frameworks and clear guidance on operator responsibilities. VARA addresses global risks including money laundering (ML) and terrorist financing (TF), ensuring that Dubai's virtual asset ecosystem operates with transparency, accountability, and alignment with international compliance standards. This framework safeguards investor interests and fosters confidence in the market.
+Target Audience
+Entities providing the following services are required to comply with VARA regulations to operate in the Emirate of Dubai:
+Requirement: Engage independent auditors to assess smart contracts and L1 chain security annually and prior to new deployments.
+CertiK Solution: Expert analysis and mathematical verification of smart contracts and blockchain protocols to ensure secure operations.
+Requirement: Perform regular security testing, vulnerability audits, and maintain preventative controls.
+CertiK Solution: Comprehensive penetration testing using OWASP methodology to identify vulnerabilities and mitigate risks.
+Requirement: Regular internal and external infrastructure audits to maintain network integrity.
+CertiK Solution: Network penetration testing using PTES and NIST SP 800-115 standards to ensure secure infrastructure.
+Requirement: Implement ledger tracing software, monitor transactions, and integrate with AML/CFT policies.
+CertiK Solution: SkyInsights platform provides on-chain intelligence, risk scoring, and integration for AML/CFT compliance.
+Requirement: Maintain reserve assets 1:1 with client liabilities, daily reconciliations, and independent audits.
+CertiK Solution: PoR audits validate reserve accuracy and provide transparent reports for VARA compliance.
+Requirement: Independent third-party audits must be conducted before deployment, including formal verification where applicable, to ensure the integrity of systems and applications.
+CertiK Solution: Formal Verification of smart contracts and critical systems to guarantee correctness, compliance, and security.
+Requirement: VASPs must maintain secure cryptographic key and wallet management, including auditing key generation, storage, access, and backup, addressing single points of failure, and analyzing the security of any open-source libraries used.
+CertiK Solution: Whitebox testing and source code review for key management, sensitive data protection, and open-source libraries, designed to detect and mitigate risks and vulnerabilities at the code level.
+Requirement: VASPs must implement tactical hardening measures to limit attacker access once a compromise is detected, including emergency access revocation, network segmentation, system isolation, pre-approved emergency change procedures, and regular testing.
+CertiK Solution: Evaluates servers, endpoints, and network devices to verify secure settings and tactical hardening capabilities, identifying gaps and guiding remediation to align with VARA.
+Requirement: VASPs must implement incident response procedures, including root cause analysis and corrective actions to prevent recurrence. Incidents affecting personal data must be reported to VARA within 24 hours.
+CertiK Solution: On-chain investigation support and expert advisory to establish effective incident response and recovery procedures, ensuring timely reporting according to VARA regulations.
+Requirement: VASPs must conduct a security review before deploying any new feature.
+CertiK Solution: Provides threat modeling and secure coding reviews to identify potential threats, mitigate vulnerabilities, and promote secure development practices.
+Requirement: VASPs must provide regular security awareness training to all personnel on common cyber threats.
+CertiK Solution: Tailored programs to educate employees on security risks and best practices, reducing human error.
+Conduct in-depth discussions to understand the system architecture, virtual asset operations, infrastructure, and applicable VARA requirements.
+Prepare and present a proposal outlining the scope, methodology, timelines, and deliverables for client review and approval.
+Perform penetration testing, smart contract audits, L1/L2 chain audits, Proof of Reserves, and AML/KYT integration using industry standard methodologies.
+Provide an initial findings report, followed by remediation support to address identified issues and re-testing to validate fixes.
+Deliver comprehensive reports for regulatory submission, outlining the assessment scope and methodology aligned with the VARA Rulebook.
+Provide ongoing support to address regulator inquiries and offer continued technical and product assistance.
+Penalties for Non-Compliance
+Immediate Cease or Suspension
+Stopping virtual assets activity or other business operations temporarily or indefinitely.
+License Suspension or Revocation
+VARA may suspend or revoke licences or related commercial trade licences in coordination with the relevant authority.
+Financial Penalties
+Financial penalties may be imposed based on the nature and severity of the violation with additional penalties for repeat or unpaid fines.
+Ready to Achieve VARA Compliance?
+Partner with CertiK to ensure your virtual asset operations meet all regulatory requirements. Our team of experts will guide you through every step of the compliance journey.

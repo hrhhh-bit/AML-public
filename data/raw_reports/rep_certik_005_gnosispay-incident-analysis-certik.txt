@@ -1,0 +1,28 @@
+Incident Summary
+On 01 June 2026 an attacker drained dozens of GnosisPay Safes on Gnosis Chain. The attack vector was a signature-verification flaw in the GnosisPay Delay module.
+The module checks transactions via moduleTxSignedBy(). It parses r,s,v values from attacker-controlled msg.data. By crafting nested signature data, the attacker caused verification to traverse first through a Biconomy Safe and then to an attacker-controlled contract that always returned the EIP-1271 magic value. As a result, the module incorrectly accepted the transaction as authorized.
+The attacker queued 41 transactions, waited out the module's cooldown, then executed them. Each transferred EURe and GNO to attacker wallets leading to the loss of ~$265K.
+Key Addresses
+Attack Flow
+May-29-2026 01:29:55 PM
+- The attacker deployed 41 attack contracts (Example Transaction). These contracts are designed to always revert with isValidSignature() / 0x1626ba7e message.
+Jun-01-2026 05:26:10 AM - Transaction
+- Call Delay execTransactionFromModule().
+The first part of msg.data is parsed as (address to, uint256 value, bytes calldata data, Enum.Operation operation) which was queued. The ‘data' included transfers of EURe and GNO from victim to the attacker The verification happens in the modifier moduleOnly() -> moduleTxSignedBy() which uses the whole msg.data including the unparsed section. The unparsed calldata was relayed first to Biconomy Safe then to the attack contract: v = 0x24400,
+r = 0x7f59e536f083a63b67adfe3bc793a47744dba7d80,
+s = 0xd957b7cc73ae8d40082124eb2a67284d8e287babfe4e6859f0772a1eab8c54af The call directed to the ‘signer’=r at 0x7f59e536f083a63b67adfe3bc793a47744dba7d80 which is Biconomy Safe, with similar verification logic through Safe.0x1626ba7e() - > Safe.0x20c13b0b() -> Safe.checkSignatures() This time the signatureSplit() function gets r=0x5a77953caa27ed4638f4dfdc665b8064d0e97a35, the attack contract address, assigned as ‘currentOwner’ and called to for verification. The signature here does not really matter as the attack contract always returns the EIP-1271 magic value 0x1626ba7e. The staticcall reverted but that does'nt revert the whole transaction, the returned value 0x1626ba7e is taken as legitimate and the malicious transaction is added to the queue 3. The attacker queued a total of 41 transactions then waited days for the cooldown period to end.
+Jun-01-2026 05:57:35 - Transaction
+- Call Delay.executeNextTx() to execute custom calldata which transferred EURe and GNO from the victim to the attacker. The target was set as the victim Gnosis Safe in the initializing transaction,
+Vulnerability
+The root cause of this incident is due to the verification process in Delay.execTransactionFromModule() -> moduleOnly() -> moduleTxSignedBy() which parsed the r,s,v values from the end of the attacker’s msg.data. In particular the r address was called to as a signer for verification. The attacker crafted msg.data contained two layers of r,s,v values. The first r=signer reached a Biconomy Safe, then the second r=currentOwner reached the attack contracts which were prepared in advance to always return the required EIP-1271 magic value.
+Fund Flow
+Exploit wallet 0x81BA8A2b895D30280bca199C2Ff75f3F058d4C6c bridged ~$246k USDT from Ethereum to Hyperliquid network. The funds were then sent to wallet 0xb1834575349c6eb56675c35b4109c3d3a77dd2fc where part of the funds swapped for XMR. As of writing this article, exploiter wallet 0xb1833 held:
+- 147,494.91 USDC
+- 1.5174 ETH (~$2,700)
+- 28.32 XMR (~$9,903.55)
+Additional XMR was split into four wallets:
+- 0xcce200e0df2f6d47ccffc0e64e6fddc145b13f67 (27.33 XMR)
+- 0x3eb18b54a2f7500c3a581197cf7d9fbd62516160 (55.06 XMR)
+- 0x0dda0f6aa7b3e0ec1273c4e47c56e7bed57a308c (69.30 XMR)
+- 0x31c2c0c4ab37a89d38968735f8ad9f04e332576a (83.31 XMR)
+To keep up to date on the latest incident alerts and statistics, follow @certikalert on X, or read our latest analysis on certik.com.

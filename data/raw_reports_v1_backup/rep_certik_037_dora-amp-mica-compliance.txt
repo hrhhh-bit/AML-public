@@ -1,0 +1,52 @@
+DORA & MiCA Compliance
+Protect your business and strengthen DORA and MiCA readiness with CertiK. Our experts provide end-to-end security testing across applications, infrastructure, smart contracts, and critical supporting systems.
+Why DORA And MiCA Matter
+DORA and MiCA are raising the bar for digital asset businesses in the EU. Together, they strengthen expectations around operational resilience, cybersecurity, incident readiness, and regulatory accountability.
+Digital Operational Resilience Act
+Focuses on ICT risk management, operational resilience, incident reporting, testing, and third-party oversight.
+Markets in Crypto-Assets Regulation
+Establishes a regulatory framework for crypto-asset issuers and service providers, with strong expectations around governance, security, and transparency.
+Who Must Comply
+Crypto and digital asset entities in the EU that fall under the categories below are required to register and comply with operational and security standards. These requirements are designed to ensure transparency and protect digital assets.
+ICT risk management
+Build and maintain a resilient ICT and cybersecurity risk framework.
+How CertiK Helps
+Risk assessments, threat modeling, security reviews, remediation support, and CertiK SkyInsight platform.
+Incident Reporting
+Establish processes for detecting, handling, documenting, and reporting material incidents.
+How CertiK Helps
+Incident response support, incident investigation, and regulatory compliance reporting.
+Operational Resilience Testing
+Test critical systems, applications, and infrastructure on an ongoing basis.
+How CertiK Helps
+Penetration testing, source code review, smart contract audits, and infrastructure assessments.
+Third-Party Risk Management
+Monitor and manage dependencies on critical providers and external partners.
+How CertiK Helps
+Third-party risk assessment, due diligence support, and control reviews for external dependencies.
+Requirement: If smart contracts are used or developed, they should be reviewed by experienced third-party auditors using a structured methodology.
+CertiK Solution: Smart Contract and Layer 1 Chain Auditing leverages expert analysis and mathematical techniques to verify and test smart contracts for resilience against blockchain attacks that could result in significant financial loss, while validating that underlying blockchain protocols operate securely and as intended.
+Requirement: Financial entities shall ensure that digital operational resilience tests on all critical applications supporting important functions are conducted by independent parties, perform annual tests, and carry out vulnerability assessments before deploying or redeploying any new or existing applications.
+CertiK Solution: CertiK performs application penetration testing using OWASP-aligned methodologies to identify vulnerabilities and provide prioritized remediation guidance. Scenario-based testing simulates real-world attack conditions and evaluates how the application behaves under realistic threats.
+Requirement: Financial entities shall perform source code reviews of applications where feasible to detect vulnerabilities and security weaknesses, including open-source analyses and secure software development lifecycle assessments.
+CertiK Solution: Source code reviews are conducted to identify security flaws, logic errors, and potential vulnerabilities in application code, providing actionable recommendations to strengthen security and maintain compliance with regulatory standards.
+Requirement: Financial entities shall perform annual tests on all critical infrastructure components supporting important functions, including network and physical security assessments, and conduct vulnerability assessments before deploying or redeploying new or existing infrastructure components.
+CertiK Solution: Infrastructure penetration testing is performed using PTES and NIST SP 800-115 methodologies to identify vulnerabilities across networks, servers, and critical systems, with scenario-based simulations that approximate real-world attack behaviors.
+Requirement: Financial entities shall conduct configuration reviews of ICT assets supporting critical and important functions to ensure that system and network settings comply with operational resilience requirements.
+CertiK Solution: Configuration Review evaluates servers, endpoints, and network devices to verify secure settings and tactical hardening capabilities. The service identifies gaps or misconfigurations and provides guidance to help clients remediate issues and align with regulatory requirements.
+Requirement: Financial entities must promptly report major ICT-related incidents, including initial, updated, and final reports, and implement early warning indicators to detect issues.
+CertiK Solution: Provides specialized support for Web3 incident investigations using our own built tools, helping organizations analyze, assess, and respond to security issues in decentralized environments.
+Penalties for Non-Compliance
+Operational Restrictions
+MiCA: Temporary bans (up to 10 years) on management members from exercising functions in CASPs. Authorization can be suspended or withdrawn. Non-regulated entities subject to assessor appointments.
+DORA: Temporary suspension from using critical ICT third-party service providers if risks are not addressed, potentially disrupting operational continuity.
+Monetary Fines
+MiCA:
+- Standard crypto-assets: €5M or 3% of annual turnover
+- ARTs and EMTs: €5M or 12.5% of annual turnover
+- CASPs: €5M or 5% of annual turnover
+- Market abuse: €2.5M to €15M or 2-15% of turnover
+- Natural persons: up to €1M plus profit-based multipliers
+DORA: Up to 2% of total global annual turnover for non-compliance.
+Prepare for DORA and MiCA with confidence.
+Whether you need security testing, resilience validation, or broader compliance support, CertiK can help you prioritize the right controls and close critical gaps.

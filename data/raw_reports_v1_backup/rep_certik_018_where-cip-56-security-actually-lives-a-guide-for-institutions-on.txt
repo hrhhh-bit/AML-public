@@ -1,0 +1,197 @@
+Our earlier article on CIP-56 covered why the Canton Network Token Standard fits institutional assets: need-to-know privacy, native delivery vs payment, and compliance rules that execute as part of the workflow rather than sitting beside it.
+But a more practical question remains: once CIP-56 is implemented, where do its security properties truly live?
+CIP-56 defines an interoperable contract. It standardizes how wallets, applications, and asset registries discover holdings and coordinate transfers. Concrete contract instances can carry state that the standard view does not expose, and they can implement checks that the interface leaves open. The result also depends on how clients construct and explain transactions, and on the permissions surrounding the participant. Two assets can implement the same interfaces while assigning different roles to owners, providers, administrators, and settlement executors.
+The implementation evidence below is pinned to the public canton-network/splice repository at main@ba2b7eec6de146f639c2a353d022d6fa6faae873. Normative requirements come from the CIP proposals. Statements about template behavior come from pinned Daml source. Official documentation pages are used for Ledger API and operational permissions. Keeping those source types separate matters, especially for V2, where the proposal carries explanatory snippets while the repository holds the complete implementation.
+What has Changed Since our First Article
+CIP-0056 is Final. CIP-0112, Canton Network Token Standard V2, was approved on June 12, 2026 as a backwards-compatible evolution of the existing standard. It adds new major versions for allocation instructions, allocation requests, allocations, holdings, and transfer instructions, along with shared token-standard utilities and a transfer-events package for transaction parsing. It also introduces standardized batching through the splice-token-standard-wallet package.
+Token metadata needs a more careful description. CIP-0112 does not add a splice-api-token-metadata-v2 Daml package. It does make backwards-compatible changes to the existing token-metadata-v1.yaml OpenAPI specification, including a paused flag, optional pause information, and fields that tell wallets which account inputs to display. The proposal notes that CIP-56 gave wallets no standardized way to detect a global pause other than attempting a transaction and observing failure. The Daml package version stayed at V1; the HTTP schema did not stay unchanged.
+Governance approval and shipped implementation are also different things. CIP-0112 has been approved, and its V2 packages, Canton Coin compatibility work, and the TestTokenV2 reference implementation now live on Splice main. This article pins all Splice source references to main@ba2b7ee so that later repository changes do not alter the code basis for its claims.
+Reading V2 alongside V1 shows which facts the newer interface exposes in a structured form, which authorization inputs became configurable, and which checks the proposal assigns to implementations. That comparison establishes what changed in the standard. It does not, by itself, prove the design reason for every change.
+Where the Standard Stops
+CIP-56 defines six APIs, each with an on-ledger Daml component and, where needed, an off-ledger HTTP component. Registries may choose which of the five registry-facing APIs to implement. Although the proposal recommends implementing all of them where possible, compliance does not require every registry to expose every standard HTTP endpoint. Wallets are therefore expected to query registry metadata, discover the supported APIs, and adjust their behavior and UI accordingly.
+The proposal also explains why authentication was not standardized in V1. It points first to the fact that sensitive holdings and in-progress transfers are queried through the investor’s own validator node. The proposal then notes that access to sensitive registry data requires contract IDs that third parties should not be able to guess. Authentication was deferred to accelerate delivery of the first version, with the expectation that it could be standardized later if demand justified it.
+That choice does not make the HTTP transport inherently untrusted, and it does not prevent an operator from deploying TLS, mTLS, OAuth, gateway authentication, or private network controls. It means those controls are outside the interoperable contract. Contract IDs still deserve careful handling because they gate access to disclosed private contracts in some workflows, but the standard does not define them as reusable credentials or prescribe their lifecycle in logs, traces, and support systems.
+The discussion then turns to the data a registry returns for transaction construction. A transfer-factory response provides ChoiceContext and a factory contract ID needed to build the transaction, but it does not provide expectedAdmin; the caller supplies that choice argument separately. The interface also defines TransferFactory_PublicFetch, which returns a TransferFactoryView containing the factory admin. A client can therefore obtain the expected admin independently of registry-supplied construction data. Whether it preserves that separation in practice is a client-side design decision.
+That handoff from interface to implementation is where the source-level analysis starts.
+Following a Transfer Across the Stack
+For the registry-assisted transfer path analyzed here, a transaction moves through these layers:
+Wallet
+-> Registry HTTP API (authentication is not standardized)
+-> ChoiceContext + factory contract ID + disclosed contracts
+-> Interface choice (TransferFactory_Transfer)
+-> Concrete Daml template (registry-specific implementation)
+-> Ledger validation (controllers, signatories, and choice checks)
+The V1 interface defines obligations for the implementation and guidance for the caller:
+inputHoldingCids : [ContractId Holding]
+-- ^ ... If the sender specifies input holdings, the transfer MUST archive
+-- all of them, so that execution conflicts with any other transfer using
+-- those holdings.
+...
+nonconsuming choice TransferFactory_Transfer : TransferInstructionResult
+-- ^ ... Implementations MUST ensure that this choice fails if
+-- `transfer.executeBefore` is in the past.
+with
+expectedAdmin : Party
+-- ^ ... Implementations MUST validate that this matches the admin
+-- of the factory.
+-- Callers SHOULD ensure they get `expectedAdmin` from a trusted source,
+-- e.g., a read against their own participant. ...
+-- *provided* all vetted Daml packages only contain interface
+-- implementations that check the expected admin party.
+transfer : Transfer
+extraArgs : ExtraArgs
+controller transfer.sender
+These declarations do not prove that a particular registry or client follows the recommendation. A client may still derive both the factory ID and the expected admin from the same untrusted domain, defeating the intended source separation even though the choice argument is present. The protection also depends on vetted packages containing implementations that actually enforce the admin check.
+The pinned Amulet path shows how one implementation performs those checks:
+checkActors actors [[transfer.sender], [transfer.sender, transfer.receiver]]
+requireExpectedAdminMatch expectedAdmin dso
+...
+optPreapprovalCid <- lookupFromContextU @(ContractId TransferPreapproval) extraArgs.context transferPreapprovalContextKey
+forA_ optPreapprovalCid \preapprovalCid ->
+fetchChecked (ForOwner with dso; owner = transfer.receiver) preapprovalCid
+...
+let expectedInstrumentId = amuletInstrumentId dso
+require
+...
+(expectedInstrumentId == transfer.instrumentId)
+require "Amount must be positive" (transfer.amount > 0.0)
+assertDeadlineExceeded "transfer.requestedAt" transfer.requestedAt
+assertWithinDeadline "transfer.executeBefore" transfer.executeBefore
+(_, configState) <- getExternalPartyConfigStateFromChoiceContext dso arg.extraArgs.context
+let configAmulet = transferConfigAmuletFromExternalPartyConfigState configState
+let transferLifetime = transfer.executeBefore `subTime` transfer.requestedAt
+require' ("transferLifetime", transferLifetime) isLessOrEqualR
+("tokenStandardMaxTTL", getTokenStandardMaxTTL configAmulet)
+require "At least one holding must be provided"
+(not $ null transfer.inputHoldingCids)
+...
+getExternalPartyConfigStateFromChoiceContext dso context = do
+cid <- getFromContextU @(ContractId ExternalPartyConfigState) context externalPartyConfigStateContextKey
+state <- fetchChecked (ForDso with dso = dso) cid
+pure (cid, state)
+The implementation checks the permitted actor groups, expected admin, instrument, amount, timestamps, maximum transfer lifetime, and required holdings. Contract references supplied through ChoiceContext, including the optional preapproval and configuration state, are fetched against the expected owner or administrator grouping rather than trusted as untyped inputs.
+ExtraArgs.meta is a separate caller-supplied channel, not part of registry-provided choice context. Amulet reads beneficiary information from that metadata only when its own policy enables the featured path, after which the reward logic applies its semantic checks. The two containers should therefore not be treated as a single trust domain.
+The scope of inputHoldingCids is narrower than general replay protection. When the sender supplies an explicit holding list, all listed holdings must be archived, so two successful executions cannot consume the same active contract instances. An equivalent business request may still be submitted using different holdings. The standard also permits the list to be omitted when the registry supports automatic selection, while the pinned Amulet path requires at least one explicit holding.
+These excerpts identify where the reviewed Amulet path enforces the interface obligations. Other CIP-56 implementations may place the corresponding checks in different code and must be evaluated separately.
+What an Interface View Cannot Tell the Wallet
+A generic CIP-56 wallet cannot depend on knowledge of the concrete template behind every asset it supports. It must interpret holdings and workflows through the standard APIs and the information those APIs expose. The relevant question is therefore not whether implementation-specific state exists, but whether the standardized view carries enough structure for the wallet to explain an action safely.
+V1 shows the problem through pendingActions : Map Party Text. The party keys identify parties that may need to act, but the text values have no machine-readable structure defined by the standard. They cannot reliably express which parties must act together or whether several alternative authorizer groups would suffice. An implementation can impose its own convention, but a generic wallet cannot depend on a convention it does not understand. V2 addresses that limitation with availableActions : Map TransferInstructionAction [[Party]], where each inner list represents one group of parties that can authorize the action.
+TestTokenV2 shows the boundary of that improvement:
+template TokenTransferOffer with
+actionAuthorizers : Map.Map V2.TransferInstructionAction [Party]
+-- ^ A map from actions to which parties have already authorized that action.
+availableActions : Map.Map V2.TransferInstructionAction [[Party]]
+-- ^ Stored results ... as we cannot access account contracts in view function.
+...
+where
+signatory
+fromOptional [] (Map.lookup V2.TIA_Accept actionAuthorizers),
+transfer.instrumentId.admin
+...
+interface instance V2.TransferInstruction for TokenTransferOffer where
+view = V2.TransferInstructionView with
+transfer
+availableActions
+...
+The transition code accumulates the latest actors in actionAuthorizers and recomputes availableActions from that updated authorization state, the transfer state machine, and the account configurations.The view exposes the groups of parties that may authorize the next actions, but not the accumulated authorization state used to calculate them. That state is not idle bookkeeping: the parties recorded under TIA_Accept also appear in the template’s signatory expression. availableActions is therefore a wallet-facing projection of the current authorization state, not the authorization state itself.
+EventLog raises a broader version of the same problem. The V2 interface gives parsers a standardized representation of holding changes:
+interface EventLog where
+...
+nonconsuming choice EventLog_HoldingsChange :
+EventLog_HoldingsChangeResult
+with
+admin : Party
+account : Account
+inputHoldingCids : [ContractId Holding]
+transferLegSides : [TransferLegSide]
+outputHoldingCids : [ContractId Holding]
+observers : [Party]
+extraArgs : ExtraArgs
+observer observers
+controller admin
+do eventLog_holdingsChangeImpl this self arg
+The declaration fixes the argument record, the controller, and the choice observers. It does not make the event stream complete. CIP-0112 requires the asset admin to report every holding created and archive for regular accounts, including holdings created and archived within one transaction, and every incoming and outgoing transfer leg. Side-effect freedom is stated as a SHOULD. These are implementation obligations, not properties guaranteed by the standardized record type.
+Token attribution also requires client filtering. Ledger-level provenance identifies the target contract, implementing template, interface choice, and acting parties, but those fields do not by themselves identify the token instrument represented by the event. The implementing template identifies a contract type, not the instrument being tracked. A parser must establish token attribution by checking the expected instrument admin and the matching admin and Account information required by the standard.
+A parser that accepts every structurally matching EventLog_HoldingsChange can ingest a transfer history emitted under another admin. For an exchange that credits deposits or reconciles balances from these events, that mistake can affect accounting and asset-control decisions. The interface gives the wallet a standard language for transaction history; it does not certify that the history is complete or correctly attributed.
+The V2 account view creates the transition to the next section. It standardizes the owner, provider, and account ID while leaving the division of movement authority to the asset implementation. Two accounts with identical standard views can therefore be governed by different rules about who may initiate an action and whose approval is required. TestTokenV2 makes those rules concrete in AccountConfig, whose canInitiate and mustApprove flags reveal the security consequences of the V2 transition.
+These distinctions are not automatically vulnerabilities. They define the limit of what a generic wallet can infer from the standardized views without consulting the concrete implementation.
+Security Invariants Revealed by the V2 Transition
+CIP-0112 changes not only the data exposed by the standard, but also when authorization is established and who later execution must trust. V2 makes prior authorization reusable and controller sets configurable. The resulting risk is not limited to missing authorization. Valid authority can also be reused for the wrong settlement, action, execution context, or time window.
+The allocation redesign shows this most clearly. Under V1, the executor, sender, and receiver are all controllers for settlement. The ledger therefore requires all three parties to authorize the choice, and the Daml transaction commits atomically. This creates a minimal-trust structure in which the affected parties remain directly involved at settlement time. The fixed controller set itself does not prove that the amounts, identifiers, and transfer legs match, but it prevents the executor from settling alone.
+V2 does not remove authorization from settlement. It moves part of it earlier. Finalized allocations record authorization established before batch settlement, allowing SettlementFactory_SettleBatch to use a configurable controller set:
+nonconsuming choice SettlementFactory_SettleBatch :
+SettlementFactory_SettleBatchResult
+with
+settlement : SettlementInfo
+transferLegs : [TransferLeg]
+allocations : [FinalizedAllocation]
+actors : [Party]
+-- ^ Implementations MUST check this value to avoid
+-- unauthorized settlement execution.
+-- By default they SHOULD check that they are equal to
+-- `settlement.executors`.
+extraArgs : ExtraArgs
+observer settlementFactory_settleBatchExtraObservers this arg
+controller actors
+do settlementFactory_settleBatchImpl this self arg
+The ledger guarantees that the parties listed in actors authorize the exercise. It cannot determine whether those are the parties permitted to settle the batch. The implementation must enforce that semantic binding. The same pattern appears in V1 TransferInstruction_Update, where caller-supplied extraActors enter the controller expression but must still be checked against the actors expected for the update. V2 makes this responsibility more consequential by placing it on batch settlement.
+The finalized allocations must remain bound to what was authorized earlier. CIP-0112 requires the settlement implementation to verify that the allocations belong to the settlement being executed, authorize both sides of the specified transfers, and cover exactly the supplied transfer legs. These are the checks that make earlier authorization safe to reuse.
+The proposal is inconsistent about their normative strength: one presentation uses SHOULD, while the later interface specification uses MUST. That should be recorded as a specification ambiguity, not treated as evidence that allocation-to-settlement matching is optional. A concrete asset still has to be judged by the checks its implementation actually performs.
+Reusable authorization also makes workflow termination more important. Allocation_Settle, Allocation_Cancel, and Allocation_Withdraw are nonconsuming choices, even though each represents a terminal outcome. The interface therefore explicitly requires the implementation to consume the allocation in the choice body.
+Auditors should trace that consumption through the concrete call chain. A Settled, Cancelled, or Withdrawn result does not itself prove that the active allocation instance is gone, and consuming the backing holdings is not the same as terminating the workflow contract.
+Moving authorization earlier also changes the trust model. Within one asset admin, CIP-0112 places atomicity trust in that admin together with the executors; across asset admins, it relies on the executors. A V1-style controller arrangement remains possible, but affected traders no longer need to participate directly in every settlement once their authorization has been captured by finalized allocations.
+That is what enables more private batching, but privacy then depends on concrete execution context as well as controllers. TestTokenV2 returns no extra settlement observers to avoid exposing one allocation to authorizers of another. It also filters the choice context per allocation so that only the relevant authorizer's AccountConfig is supplied, and rejects an account map containing additional accounts.
+The confidentiality invariant is therefore broader than the observer hook: one allocation must not receive private reference data belonging only to another allocation in the same batch. An empty extra-observer list does not preserve privacy if batch-wide context is still passed into every allocation exercise.
+The account model applies the same “authorize earlier, exercise later” pattern. TestTokenV2 lets an owner and provider agree on an AccountConfig that determines who may initiate later actions and whether the other account party must approve them:
+data PartyConfig = PartyConfig with
+canInitiate : Bool
+mustApprove : Bool
+template AccountConfig
+with
+admin : Party
+account : V2.Account
+ownerConfig : PartyConfig
+providerConfig : PartyConfig
+where
+signatory account.owner, account.provider
+observer admin
+ensure isValidAccountConfig this && isSome account.provider
+isValidAccountConfig config =
+(config.ownerConfig.canInitiate ||
+config.providerConfig.canInitiate)
+&&
+(config.ownerConfig.mustApprove ||
+config.providerConfig.mustApprove)
+authorizationTransfers config =
+[ (p, q)
+| (p, pConfig) <- accountPartiesWithConfig
+, (q, qConfig) <- accountPartiesWithConfig
+, q /= p
+, pConfig.canInitiate
+, not qConfig.mustApprove
+]
+isValidAccountConfig requires an initiator and a party marked as requiring approval, but it does not require those roles to belong to different parties. For example:
+ownerConfig = PartyConfig False False
+providerConfig = PartyConfig True True
+passes the predicate. It also permits (provider, owner) in authorizationTransfers, because the provider can initiate while the owner does not require fresh approval for the later action.
+This does not bypass the owner. The AccountConfig is signed by both account parties, and a provider-created proposal becomes active only when the owner accepts it. What changes is the timing of consent: prior agreement to the configuration becomes standing authority that can later be exercised without a fresh owner action on each transaction.
+The audit question therefore shifts from “did this party act on this transaction?” to “did the party validly accept this policy, and is it being applied only within its permitted scope?” TestTokenV2 keeps that scope explicit. Its account-authority mechanism can assist selected transfer and allocation actions, but it refuses to use the same mechanism for allocation settlement or cancellation. Standing account policy therefore remains separate from settlement authority.
+The same separation between prior consent and later execution becomes more consequential once an allocation is committed. A committed allocation prevents the authorizer from unilaterally withdrawing before the settlement deadline, giving executors a temporary guarantee that the position remains available.
+That commitment must be considered together with configurable settlement actors. Once the authorizer gives up unilateral exit, the implementation's actor validation determines who may exercise settlement authority over a position the authorizer cannot yet reclaim. A permissive actor check therefore changes not only who may call settlement, but who controls the committed position during that window.
+Commitment provides safety, not liveness. It prevents early withdrawal but does not guarantee that settlement will occur. The deadline completes the same invariant from the other direction: before it passes, a committed allocation must not be unilaterally withdrawn; after it passes, settlement must no longer be allowed and withdrawal must become available.
+A correct check on only one path is insufficient. Early withdrawal defeats the executor's reliance on commitment, while late settlement extends previously granted authority beyond the agreed window. In TestTokenV2, the settlement deadline check occurs further down the call chain when lockAllocationFunds validates the deadline before creating the resulting locked state.
+That is why an audit must follow helper calls rather than stop at the interface entry point. Passing the deadline does not itself archive the allocation or release its holdings. A later settlement, withdrawal, cancellation, expiry, or other implementation-specific transaction must still perform the ledger transition.
+Taken together, the V2 transition reveals one consistent security pattern: authorization can be established earlier and reused later, while the parties executing later transitions can be more configurable. That flexibility enables batching, privacy, and account-level delegation, but it makes correct binding the central invariant. Prior authorization must remain attached to the settlement, action, account, confidentiality boundary, and time window for which it was established.
+When Operational Authority Sits Outside the Contract
+Everything above lives in Daml, the token-standard workflow, and the clients that construct or interpret it. The final boundary is operational.
+Splice's holding-UTXO guidance recommends wallet providers keep users' holding counts low. For automatic merging, it suggests a background process whose Ledger API user has CanReadAsAnyParty on the validator node so it can discover holdings across hosted users. CanReadAsAnyParty is a Ledger API user right. Official API documentation calls it the participant's super-reader, intended for services such as participant query stores that need continuous read access as parties appear and disappear.
+That right is separate from the PartyToParticipant topology permissions named Submission, Confirmation, and Observation. Those permissions describe what a participant node can do on behalf of a hosted party. A submitting participant can submit for the party, a confirming participant can confirm transactions subject to the party's threshold, and an observation-only participant cannot submit or confirm.
+Read and interactive execution rights are separate as well. CanExecuteAs and CanExecuteAsAnyParty allow a Ledger API user to prepare and execute interactive submissions. The official definition of CanExecuteAs states that it grants no read access, so a separate read right is required. Broad read access, in turn, does not satisfy Daml controllers, external signatures, or topology confirmation requirements.
+The operational consequence is a wider privacy boundary. A compromised super-reader can expose ledger data visible to all parties hosted on that participant even though it is not a universal Daml authorizer. PQS databases, indexers, logs, metrics, and debug systems can inherit that cross-tenant visibility when they receive or retain data collected under the credential. Their access controls and retention rules become part of the effective security model.
+MergeDelegation adds a separate contractual layer. Official Splice documentation describes the owner and operator as signatories, the operator as controller of the merge choice, an owner self-transfer for merging holdings, and an optional operator-to-user transfer that depends on an existing incoming-transfer preapproval. At that documented choice boundary, the workflow composes two separately authorized capabilities. The documentation does not, by itself, prove a global negative about every alternative contract path, so the conclusion should remain limited to the documented delegation choice.
+Daml choice authority, user preapprovals, operator delegation, Ledger API user rights, and topology hosting permissions are distinct mechanisms. Grouping all of them under a single label hides where each one is enforced and what a compromised credential can actually do.
+Conclusion
+CIP-56 compliance tells you that an implementation speaks the common interface. It does not, by itself, establish how registry inputs are checked, what typed state sits behind a view, how owner and provider authority is divided, how a wallet constructs and explains the transaction, or which parties a settlement asks users to trust.
+The public sources make narrower questions answerable. EventLog standardizes a transaction-history record while leaving completeness and provenance to asset-admin obligations and client filtering. TestTokenV2 makes a concrete confidentiality choice by adding no extra observers to batch settlement. Amulet's ExpiringAmount is a smaller example of registry-specific lifecycle state behind a common view, while AccountConfig shows how movement authority can depend on policy stored in the implementing templates.
+The interface defines compatibility. Effective security is completed by the concrete Daml implementation, the client's transaction construction and interpretation, and the operational authority surrounding the participant.
+These distinctions also shape audit practice. CertiK has been working with several teams targeting CIP-56 compatibility, including USDCx, Temple, Interstice-digital, Cancore, Eesee and more, to review their implementations against exactly these boundaries: the enforcement behind each interface choice, the trust assumptions in client-side transaction construction, and the operational authority around the participant. As the token standard evolves, CertiK stays current with each revision, ensuring our audit methodology keeps pace with the standard itself.

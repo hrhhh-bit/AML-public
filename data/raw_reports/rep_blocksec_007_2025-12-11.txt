@@ -1,0 +1,16 @@
+Address freeze and unfreeze checks are a frequent and practical need for USDT users. Yet for a long time, this task has been hard to handle through traditional channels. TronScan and Etherscan do not clearly show freeze status. Some enterprise KYT tools offer this data, but they often lack a simple and open search interface.
+BlockSec published a report on almost 1.26 billion dollars in frozen USDT and how to lower freeze risk. Since then, we received many user requests asking how to check if an address is frozen. For a quick one-off lookup, you can check a single USDT address's freeze status instantly. For the full picture — every freeze, unfreeze, and destroy event across Ethereum and Tron — we launched USDT Freeze Tracker. Below, we walk through the first of its four core pages.
+Overview: See the Big Picture at a Glance
+The Overview page serves as the main dashboard. It brings together full data on USDT address freeze, unfreeze, and destroy events. You can filter results by different time ranges, including the past 24 hours, 7 days, 30 days, 90 days, six months, one year, two years, or all time.
+With no complex setup, you can quickly understand activity during any selected period. The data is clear and easy to read. Overall trends are visible at a glance, helping you stay informed and make better decisions faster.
+Events: Track Address Activity One by One
+The Events page shows address activity in a clear list, ordered by time. Each row displays a single freeze, unfreeze, or destroy event with full details. This makes it easy to trace what happened and when.
+For every event, you can open the related transaction in Phalcon Explorer to view on chain details. You can also click the affected address to open Phalcon Compliance and run a risk scan. This helps you understand why the address was frozen, unfrozen, or destroyed and where the risk may come from.
+Addresses: Search and Get Results Instantly
+On the Addresses page, you can enter a wallet address to run a direct search. The system quickly checks whether the address is on the blacklist and shows its current freeze or unfreeze status.
+This lets you confirm the status of a specific address right away and understand whether it is affected by any USDT restrictions.
+Proposals: Track Related Governance Actions
+The Proposals page shows completed multisignature proposals related to USDT freezes and unfreezes. It also provides detailed Regulatory Implications to help explain what each proposal means.
+You can see key information such as execution speed, action windows, and enforcement timelines. This gives you a clearer view of how freeze decisions are carried out and how they connect to broader regulatory practices in the crypto industry.
+This tool covers everything from general overviews to specific address searches. It helps with event tracing and explains the rules behind freezes. It’s perfect for both casual users and industry experts needing USDT address lookups. All data comes straight from native Ethereum and Tron on-chain sources. This ensures accuracy and provides real-time updates.
+To better protect your platform and ensure seamless compliance, explore how Phalcon Compliance can help you identify, analyze, and mitigate risks in real time. Start securing your crypto operations today.

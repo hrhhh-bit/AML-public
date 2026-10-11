@@ -1,0 +1,59 @@
+Incident Summary
+On 20 January 2026, DeFi protocol MakinaFi suffered an exploit resulting in the theft of 1,299 ETH, valued at approximately $4.13 million.
+The attacker targeted MakinaFi's DUSD/USDC Curve pool, using a large flash loan to manipulate sharePrices, specifically Curve.finance : MIM-3LP3CRV-f.calc_withdraw_one_coin() and Curve.finance : DAI/USDC/USDT Pool.balance(), and arbitrage the sharePrice increase. MakinaFi has since activated their security mode as a precaution and advised liquidity providers to withdraw from the affected pool.
+Attack Flow
+Addresses:
+Exploiter:
+- 0x935bfb495E33f74d2E9735DF1DA66acE442ede48
+- 0xbed26250Db2097318386F540fD546acEDf7bdE25
+Makina:
+DUSD/USDC pool: 0x32E616F4f17d43f9A5cd9Be0e294727187064cb3
+Dialectic USD: 0x1e33E98aF620F1D563fcD3cfd3C75acE841204ef
+Caliber: 0x06147e073B854521c7B778280E7d7dBAfB2D4898
+Step by Step Event Flow:
+2026-01-20 03:40:35 - Txn
+Step 1 Flashloan 160(.590920.349812)M USDC from Morpho and 119(.409079650188)M USDC from Aave.
+Step 2 CALL
+a. CurveStableSwapNG.add_liquidity() - Add 100M USDC to Makina‘s DUSD-USDC StableSwap Pool for 99(.206722150127812419545815)M LP. (Line 190)
+b. CurveStableSwapNG.exchange() - Swap 10M USDC for 9(.215229240302006980932922)M Dialetic USD (DUSD). (Line 375)
+Before these operations executed, SharePrice equalled 1.011771 and the Makina: DUSD/USDC pool held 5(.127936124721)M USDC.
+The SharePrice is calculated from the ratio of the DUSD total supply and Machine.lastTotalAum.
+SharePrice = aum / supply = ~1.011771 (Line 247)
+Step 3 CALL
+a. Curve.fi: DAI/USDC/USDT Pool.add_liquidity() - Add 170M USDC liquidity and receive 163(.452534942607891503492223)M LP. (Line 551)
+b. Curve.finance : MIM-3LP3CRV-f.add_liquidity() - Add 30M DAI/USDC/USDT liquidity and receive 30(.642770411109495728143125)M LP. (Line 641)
+c. Curve.finance : MIM-3LP3CRV-f.remove_liquidity_one_coin() - Remove 15M from the MIM-3LP3CRV-f LP to get 13(.163315338344059156793384)M MIM. (Line 710)
+d. Curve.finance : MIM-3LP3CRV-f.exchange() - Exchange 120M DAI/USDC/USDT LP for 37(.742942705126949207991)M MIM. (Line 760)
+These actions inflated the MIM-3Crv reward as well as the balances in the DAI/USDC/USDT Pools.
+Step 4 CALL
+a. Caliber.accountForPosition() for positionId 329781725403426819283923979544582973776, which involves DAI, USDC and USDT on the Curve.finance: DAI/USDC/USDT Pool (Line 825) Inputting the MIM-3Crv Reward (BaseRewardPool) balance (3009819.076272546058287333). Curve.finance : MIM-3LP3CRV-f.calc_withdraw_one_coin(3009819.076272546058287333) returned 18,622,517.448370302132064568, the “total reward” (inflated with DAI/USDC/USDT LP) will later be used as a multiplier. (Line 885)
+From the Curve.finance : DAI/USDC/USDT Pool itself, the inflated token balances are:
+i) 34870375.111434749084638743 DAI
+ii) 35,995,671.514679 USDC
+iii) 96656416.382590 USDT
+Take the Curve.finance : DAI/USDC/USDT Pool total LP supply (323822344.403249000025815499) as the denominator, and the overall formula (for this particular position id) reconstructed from the instructions is __Calibre positional aum = ∑ balance * total MIM-3Crv reward / total 3Crv LP supply =
+2005455.545664866080630926 + 11801486.968905 + 5558877.575566 = 19365820.090135866080630926__ (Lines 943, 949, 955) Deducting likely 0x2c8842a508a = 3060234080394, the old positional AUM received the new positional AUM delta at 16302957.638680. (Line 960)
+b. Then call Machine.updateTotalAum() to include the newly updated AUM position. The extra 16302957.638680 accounts for the increase in AUM before and after the update. totalAum = 51582210.540930 + 1630295.763868 + (minor balance changes) = 67886575.091834 (Line 1138)
+Step 5 At this point the new SharePrice = aum / supply = 1.331577 and Makina: DUSD/USDC only held 2(.02428922777392189854374)M DUSD.
+The exploiter was then able to exchange 9,215,229.240302006980932922 DUSD for 12.785M USDC before removing 99.2M LP for 100.66M USDC to extract ~4M USDC. (Line 1872)
+Step 6 (reset)
+a. Curve.finance : MIM-3LP3CRV-f.exchange() - Exchange 37.742942 MIM for 119.349M DAI/USDC/USDT LP. (Line 2171)
+b. Curve.finance : MIM-3LP3CRV-f.remove_liquidity_one_coin() - Remove 15.64M liquidity from MetaPool for 16.96M DAI/USDC/USDT Pool LP. (Line 2230)
+c. Curve.finance : MIM-3LP3CRV-f.exchange() - Exchange 13.16M MIM for 13.3M DAI/USDC/USDT LP. (Line 2279)
+d. Curve.fi: DAI/USDC/USDT Pool.0x1a4d01d2() - Remove 163M DAI/USDC/USDT LP for 169,585.244070586 USDC. (Line 2338)
+e. Call Caliber.accountForPosition() and Machine.updateTotalAum() again to lower the AUM. (Line 2412 and 2725)
+Step 7 Repeat the above operations till the victim pool is drained of USDC.
+Vulnerability
+Makina offers a cross-chain asset management system. It consists of two main components: the Machine and the Caliber.
+- The Machine is responsible for managing deposits, withdrawals, and share price calculations.
+- The Caliber provides execution and accounting logic.
+The Caliber is an upgradeable smart contract that provides execution and accounting logic for managing financial positions on each chain. It integrates with an external virtual machine (Weiroll VM) to execute sequences of encoded instructions. It relies on Merkle root validation to enforce that only pre-authorized instructions can be used. The contract maintains a registry of active positions, performs token valuation based on price feeds, and applies risk parameters and cooldowns to govern execution behavior. Among the Merkel proof verified instruction are the following commands:
+- "cc2b27d7810406ff000000845a6a4d54456819380173272a5e8e9b9904bdf41b"
+- "4903b0d10105ff0000000005bebc44782c7db0a1a60cb6fe97d0b483032ff1c7"
+- "4903b0d10106ff0000000006bebc44782c7db0a1a60cb6fe97d0b483032ff1c7"
+- "4903b0d10107ff0000000007bebc44782c7db0a1a60cb6fe97d0b483032ff1c7"
+The commands are translated by the WeirollVM to Curve.finance: MIM-3LP3CRV-f.calc_withdraw_one_coin() and Curve.finance: DAI/USDC/USDT Pool.balance(). The results are used as multiplier terms in calculating AUM, the numerator in sharePrice calculation that Makina stableswap uses as an oracle reference.
+For the position at id 329781725403426819283923979544582973776
+Calibre positional AUM = ∑ (balance * total MIM-3Crv reward / total 3Crv LP supply) The arrangement enabled the exploiter to inflate Calibre AUM and in turn the sharePrice with flashloaned liquidity and arbitrage the sharePrice increase.
+Fund Flow
+As of 21 January 2026, 1,023 ETH (~$3.2M) is held in wallet 0xbed26250Db2097318386F540fD546acEDf7bdE25 and 276.322 ETH was sent to a validator at 0x573db3aed219efd4d2cdabc0d00366e7b80f910e. The team has reached out to offer a 10% bounty to the attacker but is still waiting for an answer. To keep up to date on the latest incident alerts and statistics follow @certikalert on X, or read our latest analysis on certik.com.

@@ -1,0 +1,25 @@
+Company Updates
+CertiK Joins LF Decentralized Trust to Advance Security Standards for Enterprise Blockchain
+CertiK joins LF Decentralized Trust to bring formal verification and security expertise into the open-source infrastructure enterprises are building on amid intensifying global regulation.
+CertiK and the National Bank of the Kyrgyz Republic Partner on Digital Som Security
+CertiK signs an MoU with the National Bank of the Kyrgyz Republic to advance Digital Som security, AML/CFT oversight, and digital asset supervision.
+From Warning Letters to Working Framework: CertiK and Brazil's Central Bank on Building the VASP Rulebook
+CertiK's Jason Jiang and the Central Bank of Brazil's Nagel Paulino join Veirano Advogados' Marcos Rocha to trace Brazil's journey from cautious crypto warnings to a detailed VASP regulatory framework.
+From Rulebook to Roadmap: CertiK and Coins.ph on Brazil's New Rules for Virtual Asset Service Providers
+CertiK's Jason Jiang and Coins.ph's Daniel Hott join Livecoins to discuss how Brazil's new VASP framework is separating prepared crypto operators from unprepared ones.
+AI Security Must Go Beyond the Model: CertiK Identifies Google EdgeTPU Vulnerabilities, Highlighting New Risks in AI Infrastructure
+CertiK researcher uncovered two vulnerabilities in Google's EdgeTPU, CVE-2026-0150 and CVE-2026-0153, acknowledged in Google's June 2026 Security Bulletin. Here's what the findings reveal about the future of AI security.
+CertiK Named Official Vendor for Hub71, Bringing Security and Compliance Support to Abu Dhabi's Startup Ecosystem
+CertiK has been named an official vendor for Hub71, offering portfolio companies a 20% service discount, a $200K subsidy pool, and free access to the CertiK Compliance Tool for UAE licensing and compliance.
+CertiK at IDAI Summit 2026: AI Adoption & Digital Asset Cybersecurity
+CertiK joined IDAI Summit 2026 to explore the growing security risks of AI adoption in Web3, analyzing structural agent vulnerabilities like indirection gaps and memory poisoning, and why intelligent, real-time auditing is now essential for protecting digital assets.
+Gate Wallet Integrates CertiK Skynet Scores Into Its Earn Platform
+Gate's Web3 Wallet now displays CertiK Skynet Scores directly within its Earn product pages, giving users on-chain security intelligence at the point of investment decision-making.
+CertiK Completes Proof of Reserves Verification for Gate Dubai
+CertiK has completed an independent Proof of Reserves (PoR) audit for Gate Technology FZE, the Dubai-based entity of the Gate Group. Gate Dubai exchange is licensed by the Virtual Assets Regulatory Authority (VARA). The audit verified that the platform's on-chain reserves fully back its user liabilities across all in-scope assets as of December 31, 2025.
+CertiK’s Path Forward: Advancing Trust, Transparency, and Web3 Infrastructure
+As conversations at the 2026 World Economic Forum at Davos-Klosters, Switzerland continue to influence how global leaders engage with emerging technologies, one message is becoming increasingly clear: Web3 is entering a new phase defined by institutional participation, regulatory engagement, and long-term infrastructure.
+CertiK and YZi Labs Form Partnership to Support EASY Residency Participants with $1 Million Audit Grants
+CertiK is excited to announce its formal strategic partnership with YZi Labs (formerly Binance Labs), which aims to improve the security architecture of participants in the “EASY Residency Global Startup Incubation Program.”
+CertiK and NEXUS Sign Memorandum of Understanding to Enhance Security, Auditing, and Stablecoin Infrastructure
+CertiK recently signed a memorandum of understanding (MOU) with NEXUS, the blockchain infrastructure behind South Korea-listed company CROSS Protocol, to enhance security, auditing, and stablecoin infrastructure of the CROSS ecosystem. This MOU agreement is the beginning of a long-term collaboration between CertiK and NEXUS, in light of accelerated adoption in on-chain gaming and the need for security to keep pace with blockchain-based transactions.

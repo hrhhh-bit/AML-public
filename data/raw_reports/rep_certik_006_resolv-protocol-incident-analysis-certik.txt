@@ -1,0 +1,44 @@
+Incident Summary
+On 22 March 2026, the Revolv protocol was exploited, resulting in a loss of ~$26.8M due to a compromise of the project's cloud infrastructure which gave access to Resolv’s AWS Key Management Service (KMS).
+Resolv uses a hybrid system where users deposit collateral (like USDC) and an off-chain service verifies the deposit before authorizing the minting of USR. The attacker made small legitimate deposits (approx. 200,000 in USDC). They then used a compromised 'SERVICE ROLE' to call the completeSwap() function, manually inflating the output of USR, gaining 80M USR over two transactions.
+The over-minting caused a crash of the USR price from 0.03, which led to other platforms pausing their pools like Lista DAO or Re7 Labs.
+Background
+To keep their keys secure, Resolv implemented Amazon's KMS (Key Management Service), a cloud-based system for managing cryptographic keys at scale.
+Why use KMS for crypto keys:
+- Security at scale - If you manage wallets for thousands of users (like Coinbase, Binance), you can't use hardware wallets for each one. KMS gives HSM-level security programmatically.
+- Access control - Only specific services/people can request signatures. You can enforce multi-approval workflows using IAM policies.
+- Compliance & audit - Every time a private key is used to sign a transaction, it's logged. Critical for regulated crypto businesses.
+- Disaster recovery - Keys are backed up automatically across AWS regions. Lose your Ledger? Your crypto is gone. KMS keys can be recovered.
+- Automation - Your application can sign transactions automatically (for withdrawals, rebalancing, smart contract interactions) without manual hardware wallet approvals.
+Within KMS was Resolv’s signing key which gave the attacker access to the ‘SERVICE ROLE’ that enabled the attacker to:
+- Sign any minting amount they wanted, as the contract enforced a minimum USR output but had no maximum output.
+- Create signatures that the smart contract would accept as legitimate.
+- Mint 80 million USR tokens against deposits of only 200,000 by using the compromised access to call completeSwap().
+Attack Flow
+Addresses:
+Exploiter:
+- 0x04A288a7789DD6Ade935361a4fB1Ec5db513caEd
+- 0x8ED8cF0C1c531C1b20848E78f1CB32fa5B99b81C
+- 0x6Db6006c38468CDc0fD7d1c251018b1B696232Ed
+- 0xb945eC1be1f42777F3AA7D683562800B4CDD3890
+- 0x9FeeEAEc113E6d2DCD5ac997d5358eee41836e5f
+Victim:
+- USR Counter contract: 0xa27a69Ae180e202fDe5D38189a3F24Fe24E55861
+- ‘SERVICE_ROLE’ EOA: 0x15CAd41e6BdCaDc7121ce65080489C92CF6de398
+Step by Step Event Flow:
+Mar-22-2026 01:50:59 - Txn
+- First the attacker created a swap request on Resolv: USR Counter with 100K USDC.
+02:21:35 - Txn 2. From the compromised ‘SERVICE ROLE’, call Resolv USR Counter’s completeSwap() function to resolve the request (id=30) and mint 50M Resolv USD, minus 50K fee, to the exploit address. 3. The above tactic was successfully executed again ~ 2 hours later (create request, resolve request) to mint an additional 30M Resolv USD.
+Vulnerability
+The root cause of this incident has been confirmed as a compromise of Resolv’s AWS Key Management Service (KMS) where the attacker gained access to a private key for wallet 0x15CAd41e6BdCaDc7121ce65080489C92CF6de398. This wallet had previously been assigned the ‘SERVICE ROLE’’ which was granted on Dec-26-2024 (txn).
+Fund Flow
+0x04A288a7789DD6Ade935361a4fB1Ec5db513caEd
+- Received 80M USR from the exploit.
+As of 24 March:
+0x04A288a7789DD6Ade935361a4fB1Ec5db513caEd
+- Holds 20,420,750.43 wstUSR ($1,263,554.35).
+0x8ed8cf0c1c531c1b20848e78f1cb32fa5b99b81c
+- Holds 11,408.85 ETH ($24,783,759.96)
+0x9FeeEAEc113E6d2DCD5ac997d5358eee41836e5f
+- Holds 12,000,000 wstUSR (56,465.26).
+To keep up to date on the latest incident alerts and statistics, follow @certikalert on X, or read our latest analysis on certik.com.

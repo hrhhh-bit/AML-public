@@ -21,7 +21,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from .schema import (
     FLOW_TOLERANCE,
     AbstractEdge,
-    OperationType,
     TopologicalMotif,
 )
 
@@ -52,7 +51,16 @@ class TopologyValidityReport(BaseModel):
 
 
 def motif_topology_issues(motif: TopologicalMotif) -> list[str]:
-    """Return the list of structural violations of one motif ([] = valid)."""
+    """Return the list of structural violations of one motif ([] = valid).
+
+    Covers syntax-level checks (acyclicity, branching) plus the Stage-3
+    Part-B physical ledger invariants:
+
+    - ``cross_chain_non_bridge:{src}->{tgt}`` — a cross-chain edge that is
+      not a Bridge primitive (ledger state cannot leap chains otherwise);
+    - ``outflow_conservation:{nid}`` — the out-edge flow_shares of a node
+      do not sum to 1.0 (single out-edges MUST be exactly 1.0).
+    """
     issues: list[str] = []
     if not motif.is_dag():
         issues.append("not_acyclic")
@@ -63,19 +71,22 @@ def motif_topology_issues(motif: TopologicalMotif) -> list[str]:
             issues.append(f"branching_exceeded:{nid}={degree}")
             break
 
-    split_groups: dict[str, list[AbstractEdge]] = {}
-    merge_groups: dict[str, list[AbstractEdge]] = {}
+    # cross-chain ledger invariant (case-robust Bridge check)
+    chain_of = {n.temp_id: n.chain for n in motif.nodes}
     for edge in motif.edges:
-        if edge.operation == OperationType.SPLIT:
-            split_groups.setdefault(edge.source, []).append(edge)
-        elif edge.operation == OperationType.MERGE:
-            merge_groups.setdefault(edge.target, []).append(edge)
-    for nid, group in split_groups.items():
+        if (
+            chain_of[edge.source] != chain_of[edge.target]
+            and edge.operation.value.lower() != "bridge"
+        ):
+            issues.append(f"cross_chain_non_bridge:{edge.source}->{edge.target}")
+
+    # out-flow conservation: every node's out-edge shares must sum to 1.0
+    out_groups: dict[str, list[AbstractEdge]] = {}
+    for edge in motif.edges:
+        out_groups.setdefault(edge.source, []).append(edge)
+    for nid, group in out_groups.items():
         if abs(sum(e.flow_share for e in group) - 1.0) > FLOW_TOLERANCE:
-            issues.append(f"flow_conservation_split:{nid}")
-    for nid, group in merge_groups.items():
-        if abs(sum(e.flow_share for e in group) - 1.0) > FLOW_TOLERANCE:
-            issues.append(f"flow_conservation_merge:{nid}")
+            issues.append(f"outflow_conservation:{nid}")
     return issues
 
 

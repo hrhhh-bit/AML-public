@@ -1,0 +1,199 @@
+Largest Blockchain Security Auditor
+CertiK is the largest Web3 security platform combining formal verification with audits and comprehensive security solutions.
+Solutions for All
+Security, compliance, and risk management for every stage of your Web3 journey.
+SOC 2® Type II Compliance
+ISO 27001 Certification
+CB Insights Top 50 Blockchain Companies
+World Economic Forum Global Innovator
+CertiK joins LF Decentralized Trust to bring formal verification and security expertise into the open-source infrastructure enterprises are building on amid intensifying global regulation.
+As I wrap up a three-day DC roadshow coordinating Capitol Hill and agency roundtables for the US/UK Crypto Alliance, one conclusion stands out above the rest: the narrative surrounding digital asset policy in Washington has fundamentally shifted.
+Circle’s Arc mainnet is scheduled for September 16, 2026, using USDC for gas and settlement while connecting stablecoin scale with institutional and programmable financial activity.
+Building a Safer, Smarter Future for Web3
+Elevate your Web3 journey with an all-in-one security and compliance suite—covering smart contract audits, on-chain monitoring, AML, incident response, and more. From launch to scale, we help you build with confidence, integrity, and real-time insights.
+Secure Your Code, Empower Your Project
+A industry-leading comprehensive security assessment of your smart contract and blockchain code to identify vulnerabilities and recommend ways to fix them.
+We safeguard decentralized systems in multiple languages.
+Strengthening Off-Chain and Application Layers
+Penetration testing delivers an in-depth security assessment across off-chain components and Web3 applications, uncovering vulnerabilities and strengthening your project against evolving threats. Leveraging deep Web2 and Web3 expertise, we enhance your project’s defenses across all layers.
+CertiK PenTesting
+Professional Real-time Web3 Evaluation System
+CertiK Skynet Score is a real-time evaluation system that provides an independent and objective assessment of the status and performance of Web3 projects, exchanges, and wallets. We deliver comprehensive analysis for 17,000+ projects for the community.
+Visit Skynet
+Institutional DLT Strategy, architecture design & Security
+Strategy, architecture design, and security assessments for institutions building distributed ledger technologies (DLT), covering on-chain systems, off-chain infrastructure, and regulatory readiness.
+Learn More
+Crypto Compliance, AML & Risk Management
+SkyInsights provides real-time transaction monitoring, AML/CTF compliance solutions, and risk analytics to ensure VASPs meet their regulatory requirements.
+Learn More
+Backed by Leading Investors
+Backed by top global VCs and Web3 pioneers, validating our Web3 security leadership and a more trusted ecosystem.
+Trusted by Thousands of Web3 Projects
+"It's important that we have a culture of building really strong software that is well-audited, well-reviewed, and that's only going to make the space safer. Lack of security is an impediment to growing the ecosystem. So we love what CertiK is doing to ensure that the space is safe, and more importantly keeping user funds safe and secure."
+Adeniyi Abiodun
+Co-Founder and CPO
+"Security is incredibly important right for the ecosystem. For me, CertiK helps ensure the security in the long term of the application code to make sure that we can continue building trust around the industry."
+Sergey Gorbunov
+Co-founder
+"We don't want to preach security, we want to show everyone that we are secure. That's why we did our two audits with CertiK, and why we enabled Skynet too. So everyone can do their own research, it's all out there. "
+Aishwary Gupta
+DeFi Chief of Staff
+"CertiK is the leading security firm in the crypto industry"
+Ben
+Head of Asia
+"Security is extremely important, not just a project’s smart contract security, but its Web2 infrastructure security too, its backend, its frontend – all of these are attack vectors that projects have to be careful about."
+Jay Lin
+Director of Partnerships
+"CertiK was actually one of the original smart contract auditors. CertiK is great. We've had nothing but good experiences with them. They were fast, they were easy, they got the job done, and we've never had any complaints. So it's been an all around good experience."
+Erik Ashdown
+Head of Ecosystem
+"We were impressed with the suite of products offered by CertiK, which ranged from full-scope auditing, to security dashboards, and ongoing white hat support. CertiK saw the vision of what TON blockchain could be and wanted to develop that relationship early on, and to really think of different ways to add value across the board."
+Justin Hyun
+Head of Incubation
+"Security for us is extremely important, and we want to make sure we go with the best company in the space."
+Andrea Armanni
+Growth Product Manager
+"CertiK is one of the leading forces when it comes to auditing and security within all of crypto. We utilized them even back in the day when Injective Token first launched."
+Mirza Uddin
+Head of BD
+"Not only do we have great auditor, provider like CertiK, but we also go under to each of the underlying protocols, make sure we do centralization and privilege control checks. We have strict security standards that all of our partner protocols have to abide by."
+WESO
+Head of Strategic Partnership
+"The gatekeeper function is very important, that we know this piece of software has been audited, has a minimum level of security, and also for the users it's very important, because this way they can trust a certain project. CertiK plays a very important role here as an auditing company."
+Alex Wilke
+Co-founder
+"Smart contracts are immutable and often are responsible for large amounts of money, which makes planning for security ahead of time more important than anything else."
+Tanner Moore
+Software Engineer
+"We've been working with CertiK since 2018. CertiK has always prioritized talent, they have the best security talent in the space. CertiK has grown to become one of the most professional and most capable auditing firms in Web3."
+Steve Ngok
+Partner & BD Director
+"You are the leaders in the security space. All your founders are from top research institutions… We can totally rely on CertiK in terms of security."
+Gracy Chen
+CEO
+"It's important that we have a culture of building really strong software that is well-audited, well-reviewed, and that's only going to make the space safer. Lack of security is an impediment to growing the ecosystem. So we love what CertiK is doing to ensure that the space is safe, and more importantly keeping user funds safe and secure."
+Adeniyi Abiodun
+Co-Founder and CPO
+"Security is incredibly important right for the ecosystem. For me, CertiK helps ensure the security in the long term of the application code to make sure that we can continue building trust around the industry."
+Sergey Gorbunov
+Co-founder
+"We don't want to preach security, we want to show everyone that we are secure. That's why we did our two audits with CertiK, and why we enabled Skynet too. So everyone can do their own research, it's all out there. "
+Aishwary Gupta
+DeFi Chief of Staff
+"CertiK is the leading security firm in the crypto industry"
+Ben
+Head of Asia
+"Security is extremely important, not just a project’s smart contract security, but its Web2 infrastructure security too, its backend, its frontend – all of these are attack vectors that projects have to be careful about."
+Jay Lin
+Director of Partnerships
+"CertiK was actually one of the original smart contract auditors. CertiK is great. We've had nothing but good experiences with them. They were fast, they were easy, they got the job done, and we've never had any complaints. So it's been an all around good experience."
+Erik Ashdown
+Head of Ecosystem
+"We were impressed with the suite of products offered by CertiK, which ranged from full-scope auditing, to security dashboards, and ongoing white hat support. CertiK saw the vision of what TON blockchain could be and wanted to develop that relationship early on, and to really think of different ways to add value across the board."
+Justin Hyun
+Head of Incubation
+"Security for us is extremely important, and we want to make sure we go with the best company in the space."
+Andrea Armanni
+Growth Product Manager
+"CertiK is one of the leading forces when it comes to auditing and security within all of crypto. We utilized them even back in the day when Injective Token first launched."
+Mirza Uddin
+Head of BD
+"Not only do we have great auditor, provider like CertiK, but we also go under to each of the underlying protocols, make sure we do centralization and privilege control checks. We have strict security standards that all of our partner protocols have to abide by."
+WESO
+Head of Strategic Partnership
+"The gatekeeper function is very important, that we know this piece of software has been audited, has a minimum level of security, and also for the users it's very important, because this way they can trust a certain project. CertiK plays a very important role here as an auditing company."
+Alex Wilke
+Co-founder
+"Smart contracts are immutable and often are responsible for large amounts of money, which makes planning for security ahead of time more important than anything else."
+Tanner Moore
+Software Engineer
+"We've been working with CertiK since 2018. CertiK has always prioritized talent, they have the best security talent in the space. CertiK has grown to become one of the most professional and most capable auditing firms in Web3."
+Steve Ngok
+Partner & BD Director
+"You are the leaders in the security space. All your founders are from top research institutions… We can totally rely on CertiK in terms of security."
+Gracy Chen
+CEO
+"It's important that we have a culture of building really strong software that is well-audited, well-reviewed, and that's only going to make the space safer. Lack of security is an impediment to growing the ecosystem. So we love what CertiK is doing to ensure that the space is safe, and more importantly keeping user funds safe and secure."
+Adeniyi Abiodun
+Co-Founder and CPO
+"Security is incredibly important right for the ecosystem. For me, CertiK helps ensure the security in the long term of the application code to make sure that we can continue building trust around the industry."
+Sergey Gorbunov
+Co-founder
+"We don't want to preach security, we want to show everyone that we are secure. That's why we did our two audits with CertiK, and why we enabled Skynet too. So everyone can do their own research, it's all out there. "
+Aishwary Gupta
+DeFi Chief of Staff
+"CertiK is the leading security firm in the crypto industry"
+Ben
+Head of Asia
+"Security is extremely important, not just a project’s smart contract security, but its Web2 infrastructure security too, its backend, its frontend – all of these are attack vectors that projects have to be careful about."
+Jay Lin
+Director of Partnerships
+"It's important that we have a culture of building really strong software that is well-audited, well-reviewed, and that's only going to make the space safer. Lack of security is an impediment to growing the ecosystem. So we love what CertiK is doing to ensure that the space is safe, and more importantly keeping user funds safe and secure."
+Adeniyi Abiodun
+Co-Founder and CPO
+"Security is incredibly important right for the ecosystem. For me, CertiK helps ensure the security in the long term of the application code to make sure that we can continue building trust around the industry."
+Sergey Gorbunov
+Co-founder
+"We don't want to preach security, we want to show everyone that we are secure. That's why we did our two audits with CertiK, and why we enabled Skynet too. So everyone can do their own research, it's all out there. "
+Aishwary Gupta
+DeFi Chief of Staff
+"CertiK is the leading security firm in the crypto industry"
+Ben
+Head of Asia
+"Security is extremely important, not just a project’s smart contract security, but its Web2 infrastructure security too, its backend, its frontend – all of these are attack vectors that projects have to be careful about."
+Jay Lin
+Director of Partnerships
+"CertiK was actually one of the original smart contract auditors. CertiK is great. We've had nothing but good experiences with them. They were fast, they were easy, they got the job done, and we've never had any complaints. So it's been an all around good experience."
+Erik Ashdown
+Head of Ecosystem
+"We were impressed with the suite of products offered by CertiK, which ranged from full-scope auditing, to security dashboards, and ongoing white hat support. CertiK saw the vision of what TON blockchain could be and wanted to develop that relationship early on, and to really think of different ways to add value across the board."
+Justin Hyun
+Head of Incubation
+"Security for us is extremely important, and we want to make sure we go with the best company in the space."
+Andrea Armanni
+Growth Product Manager
+"CertiK is one of the leading forces when it comes to auditing and security within all of crypto. We utilized them even back in the day when Injective Token first launched."
+Mirza Uddin
+Head of BD
+"CertiK was actually one of the original smart contract auditors. CertiK is great. We've had nothing but good experiences with them. They were fast, they were easy, they got the job done, and we've never had any complaints. So it's been an all around good experience."
+Erik Ashdown
+Head of Ecosystem
+"We were impressed with the suite of products offered by CertiK, which ranged from full-scope auditing, to security dashboards, and ongoing white hat support. CertiK saw the vision of what TON blockchain could be and wanted to develop that relationship early on, and to really think of different ways to add value across the board."
+Justin Hyun
+Head of Incubation
+"Security for us is extremely important, and we want to make sure we go with the best company in the space."
+Andrea Armanni
+Growth Product Manager
+"CertiK is one of the leading forces when it comes to auditing and security within all of crypto. We utilized them even back in the day when Injective Token first launched."
+Mirza Uddin
+Head of BD
+"Not only do we have great auditor, provider like CertiK, but we also go under to each of the underlying protocols, make sure we do centralization and privilege control checks. We have strict security standards that all of our partner protocols have to abide by."
+WESO
+Head of Strategic Partnership
+"The gatekeeper function is very important, that we know this piece of software has been audited, has a minimum level of security, and also for the users it's very important, because this way they can trust a certain project. CertiK plays a very important role here as an auditing company."
+Alex Wilke
+Co-founder
+"Smart contracts are immutable and often are responsible for large amounts of money, which makes planning for security ahead of time more important than anything else."
+Tanner Moore
+Software Engineer
+"We've been working with CertiK since 2018. CertiK has always prioritized talent, they have the best security talent in the space. CertiK has grown to become one of the most professional and most capable auditing firms in Web3."
+Steve Ngok
+Partner & BD Director
+"You are the leaders in the security space. All your founders are from top research institutions… We can totally rely on CertiK in terms of security."
+Gracy Chen
+CEO
+"Not only do we have great auditor, provider like CertiK, but we also go under to each of the underlying protocols, make sure we do centralization and privilege control checks. We have strict security standards that all of our partner protocols have to abide by."
+WESO
+Head of Strategic Partnership
+"The gatekeeper function is very important, that we know this piece of software has been audited, has a minimum level of security, and also for the users it's very important, because this way they can trust a certain project. CertiK plays a very important role here as an auditing company."
+Alex Wilke
+Co-founder
+"Smart contracts are immutable and often are responsible for large amounts of money, which makes planning for security ahead of time more important than anything else."
+Tanner Moore
+Software Engineer
+"We've been working with CertiK since 2018. CertiK has always prioritized talent, they have the best security talent in the space. CertiK has grown to become one of the most professional and most capable auditing firms in Web3."
+Steve Ngok
+Partner & BD Director
+"You are the leaders in the security space. All your founders are from top research institutions… We can totally rely on CertiK in terms of security."
+Gracy Chen
+CEO

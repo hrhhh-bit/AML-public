@@ -3,12 +3,13 @@
 ``scripts/smoke_deepseek.py`` 需要真实 LLM 凭据；本测试以确定性脚本化 LLM
 替代真实端点（其余部分——Whale 场景、PlannerAgent 决策闭环、双轨检索前置
 注入——与冒烟脚本逐行一致），验证稠密检索的前置注入行为在决策闭环中完全
-自洽：
+自洽。对运行环境自适应：
 
-1. Dense 模式下轨迹成功收敛，且每一步都注入非空 RAG 先验；
-2. 注入的提示词包含先验上下文块（压缩器输出）；
-3. Dense（本环境降级为离散哈希引擎）与 Discrete 双模式决策闭环逐步骤一致；
-4. Provider 后端标识可被如实报告（实验审计需要）。
+- 已安装 sentence-transformers：使用真实预训练模型（module 级共享加载）；
+- 未安装：Dense Provider 降级为离散哈希引擎并发出一次性降级告警。
+
+两种环境下轨迹均须成功收敛、每步注入非空 RAG 先验；另以强制降级模式
+断言 Dense/Discrete 双模式决策闭环逐步骤一致。
 """
 
 from __future__ import annotations
@@ -32,6 +33,7 @@ from aml_rag import (  # noqa: E402
     DiscreteEmbeddingProvider,
     DualTrackMotifRetriever,
     build_default_knowledge_base,
+    is_sentence_transformers_available,
 )
 from aml_rag.schema import NodeRole, OperationType  # noqa: E402
 
@@ -56,6 +58,13 @@ def _smoke_spec() -> ScenarioSpec:
     )
 
 
+@pytest.fixture(scope="module")
+def dense_provider() -> tuple[DenseEmbeddingProvider, bool]:
+    """One shared provider (real model loaded once); returns (provider, degraded)."""
+    provider = DenseEmbeddingProvider()
+    return provider, provider.degraded
+
+
 def _run_loop(embedder, *, top_k: int = 3):
     env = BehavioralEnvironment()
     retriever = DualTrackMotifRetriever(
@@ -67,9 +76,14 @@ def _run_loop(embedder, *, top_k: int = 3):
 
 
 class TestDenseSmokeLoop:
-    def test_dense_decision_loop_succeeds_and_injects_priors(self) -> None:
-        dense = DenseEmbeddingProvider()
-        with pytest.warns(RuntimeWarning, match="degraded"):
+    def test_dense_decision_loop_succeeds_and_injects_priors(
+        self, dense_provider
+    ) -> None:
+        dense, degraded = dense_provider
+        if degraded:
+            with pytest.warns(RuntimeWarning, match="degraded"):
+                traj, llm, retriever = _run_loop(dense)
+        else:
             traj, llm, retriever = _run_loop(dense)
 
         assert traj.success is True, traj.unmet_goals
@@ -86,10 +100,17 @@ class TestDenseSmokeLoop:
             "sentence_transformers:all-MiniLM-L6-v2",
         }
 
-    def test_dense_and_discrete_loops_are_stepwise_identical(self) -> None:
-        dense = DenseEmbeddingProvider()
+    def test_dense_and_discrete_loops_are_stepwise_identical(
+        self, monkeypatch
+    ) -> None:
+        # 强制降级路径：dense 与 discrete 向量代数一致，决策闭环必须逐步一致
+        import aml_rag.embedding as emb_mod
+
+        monkeypatch.setattr(
+            emb_mod, "is_sentence_transformers_available", lambda: False
+        )
         with pytest.warns(RuntimeWarning, match="degraded"):
-            traj_dense, _, _ = _run_loop(dense)
+            traj_dense, _, _ = _run_loop(DenseEmbeddingProvider())
         traj_disc, _, _ = _run_loop(DiscreteEmbeddingProvider())
 
         def _ops(traj):
@@ -104,10 +125,21 @@ class TestDenseSmokeLoop:
         ]
         assert traj_dense.success == traj_disc.success is True
 
-    def test_prior_prompts_reference_retrieved_motifs(self) -> None:
-        dense = DenseEmbeddingProvider()
-        with pytest.warns(RuntimeWarning, match="degraded"):
+    def test_prior_prompts_reference_retrieved_motifs(self, dense_provider) -> None:
+        dense, degraded = dense_provider
+        if degraded:
+            with pytest.warns(RuntimeWarning, match="degraded"):
+                traj, llm, _ = _run_loop(dense)
+        else:
             traj, llm, _ = _run_loop(dense)
+        # 压缩器可能丢弃被支配子路径，但排名第一的注入先验必被保留
         for step, prompt in zip(traj.steps, llm.prompts):
-            for motif_id in step.prior_motif_ids:
-                assert motif_id in prompt
+            assert step.prior_motif_ids, "prior must be non-empty"
+            assert step.prior_motif_ids[0] in prompt
+
+    def test_real_model_path_reported_when_available(self, dense_provider) -> None:
+        dense, _ = dense_provider
+        if is_sentence_transformers_available():
+            assert dense.backend.startswith("sentence_transformers:")
+        else:
+            assert dense.backend == "hash_fallback"

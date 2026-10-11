@@ -1,0 +1,26 @@
+Incident Summary
+On 30 January 2026, Gyroscope announced via their X account that they had paused liquidity pools due to an issue with their cross-chain contract. The issue led to losses of 6M Gyro Dollar (GYD) tokens with approximately $807k of liquidity extracted by the attacker. The issue was due to a an arbitrary input vulnerability in Gyroscopes bridge contract which allowed an attacker to grant themselves unlimited approval for GYD tokens on Ethereum. With unlimited approval the attacker used transferFrom() to obtain 6M GYD tokens.
+Gyroscope has since offered the attacker a 33% white hat bounty, over three times larger than the widely offered 10% bounty.
+Attack Flow
+Addresses:
+Exploiter:
+- 0x7DD4075A6eAe9f18309F112364f0394C2DfA8102
+Gyroscope:
+- 0xe07F9D810a48ab5c3c914BA3cA53AF14E4491e8A
+Step by Step Event Flow:
+Jan-30-2026 08:07:51 PM - Txn
+- An attacker bridged 1 wei GYD from Arbitrum to Ethereum with the recipient address set to the GYD token contract and passed the following call data:
+Jan-30-2026 08:27:59 PM - Txn
+- The 1 wei GYD was received on Ethereum but the attacker received unlimited approval for GYD that was not revoked at any point.
+Jan-30-2026 08:40:59 PM - Txn
+- The attacker used their approval to withdraw 6,099,337.37 GYD tokens.
+Vulnerability
+The primary cause of the incident is due to arbitrary input when calling the BridgeToken() from contract 0xCA5. The function took 4 arguments:
+- Destination chain
+- Recipient
+- Amount
+- Call data
+The attacker bridged 1 wei Gyro Dollar to the Gyro Dollar token address instead of a user address, which was necessary to execute the exploit, while they also passed in call data which was executed after the bridge procedure. On the receiving end the bridging process completed as normal, however, in the _ccipReceive() function (which handles the transfer) then checked if data.length was greater than zero. recipient.functionCall(data) then executed the call data passed by the attacker. As seen in the step by step process: The call data passed triggered the approve() function on the recipient address, which the attacker had earlier specified was the Gyro Dollar token address, and gave unlimited token approval to 0x7dd. Restricting the recipient address and not allowing the Gyro Dollar token address could have prevented the exploit.
+Fund Flow
+Despite transferring over 6 million Gyro tokens the attacker was only able to extract approximately $807k due to the liquidity available.
+In total, the attacker deposited a total of 300.2 ETH into Tornado Cash. To keep up to date on the latest incident alerts and statistics follow @certikalert on X, or read our latest analysis on certik.com.

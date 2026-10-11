@@ -1,0 +1,21 @@
+The FSB’s latest assessment reveals worrying fragmentation in global stablecoin regulation. Uneven rules create risks and allow some to take advantage. This shows we need global standards.
+This article provides BlockSec’s analysis of the Financial Stability Board’s (FSB) Thematic Review on FSB Global Regulatory Framework for Crypto-asset Activities (October 2025), offering readers an in-depth understanding of the current global stablecoin regulatory landscape and its challenges.
+The Financial Stability Board (FSB) connects G20 countries and key financial hubs. It sets global standards for stablecoins. It gathers senior decision-makers from treasury departments, central banks, and regulatory bodies. This improves coordination.
+The FSB influences through “moral suasion and peer pressure.” When it reaches a consensus, members commit to implementing those standards nationally. This method works in traditional finance. However, it has challenges in the fast-paced stablecoin sector.
+In July 2023, the FSB launched its global stablecoin regulatory framework. This is the first time there has been a systematic standard for oversight. The peer review report from October 2025 looks at how well the framework worked after more than two years of use.
+The FSB’s latest assessment shows a troubling global stablecoin regulation picture. While some progress exists in crypto-asset regulation, stablecoin regulation lags. The current approach reflects a “few leaders, many observers” mentality.
+The report notes that “few places have set up strong, stablecoin regulations.” This stands out because the stablecoin market has grown quickly, reaching over $150 billion by August 2025.
+Even where frameworks exist, “full consistency with FSB recommendations remains limited.” Differences in regulatory scope and definitions complicate cross-border harmonization.
+The FSB report points out a major risk: uneven rules can lead to regulatory arbitrage. This makes it harder to oversee global crypto-asset markets. This is a major issue in stablecoin regulation.
+Regulatory arbitrage is common in the stablecoin sector. Issuers often engage in “regulatory shopping,” choosing jurisdictions with looser requirements. This undermines policies in regulated areas and raises systemic risks globally.
+The report warns that areas trying to be “minimally regulated crypto hubs” might “cause excessive leverage and unclear exposures, raising systemic risk.” This “race to the bottom” competition for relaxed regulation affects policy efficacy and risks triggering cross-border contagion of systemic risks.
+The FSB report talks about stablecoins from different regions. These are issued by the same or related entities. Many FSB members raised concerns about this model.
+This cross-border issuance introduces significant regulatory challenges.
+On the positive side, the FSB report shows a growing understanding of stablecoin risks. Jurisdictions are creating specialized frameworks, like MiCAR in the EU. Technical standards are also aligning for reserve asset transparency and redemption methods.
+However, the main challenge is diminishing regulatory effectiveness due to inconsistent standards. Strict jurisdictions have a “reverse selection” problem. Quality projects often shift to more lenient areas. This movement exposes local markets to higher risks. Additionally, insufficient enforcement complicates oversight.
+To address fragmentation, the FSB seeks better international standards.
+This will help stop the “fragmentation of global liquidity.” Key priorities are:
+The clear message from the FSB is that global crypto regulation is fragmented. Crypto institutions need professional compliance solutions to navigate this complexity. BlockSec, known for its global regulatory expertise, provides full compliance support via the Phalcon Compliance.
+The Phalcon Compliance provides:
+BlockSec simplifies complex demands into standard processes. This helps businesses stay compliant and focus on innovation, even with changing regulations.
+The FSB report includes several key terms that are relevant to the crypto space:

@@ -1,0 +1,35 @@
+Incident Summary
+On 20 June 2026, the JaredFromSubway MEV bot lost 4,424 ETH (~$7.5M) due to an approval hijacking flaw. The attacker deployed fake arbitrage pools and bait tokens that appeared to offer profitable trading opportunities, causing the bot’s automated strategy to interact with malicious contracts and grant token approvals.
+The core issue was that these approvals were not fully consumed or revoked after execution. As a result, the attacker was able to activate the bait contracts and use the remaining allowances to drain the bot’s WETH, USDC, and USDT reserves.Background
+Background
+Jaredfromsubway.eth is a MEV (Maximal Extractable Value) bot, meaning an automated program that monitors pending transactions on the blockchain and reorders their execution to capture a profit. Its specialty is the sandwich attack, which consists of front-running and back-running a user's transaction with two of the bot's own orders to profit from the price difference.
+When a user submits a swap on a decentralized exchange, the transaction may become visible before it is included on-chain. MEV bots monitor this flow, simulate the impact of pending trades on liquidity pools, and identify opportunities where a user’s transaction is likely to move the price of an asset.
+Key Addresses
+Attack Flow
+Preparation:
+- So to entice MEV bots, one would need set-up imbalanced pools with some real assets in it Attacker deployed several helper contracts that is used to set up such traps:
+- 0x81f248ff583d3f8592ea0354a7b8dbe66de40091 for deploying fake tokens
+- 0xb84db016324e8F2BFdD8DD9c260338AEE0A8DF52 for coordinating token status and profit extraction
+- 0xEEE172A069f5171b407eBf47e8FCFB637E944ec2 for creating fake pools
+- 0x4dE8C729A064Ff6087Cc84A4152969349e4FEb98 for conducting swaps
+- Deploying 131 fake token contracts as bait through method 0x9045f3f9() (txn) These bait contracts appear in the form of restaked WETH/USDC tokens. That you get exactly 1 such token for 1 WETH/USDC wrapTo() it, the wrapTo() method requires approvals to call but is binded by the coordinate contract.
+i) When ‘owner_a_0_19’ is not set up, wrapTo() called _safeTransferFrom() and the allowance was consumed.
+ii) After ‘owner_a_0_19’ is set up (to coordinator contract), getStatus() returns _getStatus == block.number. iii) If _getStatus is not up to blocknumber, then setStor3 is called to remind attacker that _getStatus should be reset. iv) If _getStatus is up to blocknumber and status == 1, wrapTo() skipped transferFrom — the allowance was not consumed; the amount is also updated in the coordinator to keep track of newly acquired allowances.
+- Set up fake LPs (txn), some are seeded (txn) with WETH-fCAP and some with fWETH-fCAP. Then make calibrating swaps to create imbalance.
+Exploit:
+- At block 25354425 (txn), jaredfromsubway.eth took the bait in its first interaction with SwapV2Pair_0x0e97. When assuming 1 fWETH = 1 WETH, the token balances on the two fake SwapV2Pairs present an arbitrage opportunity in swap route fWETH->fCAP->WETH:
+- SwapV2Pair_0x0e97: 0.1 fWETH, 0.1 fCAP
+- SwapV2Pair_0xc12a: 0.086034434021378528 fCAP, 0.116281374898538093 WETH The MEV bot approved and wrapped 7,391,033,126,027,264 WETH to the bait, which in turn minted the same amount to SwapV2Pair_0x0e97. It then swapped out 6,863,125,844,328,448 wei fCAP for 8,566,811,964,473,344 wei WETH. The MEV bot netted 0.002351557676892158 WETH; the approval is properly spent normally as status coordinator ‘owner_a_0_19’ hasn’t been set.
+- Wait patiently for nearly a day, as MEV builds trust for the setup. Attacker set up (txn) the ‘owner_a_0_19’ for the bait tokens to coordinator. Starting from block 25360428, the attacker calls markStatusAndTip() (txn) with some bribe to frontrun Jared and set ‘_getStatus’ to block.number. The ensuing wrapTo() (txn) during MEV arbitrage would not cost the allowance.
+- Wait for the MEV to conduct more swaps to accumulate unrevoked approvals. It didn’t take long as it seems MEV fully trusts the set-up now and grews greedy by conducting hundreds of swaps per txn, In fact the attacker only conducted a dozen ‘_getStatus’ updates / 0xb6e808af() to get the allowance it needed. Then at blockheight 25360696, activate 66 approval bait contracts (txn), 60 of which have approval of the target MEV Bot, and transfer funds to the attacker.
+Vulnerability
+The arbitrage bot approves wrapper contracts to spend its tokens for wrapTo() operations, assuming the allowance is fully consumed. However, the bot never verifies this consumption or revokes unspent allowances. If a wrapper avoids calling transferFrom, this lingering approval creates a persistent vulnerability, allowing it to drain the bot's funds.
+Fund Flow
+The attacker 0x3e37f4A10d771Ba9dE44b6d301410b1BEdeA65d0 was able to drained 2,869,812.43 USDC, 2,032,769.62 USDT, and 1,474 wETH ($2,567,708) then swapped all the stablecoins for ETH.
+The funds were then sent to these 5 addresses:
+- 0x5aF38735B215b00aa7C9f93fEd7ee415CeCB36e1
+- 0x71d4416A7A85e08a5Fe7227Ca3B44Fc639e94e97
+- 0x74Dc5b93586D248D5Aec64b3586736FF0A0D0e65
+- 0xe3Da36E4bd1a5738fa5D6Ef4F0e4dF40bDeB5f17
+- 0xd8C125efCBc99408eC8723E9BBd81d1E8D39D845 Finally, the attacker deposited 3,000 ETH into Tornado Cash and swapped 1,422 ETH for ~$2.44M in DAI, which is still in wallet 0x7B4F24a4522bc2AEE9D1686FFB7d6c9dAC514e20.
+To keep up to date on the latest incident alerts and statistics, follow @certikalert on X, or read our latest analysis on certik.com.

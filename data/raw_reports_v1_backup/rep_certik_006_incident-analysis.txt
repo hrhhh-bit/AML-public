@@ -1,0 +1,25 @@
+Research
+Liquid Network Incident Analysis
+On 6 September 2026, the Liquid Network was exploited through a vulnerability in the Elements codebase used to validate Confidential Transactions. The issue stemmed from an ambiguous cache-key encoding in the rangeproof verification cache, allowing two different validation inputs to produce the same cached entry.
+Verus Incident Analysis
+On July 23, 2026, an attacker exploited the Verus Protocol’s Ethereum cross-chain bridge, draining approximately $7.44 million in ETH, tBTC, stablecoins, and MKR. The attack relied on a discrepancy in how Verus and Ethereum interpreted notarization data: malicious duplicate state-root entries were included in otherwise legitimate notarizations, signed by Verus notaries, and then relayed to Ethereum, where they overwrote the genuine trusted state root.
+DefiTuna Incident Analysis
+On 16 July 2026, DeFiTuna was exploited for approximately $569,601 USDC on Solana. The attackers created a highly illiquid TUNA/USDC pool and used it as the destination for borrowed USDC routed through Jupiter. Because the swap returned only a negligible amount of TUNA, DeFiTuna’s value calculation rounded the position’s total assets down to zero. The protocol then incorrectly treated the position as healthy, allowing the attackers to bypass the solvency check and withdraw the USDC through attacker-controlled liquidity positions.
+JaredFromSubway MEV bot Incident Analysis
+On 20 June 2026, the JaredFromSubway MEV bot lost 4,424 ETH (~$7.5M) due to an approval hijacking flaw. The attacker deployed fake arbitrage pools and bait tokens that appeared to offer profitable trading opportunities, causing the bot’s automated strategy to interact with malicious contracts and grant token approvals.
+GnosisPay Incident Analysis
+On 01 June 2026 an attacker drained dozens of GnosisPay Safes on Gnosis Chain. The attack vector was a signature-verification flaw in the GnosisPay Delay module.
+Resolv Protocol Incident Analysis
+On 22 March 2026, the Revolv protocol was exploited, resulting in a loss of ~$26.8M due to a compromise of the project's cloud infrastructure which gave access to Resolv’s AWS Key Management Service (KMS).
+Movie Token Incident Analysis
+On 10 March 2026, the Movie Token (MT) contract was exploited for approximately $242,000 due to a critical flaw in its 'sell' logic. The vulnerability stemmed from a double-counting error: when a user sold MT tokens, the contract simultaneously transferred them to the liquidity pair for the swap and added that same balance to a pendingBurnAmount variable. When distributeDailyRewards() subsequently burned those pending tokens, it created an artificial supply shock, inflating the MT price and allowing the attacker to drain value from the pool.
+SOF/LAXO Incident Analysis
+In February 2026 two separate exploits occurred on the BNB Smart Chain (BSC), affecting SOF and LAXO tokens, leveraging the same class of vulnerability: a flawed token burn mechanism that allowed price manipulation within a single transaction.
+Gyroscope Incident Analysis
+On 30 January 2026, Gyroscope announced via their X account that they had paused liquidity pools due to an issue with their cross-chain contract. The issue led to losses of 6M Gyro Dollar (GYD) tokens with approximately $807k of liquidity extracted by the attacker.
+Makina Incident Analysis
+On 20 January 2026, DeFi protocol MakinaFi suffered an exploit resulting in the theft of 1,299 ETH, valued at approximately $4.13 million.
+Truebit Incident Analysis
+On 08 January 2026 Truebit was exploited for ~$26.6M due to an overflow issue. A malicious actor minted tokens for zero ETH that they then sold for ~$26.4M in the same transaction. The exploit was followed up by a second attacker who was able to extract a further ~$224k.
+Balancer Incident Analysis
+On 3 November 2025, Balancer and its forks Beets and Bex were exploited, resulting in a combined initial loss of approximately $130M.

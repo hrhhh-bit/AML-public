@@ -1,0 +1,436 @@
+For much of TON's history, production smart contracts have been written in FunC. The language gives developers direct control over cells, slices, message bodies, and storage layouts. That control made it possible to build efficient protocols early in the ecosystem, while leaving teams responsible for a large amount of low-level bookkeeping.
+Field order, integer width, parsing position, message flags, and mutation behavior often exist as conventions spread across loaders, builders, and entrypoints. A mistake in one of those conventions can change who owns an asset, how much a contract records, or whether a failed transfer is processed twice.
+Tolk was developed to move more of that knowledge into code the compiler can understand: named structures, precise types, automatic serialization, typed messages, explicit mutation, and dedicated entrypoints. The result is not a different TON execution model. It is a safer and more maintainable way to express the same contract model.
+This article compares FunC and Tolk through practical examples. It then examines the security boundaries introduced by Tolk features such as `lazy`, unions, nullable values, and `BounceMode`, before outlining the authorization, replay, asynchronous-state, accounting, and governance risks that remain part of a full audit.
+The code blocks are focused fragments rather than complete deployable contracts. Surrounding type declarations, helper implementations, error constants, and imports are omitted unless they are relevant to the point being discussed.
+A few TON and Tolk terms recur throughout. For readers new to them:
+- Cell: TON's tree-based data container for contract state and messages.
+- Slice: a read cursor over cell data; each load operation advances the cursor.
+- Builder: the object used to serialize values into a new cell.
+- Automatic serialization: Tolk-generated encoding and decoding derived from a declared type.
+- Lazy loading: deferred parsing in which fields are loaded only when the current path accesses them.
+- Bounced message: a failed internal message returned to its sender so the sender can recover or reconcile the state.
+Background: Why TON Needed Tolk
+TON smart contract data is organized into cells, read through slices, written through builders, and exchanged through asynchronous messages. The model is efficient and flexible, with contract development operating much closer to low-level binary layout than conventional application development.
+FunC gives developers extensive control. That control comes with a long list of details to manage manually: field order, integer widths, tensor positions, message opcodes, bounce flags, parsing cursors, and modifying-method semantics. In a small contract, these concerns may appear to be readability issues. Once a contract manages real assets, evolves through multiple upgrades, and is maintained by a larger team, the same issues become security risks.
+Tolk keeps TON's cell model and asynchronous message architecture intact while providing a modern, strongly typed, and more auditable interface for working with them.
+Key Differences Between FunC and Tolk
+How Tolk Addresses FunC's Common Failure Modes
+Named struct Types Replace Unnamed Tensors and Positional Guesswork
+FunC predates modern struct types, so a storage loader commonly returns an unnamed tensor of positional values:
+(slice, int, int) load_data() inline {
+slice ds = get_data().begin_parse();
+slice owner = ds~load_msg_addr();
+int balance = ds~load_coins();
+int paused = ds~load_uint(1);
+return (owner, balance, paused);
+}
+Every caller must remember the exact order of the three return values. An owner and a recipient may both be slices; a balance, fee, and timestamp may all be integers. If two variables are swapped, the compiler may have no way to recognize that their business meanings are now incorrect.
+Tolk can model storage as a named structure:
+struct Storage {
+ownerAddress: address
+balance: coins
+isPaused: bool
+}
+fun Storage.load() {
+return Storage.fromCell(contract.getData())
+}
+fun Storage.save(self) {
+contract.setData(self.toCell())
+}
+The contract now refers to `storage.ownerAddress` and `storage.balance` rather than positional return values. Field names and types become visible to the compiler, IDE, test suite, and auditor.
+Field order remains part of the serialized layout of a `struct`. During a FunC-to-Tolk migration, the new schema must parse historical on-chain state bit for bit.
+Automatic Serialization Reduces Reader/Writer Mismatches
+A classic FunC failure mode is a mismatch between the write path and one of the read paths:
+;; query_id is written as 64 bits
+b = b.store_uint(query_id, 64);
+b = b.store_coins(amount);
+;; another path incorrectly reads only 32 bits
+int query_id = s~load_uint(32);
+int amount = s~load_coins();
+The impact is not limited to truncating `query_id`. The parsing cursor stops at the wrong position, so every following amount, address, or reference may also be decoded incorrectly.
+Tolk allows the message layout to be declared once:
+struct (0x71f2b8aa) Withdraw {
+queryId: uint64
+amount: coins
+recipient: address
+}
+`Withdraw.fromSlice(...)`, `.toCell()`, and typed message bodies all use the same schema. This removes much of the duplicated bit-level logic that would otherwise be maintained across multiple functions.
+Deriving serialization and deserialization from the same schema substantially reduces the risk that the two paths will diverge. Protocol design remains the developer's responsibility, including the width of `queryId` and whether each field is stored inline or in a reference.
+Lazy Loading Avoids Parsing Unused Data
+Selective reads are possible in FunC. In practice, many projects reuse a full `load_data()` function, causing a balance-only getter to parse the owner, configuration, and additional references as well:
+(slice, int, cell) load_data() inline {
+slice ds = get_data().begin_parse();
+slice owner = ds~load_msg_addr();
+int balance = ds~load_coins();
+cell config = ds~load_ref();
+return (owner, balance, config);
+}
+int get_balance() method_id {
+(slice owner, int balance, cell config) = load_data();
+return balance;
+}
+A separate balance-only loader would avoid the extra reads at the cost of duplicating field-order knowledge. That duplication increases the chance of parsing logic drifting as the storage layout changes.
+Tolk supports lazy loading over the same typed storage schema:
+get fun currentBalance(): coins {
+val storage = lazy Storage.load();
+return storage.balance;
+}
+The contract continues to use the shared `Storage` schema, with parsing deferred until a field is accessed. The same mechanism applies to message dispatch:
+fun onInternalMessage(in: InMessage) {
+val msg = lazy AllowedMessage.fromSlice(in.body);
+match (msg) {
+Deposit => {
+handleDeposit(in, msg);
+}
+Withdraw => {
+handleWithdraw(in, msg);
+}
+Pause => {
+handlePause(in, msg);
+}
+else => {
+assert (in.body.isEmpty()) throw 0xFFFF;
+}
+}
+}
+Lazy loading offers two main benefits:
+- It avoids the cost of parsing fields that the current path does not use.
+- It avoids maintaining multiple handwritten loaders for the same layout.
+Lazy loading optimizes data access while leaving full-input validation to the contract. Fields that are never accessed may never be fully parsed. Security-critical fields must therefore be read explicitly before authorization decisions, asset transfers, or state commits. Section 3 examines this boundary in detail.
+bool, Fixed-Width Integers, and Address Types Make Intent Explicit
+In FunC, booleans are represented as integers, while amounts, timestamps, flags, and opcodes frequently share the broad `int` type. This flexibility allows many invalid combinations to survive until runtime.
+Tolk offers more precise types:
+struct TransferRequest {
+queryId: uint64
+amount: coins
+validUntil: uint32
+recipient: address
+notifyReceiver: bool
+}
+An auditor can immediately see that:
+- `amount` represents coins rather than an arbitrary integer;
+- `validUntil` is a fixed-width timestamp field;
+- `recipient` must be an internal address;
+- `notifyReceiver` is a boolean rather than an integer convention such as 0, 1, or -1.
+The stronger types make intent visible and catch many category errors at the data boundary. Economic validity belongs to the business logic: values of type `coins` require explicit checks for zero amounts, available balances, upper bounds, and rounding behavior.
+Explicit mutate Clarifies State Changes
+FunC uses `~` for modifying method calls and `.` for non-modifying calls. Functions that rely on side effects must also be declared correctly as `impure`. Choosing the wrong call form may leave a developer believing a value was updated when it was not, while an incorrect purity declaration can cause security checks or fee calculations to behave differently from what the code suggests.
+Tolk uses a consistent method syntax and makes mutation explicit:
+fun debit(mutate storage: Storage, amount: coins) {
+assert (amount > 0) throw ERR_ZERO_AMOUNT;
+assert (storage.balance >= amount) throw ERR_INSUFFICIENT_BALANCE;
+storage.balance -= amount;
+}
+debit(mutate storage, msg.amount);
+storage.save();
+Both the function definition and the call site show that `storage` will be modified. This makes refactoring and code review substantially clearer.
+`mutate` makes the state change explicit. Correct timing remains a state-machine concern: an asynchronous flow must define when funds are debited, when an operation becomes pending, and how a bounce restores state.
+Unions and match Make the Message Protocol Visible
+FunC contracts commonly parse opcodes manually:
+int op = in_msg_body~load_uint(32);
+if (op == op::deposit()) {
+;; parse deposit
+} elseif (op == op::withdraw()) {
+;; parse withdraw
+} else {
+;; unknown message
+}
+As the message surface grows, opcodes, parsing logic, and permission checks tend to become scattered across multiple branches.
+Tolk can define an explicit family of messages:
+struct (0x47d54391) Deposit {
+queryId: uint64
+amount: coins
+}
+struct (0x71f2b8aa) Withdraw {
+queryId: uint64
+amount: coins
+recipient: address
+}
+struct (0x51506175) Pause {
+queryId: uint64
+}
+type AllowedMessage = Deposit | Withdraw | Pause
+The entrypoint then dispatches through `match`:
+fun onInternalMessage(in: InMessage) {
+val msg = lazy AllowedMessage.fromSlice(in.body);
+match (msg) {
+Deposit => {
+handleDeposit(in, msg);
+}
+Withdraw => {
+handleWithdraw(in, msg);
+}
+Pause => {
+handlePause(in, msg);
+}
+else => {
+// Only an empty body is accepted as a plain balance top-up.
+assert (in.body.isEmpty()) throw 0xFFFF;
+}
+}
+}
+The set of valid messages, handling branches, and unknown-message policy are now visible in one place. Authorization remains branch-specific; membership in the same union says nothing about which role may invoke each message.
+A Dedicated Bounce Entrypoint Reduces Misclassification
+FunC contracts typically inspect message flags manually to determine whether an incoming message has bounced. If this check is omitted, a bounced transfer may enter ordinary deposit or transfer logic.
+Tolk separates ordinary internal messages from bounced messages:
+fun onInternalMessage(in: InMessage) {
+// Normal business messages
+}
+fun onBouncedMessage(in: InMessageBounced) {
+// Failure recovery
+}
+This separation reduces the chance of treating a bounce as a new request. Recovery itself remains contract logic: the implementation must define which state is restored, prevent duplicate recovery, and handle unrecognized bounced messages.
+createMessage() Reduces Errors in Handwritten Message Headers
+Tolk provides a structured API for constructing outbound messages:
+val out = createMessage({
+bounce: BounceMode.Only256BitsOfBody,
+dest: msg.recipient,
+value: msg.amount,
+body: Payout {
+queryId: msg.queryId,
+amount: msg.amount,
+recipient: msg.recipient,
+}
+});
+out.send(SEND_MODE_PAY_FEES_SEPARATELY);
+The destination, value, bounce policy, and typed body are no longer hidden in a sequence of low-level bit operations. The remaining design choices—`BounceMode`, send mode, and fee source—are explicit and should be reviewed as part of the message flow.
+Security Boundaries Introduced by Tolk Features
+lazy Optimizes Parsing; Validation Is Separate
+Tolk can parse an object lazily:
+val request = lazy SignedRequest.fromSlice(inMsg);
+The compiler loads only the data needed for accessed fields and may skip unused fixed-width fields. Some variable-width values still have to be loaded while the compiler advances through a slice. The risk is that a developer may interpret “a lazy object was created” as “the entire input passed schema validation.”
+fun onExternalMessage(inMsg: slice) {
+val request = lazy SignedRequest.fromSlice(inMsg);
+// Dangerous: seqno is checked while validUntil remains unread and unvalidated.
+assert (request.seqno == Storage.load().seqno) throw ERR_BAD_SEQNO;
+acceptExternalMessage();
+executeSignedAction(request.action);
+}
+Every security-critical field should be read explicitly before accepting an external message, changing state, committing, or sending assets:
+fun onExternalMessage(inMsg: slice) {
+val request = lazy SignedRequest.fromSlice(inMsg);
+var storage = lazy Storage.load();
+assert (request.validUntil > blockchain.now()) throw ERR_EXPIRED;
+assert (request.seqno == storage.seqno) throw ERR_BAD_SEQNO;
+assert (checkSignature(request)) throw ERR_BAD_SIGNATURE;
+acceptExternalMessage();
+storage.seqno += 1;
+storage.save();
+executeSignedAction(request.action);
+}
+In this version, the `seqno` update remains transactional: if `executeSignedAction()` throws before successful completion, the storage update rolls back and the request can be retried.
+If a protocol requires a unique, fully canonical encoding, a critical entrypoint should use eager parsing or explicitly validate every field and any remaining data.
+A Permissive Lazy-Union else Can Accept Unknown Input
+type AdminMessage = Pause | Resume | Upgrade
+fun onInternalMessage(in: InMessage) {
+val msg = lazy AdminMessage.fromSlice(in.body);
+match (msg) {
+Pause => {
+handlePause(in, msg);
+}
+Resume => {
+handleResume(in, msg);
+}
+Upgrade => {
+handleUpgrade(in, msg);
+}
+else => {
+// Dangerous: unknown bodies and bodies too short to match a prefix are silently accepted.
+}
+}
+}
+Even with lazy matching, Tolk requires every known union member to have an explicit branch. The `else` branch cannot stand in for `Upgrade`, and adding another type to `AdminMessage` makes the compiler require another branch.
+For a lazily parsed union, `else` serves a different purpose: it handles a body whose prefix matches none of the declared members. This includes an unknown opcode and a body too short to identify a prefix, such as an empty body. A known opcode followed by a truncated payload is different: Tolk selects the known branch, and missing fields fail only when that branch attempts to read them. That field-level validation boundary is covered in Section 3.1.
+The security question is therefore whether the unknown-message policy rejects, ignores, or accidentally accepts unmatched input. Keep that policy explicit and narrow:
+fun onInternalMessage(in: InMessage) {
+val msg = lazy AdminMessage.fromSlice(in.body);
+match (msg) {
+Pause => {
+handlePause(in, msg);
+}
+Resume => {
+handleResume(in, msg);
+}
+Upgrade => {
+handleUpgrade(in, msg);
+}
+else => {
+// Accept an empty body only as a plain balance top-up.
+assert (in.body.isEmpty()) throw 0xFFFF;
+}
+}
+}
+If the contract has no reason to accept empty top-ups, the `else` branch should reject every unmatched body instead.
+Forced Unwrapping with ! Defeats Nullable Safety
+struct Storage {
+adminAddress: address?
+}
+// Dangerous: `!` suppresses the compiler's null check. Using null as an address
+// can later trigger a runtime type error.
+assert (in.senderAddress == storage.adminAddress!) throw ERR_NOT_ADMIN;
+Handle the business meaning of `null` before using the value:
+assert (storage.adminAddress != null) throw ERR_ADMIN_DISABLED;
+assert (in.senderAddress == storage.adminAddress) throw ERR_NOT_ADMIN;
+Auditors should review every `!`. Some protocols intentionally use `adminAddress = null` to represent permanent renunciation of administrative control. Such an irreversible state requires explicit errors and dedicated tests rather than relying on an asserted value to fail only when it is used later.
+as Casts on Untrusted Data Can Create a False Sense of Type Safety
+`as` is appropriate for narrowing a value after its range has been validated. It should not be used to bypass input validation:
+// Dangerous: rawStatus may not represent a valid enum member.
+val rawStatus = body.loadUint(8);
+val status = rawStatus as Status;
+Prefer typed enum deserialization, or validate the exact set of permitted members before casting:
+val rawStatus = body.loadUint(8);
+assert (
+rawStatus == (Status.Pending as int) ||
+rawStatus == (Status.Active as int) ||
+rawStatus == (Status.Closed as int)
+) throw ERR_BAD_STATUS;
+val status = rawStatus as Status;
+For addresses, messages, and storage, prefer typed interfaces such as `address`, `fromSlice()`, `fromCell()`, and `loadAny<T>()`.
+address, address?, and any_address Are Not Interchangeable
+If a protocol accepts only ordinary internal addresses, use `address`:
+struct Withdraw {
+recipient: address
+}
+Use `address?` or `any_address` only when the protocol intentionally accepts an absent address or a broader address encoding. An unnecessarily broad type expands the accepted input space and allows values that should have failed during parsing to enter business logic.
+An `address` value establishes a valid encoding, not a trusted identity. A Jetton notification must verify that its sender is the expected wallet derived from the master, owner, and wallet code.
+Disabling Full-Consumption Checks Requires a Protocol Reason
+Automatic deserialization checks by default that the declared schema fully consumes its input. The following configuration silently permits trailing data:
+// Dangerous unless the protocol explicitly permits a trailing payload.
+val config = Config.fromCell(configCell, {
+assertEndAfterReading: false,
+});
+If a protocol includes a remainder payload, model it explicitly:
+struct ForwardRequest {
+queryId: uint64
+amount: coins
+payload: RemainingBitsAndRefs
+}
+An explicit remainder is easier to test and audit than silently ignored trailing data.
+BounceMode and Field Order Determine What Can Be Recovered
+With `Only256BitsOfBody`, a bounced message contains only a limited prefix of the original body. Fields required for recovery must appear early:
+// A field order better suited to bounce recovery.
+struct (0x0f8a7ea6) Payout {
+queryId: uint64
+amount: coins
+recipient: address
+}
+If a large address field appears before the amount, the amount may not fit into the recoverable prefix. Some protocols may instead choose a rich bounce mode, which brings different cost, compatibility, and recipient-behavior considerations.
+This check concerns whether the Tolk message schema matches its bounce configuration. The separate question of how balances are restored and how duplicate or out-of-order results are handled belongs to asynchronous state-machine design, discussed in Section 4.
+Typed Map Lookups Return Result Objects
+Tolk maps return a lookup result object:
+val result = storage.pending.get(queryId);
+if (result.isFound) {
+val pending = result.loadValue();
+processPending(pending);
+}
+Do not treat `map.get()` as returning `value?` and check it against `null`. This language-specific check verifies correct use of Tolk's lookup API. Collection size, batch limits, and long-term state growth are broader resource-management concerns that should be reviewed separately during a full protocol audit.
+commitContractDataAndActions() Changes the Failure Boundary
+`commitContractDataAndActions()` commits the current contract data and actions early. If it is called before authorization, signature, amount, and state-invariant checks are complete, a later exception may leave part of the operation committed:
+// Dangerous: security validation is not complete.
+storage.seqno += 1;
+storage.save();
+commitContractDataAndActions();
+assert (request.amount <= storage.limit) throw ERR_LIMIT;
+The safer principle is to complete every security check that does not require an early commit first, then define the commit boundary for replay state and actions deliberately. Every exception path after the commit must have a documented outcome.
+Beyond the Language: What a Full Tolk Audit Still Needs to Cover
+Authorization Boundaries and Authentic Message Sources
+Types establish the shape of a message, not the authority of its sender. Every branch that changes state, transfers assets, or modifies code must independently validate the actual sender:
+ChangeAdmin => {
+assert (in.senderAddress == storage.adminAddress) throw ERR_NOT_ADMIN;
+storage.adminAddress = msg.newAdminAddress;
+storage.save();
+}
+TransferNotification => {
+// A valid opcode and body establish message shape, not wallet identity.
+assert (in.senderAddress == storage.acceptedJettonWallet) throw ERR_FAKE_JETTON_WALLET;
+creditDeposit(msg.senderAddress, msg.amount);
+}
+The first branch protects a privileged state transition by checking the actual message sender before updating storage. The second prevents fake deposit notifications: constructing a valid `TransferNotification` body is not enough to receive credit—the message must come from the Jetton wallet trusted by the contract.
+An audit should map the authority of every admin, operator, minter, oracle, treasury, and upgrade role. For Jettons, NFTs, and factory-deployed child contracts, the sender must be verified as a genuine contract derived from—or registered by—a trusted master, code cell, and owner. Identity fields supplied inside the message body are not sufficient.
+External-Message Replay Protection and Signature Domains
+External messages originate off-chain. A signature authenticates a request; expiration, a nonce or sequence number, and explicit domain separation establish where and when that request may be executed:
+The following is a simplified consume-once implementation pattern: it validates the expiration, expected sequence number, and domain-separated signature before calling `acceptExternalMessage()`, then commits the next sequence number before executing the requested action.
+fun onExternalMessage(inMsg: slice) {
+val request = SignedRequest.fromSlice(inMsg);
+var storage = Storage.load();
+assert (request.validUntil > blockchain.now()) throw ERR_EXPIRED;
+assert (request.seqno == storage.seqno) throw ERR_BAD_SEQNO;
+assert (
+verifySignedRequest(request, storage.publicKey, storage.signatureDomain)
+) throw ERR_BAD_SIGNATURE;
+acceptExternalMessage();
+storage.seqno += 1;
+storage.save();
+commitContractDataAndActions();
+executeSignedAction(request.action);
+}
+The signed payload should cover the opcode, recipient, amount, sequence number, expiration, and a domain that separates networks, contracts, or protocol versions. Because the commit makes the `seqno` survive a later compute-phase exception, this pattern intentionally consumes the request even if `executeSignedAction()` fails. A protocol that promises retry-on-failure semantics should omit the commit and document that the `seqno` update rolls back. Action-phase failures and send modes require separate tests in either design.
+Asynchronous State Machines, Partial Success, and Message Races
+A cross-contract operation on TON consists of multiple asynchronous transactions. A successful send advances the message to the next stage and says nothing about whether the recipient completed the intended business operation. The following state-transition fragment locks the balance and records the expected destination before sending:
+fun startWithdrawal(
+mutate storage: Storage,
+queryId: uint64,
+amount: coins,
+recipient: address,
+) {
+assert (amount > 0) throw ERR_ZERO_AMOUNT;
+assert (storage.balance >= amount) throw ERR_INSUFFICIENT_BALANCE;
+assert (!storage.hasPending(queryId)) throw ERR_DUPLICATE_QUERY;
+storage.balance -= amount;
+storage.putPending(queryId, PendingWithdrawal {
+amount,
+destination: recipient,
+});
+storage.save();
+sendWithdrawal(recipient, queryId, amount);
+}
+fun failWithdrawal(
+mutate storage: Storage,
+queryId: uint64,
+bouncedFrom: address,
+) {
+val result = storage.pending.get(queryId);
+assert (result.isFound) throw ERR_UNKNOWN_QUERY;
+val pending = result.loadValue();
+assert (bouncedFrom == pending.destination) throw ERR_BAD_BOUNCE_SENDER;
+// Delete before crediting so the same operation cannot be restored twice.
+storage.pending.delete(queryId);
+storage.balance += pending.amount;
+storage.save();
+}
+This is not a complete bounce entrypoint. `onBouncedMessage()` must first skip the bounced prefix, match the expected typed body, and pass the actual `in.senderAddress` into `failWithdrawal()`. The lookup, sender check, deletion, and refund must remain one atomic transition. An audit must then reconstruct the complete state machine: when the request is created, when assets are locked, how success is confirmed, how failure is recovered, and how timeouts are handled. Tests should cover duplicate messages, repeated failure notifications, late responses, out-of-order delivery, and concurrent requests that reference the same stale balance. `queryId` handling and state transitions must remain idempotent.
+Economic Models, Rounding, and Accounting Invariants
+`coins`, fixed-width integers, and automatic serialization constrain data representation. Financial correctness comes from the formulas and accounting invariants built on top of those types. For example, a deposit path may increase a user's shares while failing to update the global share supply:
+// Dangerous: user-level and global accounting are no longer symmetric.
+val mintedShares = quoteDeposit(msg.amount, storage);
+account.shares += mintedShares;
+storage.totalAssets += msg.amount;
+// Missing: storage.totalShares += mintedShares;
+The following accounting fragment restores symmetry between local and global state:
+val mintedShares = quoteDeposit(msg.amount, storage);
+assert (mintedShares > 0) throw ERR_DEPOSIT_TOO_SMALL;
+account.shares += mintedShares;
+storage.totalShares += mintedShares;
+storage.totalAssets += msg.amount;
+Authorization, slippage limits, and persistence are intentionally omitted from this fragment. A real implementation must save both account-level and global state according to the contract's storage model before returning.
+An audit should not stop at individual formulas. It should define and verify protocol invariants—for example, `sum(userShares) == totalShares`, assets cover liabilities, and deposit/withdraw and mint/burn paths update state symmetrically. Testing should cover zero and maximum values, multiplication-before-division, rounding direction, dust, fees, slippage, stale prices, and whether repeated small operations create an arbitrage opportunity.
+Upgrade Governance and Storage Migration
+A clear Tolk storage schema makes migrations easier to reason about. Upgrade authority, activation delays, and compatibility with historical state remain governance and protocol-design decisions. Accepting arbitrary `newData` from a caller is particularly dangerous; a safer migration derives the new storage shape inside the contract, while separately applying governance controls to caller-supplied `newCode`:
+Upgrade => {
+requireUpgradeAuthority(in.senderAddress, storage.upgradeAuthority);
+assert (msg.expectedStorageVersion == storage.version) throw ERR_BAD_STORAGE_VERSION;
+val migrated: StorageV2 = migrateV1ToV2(storage);
+contract.setData(migrated.toCell());
+contract.setCodePostponed(msg.newCode);
+}
+Auditors should verify whether upgrade authority is separated from routine administration and whether the protocol needs multisignature approval, a timelock, a code-hash allowlist, or an emergency pause. Migration tests should use real historical storage data and cover default values for new fields, existing pending operations, rollback procedures, and compatibility with off-chain wrappers. A governance restriction that exists only in documentation, rather than in contract code or another verifiable process, is not an effective control.
+Conclusion
+Tolk's value can be summarized in four points:
+- It makes common mistakes harder to write: Named structs, automatic serialization, precise types, and explicit mutation move many details that FunC developers previously maintained by hand into compiler-visible declarations.
+- It makes data access more efficient: Lazy loading allows one typed schema to serve multiple read paths without duplicating loaders or parsing fields that the current path does not use.
+- It makes protocols easier to understand: Message unions, typed bodies, dedicated bounce handling, and centralized schemas make contract behavior easier for both developers and auditors to reconstruct.
+- It moves the audit focus upward: As field-offset errors and handwritten serialization bugs become less common, more attention can be devoted to authorization, authentic message sources, asynchronous state machines, economic models, and upgrade governance.
+These benefits change what an audit should prioritize, not whether an audit is needed. Tolk-specific review still has to cover lazy parsing and explicit reads of security-critical fields, unknown-message handling in lazy unions, forced nullable unwrapping, unsafe `as` casts, address types, full-consumption checks, typed-map lookup results, bounce modes, commit boundaries, and compatibility with existing binary layouts.
+The most serious asset-loss risks remain protocol-level. A correctly typed message can still come from an unauthorized sender; a validly signed request can still be replayed if the state machine permits it; a bounced message can still be refunded twice; and a sound `coins` representation cannot repair an incorrect accounting formula. Upgrade authority, migration procedures, economic invariants, and failure recovery therefore remain explicit design and audit responsibilities.
+For new TON protocols, Tolk provides a clearer and more maintainable foundation for expressing and reviewing contract behavior. For existing FunC contracts, migration should preserve the historical binary protocol and state semantics before introducing new abstractions. In both cases, Tolk works best as part of a broader security process that combines design review, compatibility tests, adversarial testing, and independent audit.

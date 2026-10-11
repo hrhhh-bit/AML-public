@@ -1,0 +1,25 @@
+Policy Pulse
+Bridging the Atlantic: Why Security Is the Real Catalyst for Transatlantic Crypto Policy
+As I wrap up a three-day DC roadshow coordinating Capitol Hill and agency roundtables for the US/UK Crypto Alliance, one conclusion stands out above the rest: the narrative surrounding digital asset policy in Washington has fundamentally shifted.
+Navigating "Regulation Crypto Assets": What the SEC's Proposed Framework Means for Web3 Projects
+The regulatory landscape for Web3 in the U.S. is undergoing a significant transformation, even in the absence of the long awaited CLARITY Act. On August 18, 2026, the U.S. Securities and Exchange Commission (SEC) issued a notice of proposed rulemaking titled Regulation Crypto Assets (Release No. 33-11434; File No. S7-2026-27).
+Inside CertiK's Independent Security Research on Besu
+CertiK independently discovered and disclosed five resource-exhaustion vulnerabilities in Besu (formerly Hyperledger Besu), now patched in version 26.7.1, through a proactive chaos-engineering-style testing methodology now productized as Chain Scan.
+Why Brazil Is Becoming a Blueprint for Digital Asset Regulation
+CertiK's CBO Jason Jiang joined the Central Bank of Brazil and Veirano Advogados at Blockchain.RIO to discuss how collaborative VASP regulation is turning Brazil into a global model for digital asset compliance.
+CLARITY Act Stalls as Regulators Move Ahead
+Senate leadership released a massive 616-page draft of the CLARITY Act, representing the most detailed legislative effort to date to regulate the digital asset industry. This comprehensive text includes expansive provisions for both crypto market structure and new law enforcement mandates designed to modernize federal oversight of the ecosystem.
+From Speculation to Infrastructure: CertiK and OKJ on the Future of Crypto in Japan and Beyond
+CertiK and OKJ discuss the future of crypto regulation, security, and institutional adoption in a fireside chat covering stablecoins, RWAs, AML compliance, and Japan's regulatory model.
+SOC 2 and ISO 27001 for Crypto Companies
+Read to learn about the requirements of SOC 2 and ISO 27001, how to choose between them, and how to get from your current state to a passed audit.
+May 2026 Regulatory Recap: Significant Movement with the CLARITY Act
+A massive turning point arrived in July 2025 when the Trump Administration’s pro-crypto stance coalesced into historic legislative action: the passage of both the stablecoin-focused GENIUS Act and the landmark CLARITY Act by the House.
+Inside the CertiK x XDC Fireside Chat: Trade Finance, Tokenization, and AI Security
+CertiK Co-Founder and CEO, Rongui Gu, and XDC Foundation’s Billy Sebell discuss trade finance, tokenization, AI-driven cybersecurity risks, and the infrastructure needed for institutional blockchain adoption.
+CertiK and CoinW Discuss AI, Cybersecurity, and the Future of Secure Crypto Trading
+CertiK Co-Founder and CEO, Rongui Gu, and CoinW’s Marketing Director Manfred Chew discuss exchange security, AI-driven cyber threats, transparency, and the future of user trust in Web3.
+Slow and Steady Progress Toward U.S. Crypto Legislation
+An overview of regulatory developments in the United States in February 2026, including the Senate Banking draft, GENIUS Act implementation, and the SEC “Task Force” transition.
+How VARA is Enabling Global Crypto in Dubai
+Learn more about the Virtual Assets Regulatory Authority (VARA), which provides licenses for virtual asset services located in Dubai. CertiK works with VASPs at every stage of the VARA licensing process.

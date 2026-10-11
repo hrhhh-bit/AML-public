@@ -249,19 +249,19 @@
         "source": "I1",
         "target": "AGG",
         "operation": "Merge",
-        "flow_share": 0.45
+        "flow_share": 1.0
       },
       {
         "source": "I2",
         "target": "AGG",
         "operation": "Merge",
-        "flow_share": 0.3
+        "flow_share": 1.0
       },
       {
         "source": "I3",
         "target": "AGG",
         "operation": "Merge",
-        "flow_share": 0.25
+        "flow_share": 1.0
       },
       {
         "source": "AGG",
@@ -427,19 +427,19 @@
         "source": "S1",
         "target": "AGG",
         "operation": "Merge",
-        "flow_share": 0.4
+        "flow_share": 1.0
       },
       {
         "source": "S2",
         "target": "AGG",
         "operation": "Merge",
-        "flow_share": 0.35
+        "flow_share": 1.0
       },
       {
         "source": "S3",
         "target": "AGG",
         "operation": "Merge",
-        "flow_share": 0.25
+        "flow_share": 1.0
       },
       {
         "source": "AGG",
@@ -814,13 +814,13 @@
         "source": "I1",
         "target": "AGG",
         "operation": "Merge",
-        "flow_share": 0.5
+        "flow_share": 1.0
       },
       {
         "source": "I2",
         "target": "AGG",
         "operation": "Merge",
-        "flow_share": 0.5
+        "flow_share": 1.0
       },
       {
         "source": "AGG",
@@ -995,13 +995,13 @@
         "source": "S1",
         "target": "AGG1",
         "operation": "Merge",
-        "flow_share": 0.6
+        "flow_share": 1.0
       },
       {
         "source": "S2",
         "target": "AGG1",
         "operation": "Merge",
-        "flow_share": 0.4
+        "flow_share": 1.0
       },
       {
         "source": "AGG1",
@@ -1477,13 +1477,13 @@
         "source": "S1",
         "target": "M",
         "operation": "Merge",
-        "flow_share": 0.5
+        "flow_share": 1.0
       },
       {
         "source": "S2",
         "target": "M",
         "operation": "Merge",
-        "flow_share": 0.5
+        "flow_share": 1.0
       },
       {
         "source": "M",
@@ -1676,25 +1676,25 @@
         "source": "S1",
         "target": "AGG1",
         "operation": "Merge",
-        "flow_share": 0.4
+        "flow_share": 1.0
       },
       {
         "source": "S2",
         "target": "AGG1",
         "operation": "Merge",
-        "flow_share": 0.3
+        "flow_share": 1.0
       },
       {
         "source": "S3",
         "target": "AGG1",
         "operation": "Merge",
-        "flow_share": 0.2
+        "flow_share": 1.0
       },
       {
         "source": "S4",
         "target": "AGG1",
         "operation": "Merge",
-        "flow_share": 0.1
+        "flow_share": 1.0
       }
     ],
     "post_state_effect": {
@@ -1800,18 +1800,18 @@
         "source": "I1",
         "target": "AG",
         "operation": "Merge",
-        "flow_share": 0.5
+        "flow_share": 1.0
       },
       {
         "source": "I2",
         "target": "AG",
         "operation": "Merge",
-        "flow_share": 0.5
+        "flow_share": 1.0
       },
       {
         "source": "AG",
         "target": "AC",
-        "operation": "Transfer",
+        "operation": "Bridge",
         "flow_share": 1.0
       },
       {

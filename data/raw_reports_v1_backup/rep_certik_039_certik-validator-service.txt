@@ -1,0 +1,45 @@
+BNB Chain
+BNB
+- APY
+- 0.62%
+- TVL Secured
+- $803M
+- Total Staked
+- 1.03M BNB
+CertiK Validator Service
+CertiK Validator Service brings enterprise-grade validator operations to public blockchain ecosystems, built on CertiK's proven expertise in security auditing. We run reliable, secure, high-performance nodes so networks and token holders can stake with confidence.
+Running Validators Across Leading Networks
+Preview of live validator data. Full, current data is available on Staking Hub.
+0+ networks
+0.00% uptime
+Case Studies
+Real results from years of operating security-first validator infrastructure.
+Case Study
+Partnering with CertiK Validator Service goes beyond infrastructure. When CertiK joined XDC Network as an Institutional Masternode Validator in June 2026, coordinated announcements from both teams, coverage across leading crypto media, and industry thought-leadership put XDC's enterprise story of trade finance and RWA tokenization in front of a global Web3 security audience.
+“CertiK is one of the most recognized names in blockchain security, and having them validate our network is a meaningful signal to institutions.”
+Validator and full nodes for networks at every stage, from newly launched chains to nodes running continuously for over 5 years.
+Deeply customized client code for at least 4 chains cuts historical balance-query latency and node resource consumption, with gains passed directly to the networks we serve.
+Service Offerings
+From risk monitoring to data APIs, CertiK Validator Service blends deep security practice with always-on node operations.
+Always-on early warning across the validator stack, with recovery procedures to match.
+Offensive testing against node software and hardware infrastructure, so weaknesses surface before attackers find them.
+Client-code vulnerabilities identified before they reach production.
+End-to-end validator operations, handled.
+Complete observability for every node we run.
+On-chain data, served efficiently.
+How Delegation Works
+Start staking to CertiK validators in three steps.
+01
+Browse the supported PoS networks and live validator data on Staking Hub to find the chain you want to stake on.
+02
+Stake from your own wallet to CertiK's validator address. Delegation is non-custodial: your assets never leave your control.
+03
+Monitor earnings, validator performance, and delegation details in your Staking Hub dashboard.
+Key Features
+The security and operating standards behind every validator we run.
+Compliance is built into how every node runs: strict operating controls, independently certified against ISO 27001 and SOC 2 Type II standards.
+Multiple secure key-management schemes, chosen to fit each network's architecture, signing model, and operational requirements.
+Real-time monitoring and highly tuned consensus execution safeguard network integrity, validator performance, and reward earnings.
+Every operational touchpoint on node infrastructure passes through a fully secured, auditable access architecture.
+No. Delegation is non-custodial: your tokens stay in your own wallet and are never transferred to CertiK. You delegate only the validation rights, and you can withdraw according to each network's unbonding rules.
+Have a question that isn't covered here?

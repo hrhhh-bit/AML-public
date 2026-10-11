@@ -1,0 +1,49 @@
+Discover how Phalcon Security spots and stops attacks in the mempool automatically. This shifts Web3 defense from reacting to being proactive.
+Over the past year, the value of crypto assets has soared, yet security risks have hit a record high. In the first ten months of 2025, the Web3 space faced severe attacks, resulting in huge asset losses.
+Key Management Vulnerabilities: The HyperLiquid trading account lost about $21 million due to a private key leak. The Bybit multisig wallet was hacked. This upgrade caused losses of nearly $1.5 billion. It highlights the risks of managing keys and permissions.
+Smart Contract Logic Exploits: GMX_IO was hit by a reentrancy attack and lost $41 million. Cetus lost up to $223 million from an integer overflow vulnerability. These flaws show that attacks target the economic and mathematical logic of protocols.
+These incidents show a hard truth: in the open world of Web3, defenders have little time to react.
+Phalcon Security is an advanced, real-time security platform from BlockSec. It aims to transform the reactive security landscape. It focuses on defense. It serves as the last line of strong protection. It identifies and stops harmful transactions before any asset loss occurs.
+It’s more than a tool. It’s a next-gen security system. It offers transaction interception while in transit, full coverage, and customizable support.
+Building the Web3 Security Moat: A Closed Loop from Alert to Block
+Facing billions in annual losses, Web3 companies are confronting heightened security risks.
+1. “Zero-Day” Attacks: Minimal Time for Defenders
+Hacker attacks are now highly automated. The time from spotting a chance in the mempool to executing the attack is often less than 1 second. Traditional alert systems can’t intercept effectively within this millisecond window of potential loss.
+2. Economic Model Risks: Dynamic and Hard to Prevent
+Complex attacks, such as TWAP oracle manipulation and empty-market exploits, take advantage of the protocol’s economic logic. This risk is tough for traditional methods to catch, leading to new attack pathways.
+3. L2/Chain’s “Ecosystem Security” Challenge
+For L2 and public chains, ecosystem success is tied to security. They must provide a strong security layer for the many smart contracts (DeFi, GameFi) on their chain. A chain that can proactively identify and filter malicious transactions boosts security and user confidence.
+Phalcon Security: The Ultimate Proactive Defense Solution
+Phalcon Security’s strength lies in two modules — Real-Time Monitoring (Monitors) and Proactive Blocking (Actions) — creating a complete defense loop.
+I. Real-Time Monitoring & Alerting: See the Threat
+We start with risk analysis through detailed monitoring, giving projects threat intelligence before an attack occurs.
+Full-Spectrum Tiered Risk Monitoring:
+Attack: 24/7 scanning of smart contract logic and high-risk transaction anomalies.
+Operational Risk: Monitoring oracle price anomalies and governance process gaps to prevent exploitation.
+Financial Risk: Tracking sharp TVL changes, liquidity pool issues, and collateralization problems to spot economic threats.
+Interaction Risk: Detecting risky user actions, such as interacting with blacklisted addresses or large withdrawals to suspicious addresses.
+Real-Time Threat Perception:
+Monitoring on-chain anomalies in real time to deliver actionable threat intelligence.
+Customizable Alert Strategies:
+A robust rule engine lets users define custom monitoring logic and alert thresholds, adapting to complex multi-chain and multi-asset needs.
+II. Proactive Defense and Blocking: Pinpoint Accuracy and Ironclad Defense
+This is Phalcon Security’s core strength: using automated responses to stop attacks before asset loss occurs.
+In-Transit Interception & Blocking:
+Core Feature: Immediately complete the malicious determination while the attack transaction is in the Mempool stage.
+Use Case: The platform automatically triggers an emergency response, precisely blocking the transaction from going on-chain before the hacker touches the assets.
+Zero-Day Emergency Plan:
+Core Feature: Pre-set automated blocking logic for specific high-risk contracts.
+Use Case: Effectively counter zero-day vulnerabilities and sudden emergencies, triggering security mechanisms instantly without human intervention to reduce potential loss to zero.
+STOP Platform (For L2/Chains):
+Core Feature: Provides a sequencer-level security service.
+Use Case: Real-time detection of attack transactions targeting smart contracts. The STOP platform allows the sequencer to identify and choose to drop these malicious transactions before packaging them, and can add attacker addresses to a chain-level blacklist, thereby enhancing the security of the entire public chain ecosystem at the source.
+Hardcore Capabilities: Answering Your Doubts
+Q1: What risk scenarios are covered by security monitoring?
+A: We cover everything from hacker attacks to business risks, with extensive customization.
+Core Security: Monitoring attacks from code flaws or high-risk transfers due to key leaks.
+Q3: How fast is the detection and emergency response?
+A: We achieve “zero-delay” response before the attack hits the chain, reducing loss to zero.
+Millisecond Detection: Accurate identification of the attack transaction while it is still in the memory pool (Mempool).
+Automated Blocking: Immediately trigger automated emergency plans, blocking the attack before it succeeds and minimizing potential losses.
+Security as Your Growth Engine
+Security and compliance shouldn’t be burdens; they should drive innovation. Phalcon Security offers an automated closed-loop system: Threat Identification → Proactive Blocking → Continuous Hardening.

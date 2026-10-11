@@ -1,0 +1,40 @@
+Total losses
+$0.0M
+Data last updated: Sep 25, 2026
+Security incidents
+0
+Adjusted losses
+Frozen & returned
+Avg loss / Incident
+Macro Trends
+Explore the highest-loss incidents recorded in Aug 2026.
+*Top incidents exclude phishing attacks, following the report's incident ranking methodology.
+Showing quarter-over-quarter changes in losses and incident activity for Q2 2026.
+Q1 2026 total losses
+$603.1M
+192
+incidents
+adjusted losses
+Q2 2026 total losses
+$819.4M +35.9%
+219 +14.1%
+$790.7M +31.1%
+In Aug 2026, Exploit recorded the highest losses, while Exploit recorded the most incidents.
+In Aug 2026, Multiple Chains recorded the highest reported losses, while Ethereum recorded the most incidents.
+Categories 1–12 of 33
+All 33 categories are available. Use the slider to view more.
+Chain categories may overlap. Losses and incident counts across categories must not be added to calculate an overall total.
+H1 2025
+39
+Total incidents
+$10.5M
+Total exposure
+~$270K
+Avg. per incident
+H1 2026
+52 +33.3%
+$124.2M
++1,079%
+~$2.4M
++784%
+Read the full analysis behind the dashboard, including attack vectors, chain-level trends, top incidents, laundering patterns, and methodology.

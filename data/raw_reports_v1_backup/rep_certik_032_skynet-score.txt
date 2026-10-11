@@ -1,0 +1,28 @@
+CertiK Skynet Score
+CertiK's Skynet Score is a real-time assessment system that evaluates the security of Web3 projects, exchanges, and wallets independently and objectively.
+Enhancing Trust in Web3 Projects And Exchanges
+CertiK's security scoring system is your foundation in the Web3 landscape. We provide extensive coverage of Web3 projects, including those on CoinMarketCap and major exchanges.
+Unbiased Security Evaluation
+Our methodology uses a weighted average to conduct a thorough security assessment. Importantly, our revaluation remains unbiased, unaffected by project affiliations.
+Expanding Score Scope
+In addition to projects, we have extended our Skynet Score to cryptocurrency exchanges and wallets, recognizing their pivotal role in the crypto ecosystem.
+Trust Through Integrity
+Our commitment to objectivity and integrity ensures trust among project owners, exchange operators, wallet users and their stakeholders.
+Skynet Score For Web3 Projects
+Our comprehensive methodology incorporates 15+ signals across six key security categories
+Our Skynet Score Coverage
+Whether you are a Web3 retail or professional community member, or Web3 project owner, Skynet has you covered.
+Web3 Projects
+Web3 projects encompass a wide range of cryptocurrency ventures that issue tokens. These projects are evaluated by CertiK's Skynet Score to ensure the safety and trustworthiness of their digital assets.
+Pre-Launch Projects
+Pre-Launch projects, often without a token and in early development stages, CertiK evaluates their security based on relevant metrics, providing a crucial layer of protection before the official launch.
+Exchanges
+Exchanges represent major cryptocurrency trading platforms like Binance and Coinbase. CertiK's Skynet Score extends to exchanges, offering a comprehensive assessment of their security practices.
+Wallets
+Wallets are essential tools for managing cryptocurrencies. CertiK's Skynet Score ensures the security of these digital asset storage solutions, assuring users that their personal data and funds are safeguarded.
+Integrating Our Skynet Score
+Our in-depth evaluations of Web3 projects, exchanges, and wallets promote transparency and reliability in the industry. Discover how integrating CertiK's Skynet Score API can enhance the security and trustworthiness of your exchange or data services.
+OKX Web3 Wallet Integration
+CoinGecko Integration
+CoinMarketCap Integration
+Bitrue Integration

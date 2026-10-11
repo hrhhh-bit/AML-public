@@ -1,0 +1,25 @@
+Technical Insights
+Red Team vs. Pentest vs. Bug Bounty: Building a Complete Web3 Security Program
+Red team vs. pentest vs. bug bounty for Web3 projects: what each one actually tests, when to use which, and how to combine them into one program.
+Tolk Security Explained: From FunC’s Engineering Pain Points to New Audit Considerations
+This article compares FunC and Tolk through code, explains how typed schemas, automatic serialization, and lazy loading change TON contract security, and identifies the risks developers and auditors still need to review.
+Where CIP-56 Security Actually Lives: A Guide for Institutions on Canton
+How Daml views, choices, factories, client-side construction, and operational permissions determine the security of CIP-56 assets.
+What Is a Crypto-Asset Service Provider (CASP)?
+A crypto-asset service provider (CASP) is any business offering any regulated “‘crypto-asset service” as defined under the EU's MiCA framework. Learn what qualifies, what compliance requires, and how to meet it.
+Post-Quantum Signatures, Part 3: Inside FIPS 205 Through Quranium’s SLH-DSA Adoption
+In this post, we use the structure of FIPS 205 to explain how SLH-DSA works and why it matters for real protocol implementations. We start with Forest of Random Subsets (FORS), the few-time signature component that signs part of the randomized message digest, then build up the hypertree that authenticates the reconstructed FORS public key to the public root. Finally, we examine how FIPS 205 defines the concrete SLH-DSA algorithm used by interoperable implementations.
+How to Prepare for a CCSS Audit
+Institutional counterparties ask crypto businesses a hard question: how do you safeguard your private keys? A bank wants evidence before it opens an account. A fund wants it before it deposits assets. The CryptoCurrency Security Standard (CCSS) exists to answer that question with an audit instead of a claim. This guide explains what the standard covers, how certification works and how you prepare for it.
+What Is a Zero-Knowledge Virtual Machine (zkVM)?
+A zkVM is a computational system designed to verify that a program executed correctly, without revealing the program's internal data. By combining zero-knowledge proofs (ZKPs) with virtual machine (VM) technology, zkVMs enable verifiable computation across blockchain and Web3 ecosystems, boosting transparency, privacy, and scalability all at once.
+The Summer Regulatory Crunch: All Eyes on the CLARITY Act
+An overview of notable crypto regulatory developments that happened in June 2026.
+What Are Decentralized Apps (dApps)?
+Decentralized apps (dApps) run on blockchain networks like Ethereum, Solana, BSC, SUI, and Avalanche. Learn what dApps are, how they work, examples, and their advantages in Web3.
+Advancing Sui: The Evolution of Sui’s Payment Pipeline
+Explore how Sui's Address Balance layer powers gasless stablecoin transfers, providing a frictionless user experience while tackling complex engineering challenges at the execution and settlement level.
+Security Considerations for Passkey-Based Web3 Wallets
+This article analyzes that security model across the full asset-control lifecycle. It traces a single transaction through Clave's open-source implementation, surveys past vulnerabilities in WebAuthn, FIDO2, and CTAP, maps them onto the lifecycle of a typical Passkey Wallet, and ends with implementation checks for teams building one.
+Post-Quantum Signatures, Part 2: From Trees to Forests
+XMSS builds on one-time signatures by organizing OTS keys into Merkle trees and hyper-trees, delivering a practical post-quantum signature scheme with compact proofs, fast verification, and a critical trade-off: strict state management.

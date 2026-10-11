@@ -1,6 +1,6 @@
 {
   "experiment": "phase3_partA_dense_vs_discrete_retrieval_correlation",
-  "generated_at": "2026-09-20T08:14:08+00:00",
+  "generated_at": "2026-09-27T08:19:27+00:00",
   "config": {
     "alpha": 0.5,
     "top_k": 18,
@@ -11,9 +11,9 @@
     "discrete_backend": "discrete_hash"
   },
   "kb_source": {
-    "path": "D:\\projects\\AML\\experiments\\phase2_distillation_empirical\\distilled_kb.json",
+    "path": "D:\\projects\\AML\\data\\distilled_kb.json",
     "n_motifs": 18,
-    "sha256": "26ffd0370be8a82ef149ee1b14a39665c2b5ac91d4dd861f826180359779e701"
+    "sha256": "4ee8b31c200e0de5ea81fc5c98e1103c2b6ec18063c4b43b393f0f2f0833469d"
   },
   "queries": [
     {
@@ -30,8 +30,8 @@
       "strict_gate_survivors": 5,
       "corpus": "soft_fallback",
       "n": 18,
-      "spearman_rho": 0.861713,
-      "p_value": 4e-06,
+      "spearman_rho": 0.865841,
+      "p_value": 3e-06,
       "top1_agree": false,
       "dense_ranking": [
         "motif_chain_hopping_bridge_evasion",
@@ -60,8 +60,8 @@
         "Mixer_Anonymization_Split_Merge",
         "DEX_Liquidity_Pool_Swap",
         "Multi_Chain_Hop_Layering",
-        "Multi_Split_Obfuscation",
         "otc_p2p_integration_merge",
+        "Multi_Split_Obfuscation",
         "multi_layering_split_fanout_v1",
         "Aggregation_Merge_To_Target",
         "many_to_one_consolidation",
@@ -153,7 +153,7 @@
         "otc_p2p_integration_merge",
         "many_to_one_consolidation"
       ],
-      "dense_top1_margin": 0.0294,
+      "dense_top1_margin": 0.0299,
       "discrete_top1_margin": 0.1255
     },
     {
@@ -270,16 +270,16 @@
       "strict_gate_survivors": 0,
       "corpus": "soft_fallback",
       "n": 18,
-      "spearman_rho": 0.614035,
-      "p_value": 0.006711,
+      "spearman_rho": 0.628483,
+      "p_value": 0.005215,
       "top1_agree": false,
       "dense_ranking": [
         "many_to_one_consolidation",
         "Aggregation_Merge_To_Target",
         "Mixer_Anonymization_Split_Merge",
         "Multi_Split_Obfuscation",
-        "otc_p2p_integration_merge",
         "Multi_Chain_Hop_Layering",
+        "otc_p2p_integration_merge",
         "peeling_chain_iterative_asymmetric_split_v1",
         "Peeling_Chain_Multi_Layer",
         "multi_layering_split_fanout_v1",
@@ -301,9 +301,9 @@
         "DEX_Liquidity_Pool_Swap",
         "Aggregation_Merge_To_Target",
         "Mixer_Anonymization_Split_Merge",
+        "otc_p2p_integration_merge",
         "mixer_pooling_obfuscation",
         "many_to_one_consolidation",
-        "otc_p2p_integration_merge",
         "multi_layering_split_fanout_v1",
         "Single_Chain_Multi_Swap_Layering",
         "Peeling_Chain_Multi_Layer",
@@ -439,7 +439,7 @@
   ],
   "summary": {
     "n_queries": 8,
-    "mean_rho": 0.696005,
+    "mean_rho": 0.698327,
     "min_rho": 0.238095,
     "max_rho": 0.940144,
     "n_significant_p_lt_005": 6,

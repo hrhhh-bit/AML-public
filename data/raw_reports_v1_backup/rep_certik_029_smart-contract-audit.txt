@@ -1,0 +1,34 @@
+Smart Contract Audit
+A comprehensive security assessment of your smart contract and blockchain code to identify vulnerabilities and recommend ways to fix them.
+Fast and Accurate Smart Contract Security Audit
+Accurate Findings
+Actionable Insights
+Unparalleled Flexibility
+Smart Contract Audit Statistics
+6,206+
+Audited Projects
+93,159+
+Security Audit Findings
+Formal Verification Statistics
+1,235+
+Formally-Verified Projects
+2,640+
+Formally-Verified Contracts
+Trusted By Market Leaders
+Why Choose CertiK?
+CertiK is a pioneer in the application of advanced Formal Verification techniques to smart contract audits. This process goes a step beyond manual review to provide mathematical guarantees about the functionality of smart contract platforms.
+Our collaborative approach to smart contract auditing ensures that your project is ready for a secure launch as soon as possible. We know that time is of the essence, and our large team of auditors can handle any job, no matter how big or small.
+What is a Smart Contract Audit?
+While blockchain projects are open source, most people don’t have the skills to inspect smart. Expert auditors help users make informed decisions by identifying, explaining, and remediating potential risks.
+Web3 platforms and DeFi projects secure billions of dollars of value. This makes blockchain security critical to the survival and success of all projects. Advanced tools like formal verification take the auditing process a step further by providing mathematical guarantees about smart contract behavior.
+We combine expert manual review of smart contract code with advanced AI and mathematical techniques to ensure contracts function as intended. Our industry-leading audit methodology, experience, and tooling combine a review of your code’s logic with a mathematical approach to ensure your program works as intended.
+Smart Contract Audit Process
+How Does a Smart Contract Audit Work?
+Every smart contract audit involves a comprehensive manual review by our team of experienced security experts. Automated AI-powered review provides an additional layer of security. Formal verification is an optional further step that certifies smart contract behavior with respect to custom function specifications. This helps developers get a handle on the entire scope of their platform.
+What’s in a Smart Contract Audit Report?
+Audit reports are comprehensive, fully transparent records that detail all identified vulnerabilities. These are classified by severity from Critical to Informational. Suggested remediation from our team of smart contract security experts accompany each vulnerability.
+Vulnerabilities that are addressed before launch are marked as resolved. Issues acknowledged but unresolved are accompanied by a description of their potential effects and the project team’s justification.
+Projects that undergo a completed audit earn a spot on the Skynet Leaderboard . This gives the entire Web3 community a powerful demonstration of a project’s commitment to security.
+Smart contract audit reports are freely available to the public. This is part of our commitment to transparency and an open-source Web3 world. An audit report is evidence that a project takes security seriously and prioritizes the safety of its users’ funds. Auditing helps Web3 projects secure their code and avoid costly errors.
+Our Experience
+When it comes to security, only the best will do.
