@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 import pytest
@@ -35,6 +36,8 @@ from aml_rag.schema import FLOW_TOLERANCE
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION_KB = PROJECT_ROOT / "data" / "distilled_kb.json"
+BASELINE_BACKUP = PROJECT_ROOT / "data" / "distilled_kb_v1.json"
+BASELINE_SHA_EVIDENCE = PROJECT_ROOT / "data" / "distilled_kb_v1.sha256.txt"
 
 SRC = NodeRole.SOURCE
 INT = NodeRole.INTERMEDIATE
@@ -223,7 +226,23 @@ class TestEvaluationIssueDetection:
 class TestProductionKnowledgeBase:
     def test_production_kb_loads_under_hardened_gate(self) -> None:
         kb = MotifKnowledgeBase.load(PRODUCTION_KB)
-        assert len(kb) == 18, "production KB must keep all 18 motifs"
+        # 阶段 3 Part B --live 扩容后生产库已从 18 提升至 40；
+        # 断言改为下界（>= 18），避免“18-Motif 旧时代”硬编码再次脱节。
+        assert len(kb) >= 18, "production KB must keep at least the 18-motif baseline"
+
+    def test_baseline_backup_keeps_exactly_18_motifs(self) -> None:
+        """基准防线冻结存证：v1 备份必须仍为 18 个基准 Motif。"""
+        backup = MotifKnowledgeBase.load(BASELINE_BACKUP)
+        assert len(backup) == 18, (
+            "distilled_kb_v1.json must remain the frozen 18-motif baseline"
+        )
+
+    def test_baseline_backup_sha256_matches_frozen_evidence(self) -> None:
+        """备份文件哈希与冻结存证（sha256.txt）一致。"""
+        digest = hashlib.sha256(BASELINE_BACKUP.read_bytes()).hexdigest().upper()
+        assert BASELINE_SHA_EVIDENCE.exists(), "missing baseline sha256 evidence file"
+        recorded = BASELINE_SHA_EVIDENCE.read_text(encoding="ascii").strip().upper()
+        assert digest == recorded
 
     def test_every_motif_satisfies_outflow_conservation(self) -> None:
         kb = MotifKnowledgeBase.load(PRODUCTION_KB)

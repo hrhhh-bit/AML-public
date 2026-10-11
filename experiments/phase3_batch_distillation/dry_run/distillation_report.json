@@ -1,0 +1,528 @@
+{
+  "mode": "dry-run",
+  "model": "deepseek-flash",
+  "temperature": 0.1,
+  "timestamp": "2026-10-11 06:59:01 UTC",
+  "git_commit": "aa6732a9c275657899df55fc6f3e8ff133ce062b",
+  "baseline_sha256": "4EE8B31C200E0DE5EA81FC5C98E1103C2B6EC18063C4B43B393F0F2F0833469D",
+  "golden_report_ids": [
+    "rep_slowmist_002",
+    "rep_slowmist_003",
+    "rep_certik_001",
+    "rep_certik_002",
+    "rep_certik_003",
+    "rep_certik_004",
+    "rep_certik_005",
+    "rep_certik_007",
+    "rep_certik_008",
+    "rep_certik_011",
+    "rep_certik_012",
+    "rep_certik_013",
+    "rep_certik_014",
+    "rep_blocksec_009"
+  ],
+  "base_motif_count": 18,
+  "final_motif_count": 21,
+  "net_added": 3,
+  "check1_legality": {
+    "candidate_chunks": 33,
+    "passed_chunks": 31,
+    "pass_rate": 0.9394,
+    "threshold": 0.9,
+    "passed": true,
+    "reflection_repairs": 37,
+    "reflection_retry_mean": 1.1212,
+    "llm_calls": 70
+  },
+  "check2_causal_alignment": [
+    {
+      "report_id": "rep_slowmist_002",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "money laundering",
+        "laundering",
+        "cross-chain",
+        "bridge"
+      ],
+      "extracted_motif_edge_counts": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_slowmist_003",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "money laundering",
+        "laundering"
+      ],
+      "extracted_motif_edge_counts": [
+        4,
+        4,
+        4
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_001",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "cash out"
+      ],
+      "extracted_motif_edge_counts": [
+        5,
+        5
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_002",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "tornado",
+        "cross-chain",
+        "bridge"
+      ],
+      "extracted_motif_edge_counts": [
+        6,
+        6
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_003",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "bridge"
+      ],
+      "extracted_motif_edge_counts": [
+        4
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_004",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "tornado"
+      ],
+      "extracted_motif_edge_counts": [
+        5
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_005",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "bridge"
+      ],
+      "extracted_motif_edge_counts": [
+        6
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_007",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "bridge"
+      ],
+      "extracted_motif_edge_counts": [
+        4
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_008",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "tornado"
+      ],
+      "extracted_motif_edge_counts": [
+        5
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_011",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "tornado"
+      ],
+      "extracted_motif_edge_counts": [
+        6
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_012",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "laundered",
+        "tornado"
+      ],
+      "extracted_motif_edge_counts": [
+        4,
+        4
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_certik_013",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "tornado"
+      ],
+      "extracted_motif_edge_counts": [],
+      "alignment_hops": 0.0
+    },
+    {
+      "report_id": "rep_certik_014",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "fund flow",
+        "cash out",
+        "cash-out"
+      ],
+      "extracted_motif_edge_counts": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "alignment_hops": 0
+    },
+    {
+      "report_id": "rep_blocksec_009",
+      "source_hop_count": 0,
+      "source_flow_markers": [
+        "cross-chain",
+        "bridge",
+        "phalcon"
+      ],
+      "extracted_motif_edge_counts": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "alignment_hops": 0
+    }
+  ],
+  "check3_zero_noise": {
+    "extracted_residues": 0,
+    "kb_residues": 0,
+    "violations": {},
+    "passed": true
+  },
+  "check4_saturation": [
+    {
+      "report_id": "rep_slowmist_002",
+      "extracted": 6,
+      "deduplicated": 5,
+      "net_added": 1,
+      "cumulative_total": 19
+    },
+    {
+      "report_id": "rep_slowmist_003",
+      "extracted": 3,
+      "deduplicated": 2,
+      "net_added": 1,
+      "cumulative_total": 20
+    },
+    {
+      "report_id": "rep_certik_001",
+      "extracted": 2,
+      "deduplicated": 1,
+      "net_added": 1,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_002",
+      "extracted": 2,
+      "deduplicated": 2,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_003",
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_004",
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_005",
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_007",
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_008",
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_011",
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_012",
+      "extracted": 2,
+      "deduplicated": 2,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_013",
+      "extracted": 0,
+      "deduplicated": 0,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_014",
+      "extracted": 6,
+      "deduplicated": 6,
+      "net_added": 0,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_blocksec_009",
+      "extracted": 4,
+      "deduplicated": 4,
+      "net_added": 0,
+      "cumulative_total": 21
+    }
+  ],
+  "ledger_audit": {
+    "clean": true,
+    "issues": {}
+  },
+  "quarantine_count": 2,
+  "per_report": [
+    {
+      "report_id": "rep_slowmist_002",
+      "vendor": "SlowMist",
+      "filename": "rep_slowmist_002_2026-09-20.txt",
+      "chunks": 6,
+      "extracted": 6,
+      "deduplicated": 5,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.043
+    },
+    {
+      "report_id": "rep_slowmist_003",
+      "vendor": "SlowMist",
+      "filename": "rep_slowmist_003_2026-09-11.txt",
+      "chunks": 3,
+      "extracted": 3,
+      "deduplicated": 2,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.02
+    },
+    {
+      "report_id": "rep_certik_001",
+      "vendor": "CertiK",
+      "filename": "rep_certik_001_liquid-network-incident-analysis-certik.txt",
+      "chunks": 2,
+      "extracted": 2,
+      "deduplicated": 1,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.013
+    },
+    {
+      "report_id": "rep_certik_002",
+      "vendor": "CertiK",
+      "filename": "rep_certik_002_verus-incident-analysis-certik.txt",
+      "chunks": 2,
+      "extracted": 2,
+      "deduplicated": 2,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.013
+    },
+    {
+      "report_id": "rep_certik_003",
+      "vendor": "CertiK",
+      "filename": "rep_certik_003_defituna-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.007
+    },
+    {
+      "report_id": "rep_certik_004",
+      "vendor": "CertiK",
+      "filename": "rep_certik_004_jaredfromsubway-mev-bot-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.007
+    },
+    {
+      "report_id": "rep_certik_005",
+      "vendor": "CertiK",
+      "filename": "rep_certik_005_gnosispay-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.007
+    },
+    {
+      "report_id": "rep_certik_007",
+      "vendor": "CertiK",
+      "filename": "rep_certik_007_movie-token-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.007
+    },
+    {
+      "report_id": "rep_certik_008",
+      "vendor": "CertiK",
+      "filename": "rep_certik_008_sof-laxo-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.006
+    },
+    {
+      "report_id": "rep_certik_011",
+      "vendor": "CertiK",
+      "filename": "rep_certik_011_truebit-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 1,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.006
+    },
+    {
+      "report_id": "rep_certik_012",
+      "vendor": "CertiK",
+      "filename": "rep_certik_012_balancer-incident-analysis-certik.txt",
+      "chunks": 2,
+      "extracted": 2,
+      "deduplicated": 2,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.013
+    },
+    {
+      "report_id": "rep_certik_013",
+      "vendor": "CertiK",
+      "filename": "rep_certik_013_2026-03-23.txt",
+      "chunks": 1,
+      "extracted": 0,
+      "deduplicated": 0,
+      "net_added": 0,
+      "failed_chunks": 1,
+      "noise_residues": 0,
+      "elapsed_s": 0.013
+    },
+    {
+      "report_id": "rep_certik_014",
+      "vendor": "CertiK",
+      "filename": "rep_certik_014_2025-07-22.txt",
+      "chunks": 7,
+      "extracted": 6,
+      "deduplicated": 6,
+      "net_added": 0,
+      "failed_chunks": 1,
+      "noise_residues": 0,
+      "elapsed_s": 0.052
+    },
+    {
+      "report_id": "rep_blocksec_009",
+      "vendor": "BlockSec",
+      "filename": "rep_blocksec_009_2026-09-24.txt",
+      "chunks": 4,
+      "extracted": 4,
+      "deduplicated": 4,
+      "net_added": 0,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 0.025
+    }
+  ],
+  "token_and_latency": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_latency_ms": 0.0,
+    "total_calls": 70
+  },
+  "total_elapsed_s": 0.231,
+  "production_kb_updated": false,
+  "artifact_sha256": {
+    "meta_config.txt": "044302453E1E42DDF6217CD13D65DDFFB1509D4FC966EE9959AD71741503FBBB",
+    "distillation_report.json": "812B4C1DBB25789B1C29CA5905B33616E1F3C2BE9A356494EBD01AAB878C457C",
+    "saturation_curve.json": "F09BCF0FE09D3888855A0F82599D22A0DF79834322F38A396DEF75973429AEDD",
+    "sample_extracted_motifs.json": "A617677A29DAE77FC87F182E2232D19C7B1D4BA39C4A795511A8DC1F2D0E9192",
+    "quarantine_log.json": "6AF126B6F13FAD8001A0345A0666F707E2FDDC835E7EF32B1358EE9D8CAD71D1"
+  },
+  "out_dir": "D:\\projects\\AML\\experiments\\phase3_batch_distillation\\dry_run"
+}

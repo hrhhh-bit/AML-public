@@ -1,0 +1,16 @@
+[
+  {
+    "report_id": "rep_certik_013",
+    "chunk_index": 0,
+    "attempts": 4,
+    "error": "motif item #0 invalid: 1 validation error for TopologicalMotif\n  Value error, Motif 'QUARANTINE_CONSERVATION': out-flow conservation violated at node 'S' (sum=0.8000, tolerance 0.01). Single out-edges must carry flow_share 1.0; downstream in-flow weights must not overwrite upstream out-shares. [type=value_error, input_value={'motif_id': 'QUARANTINE_... ['dry_run', 'invalid']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+    "disposition": "physically discarded"
+  },
+  {
+    "report_id": "rep_certik_014",
+    "chunk_index": 0,
+    "attempts": 4,
+    "error": "invalid JSON after cleanup: Expecting value at line 1 col 1",
+    "disposition": "physically discarded"
+  }
+]

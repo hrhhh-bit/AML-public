@@ -1,0 +1,100 @@
+[
+  {
+    "report_id": "rep_slowmist_002",
+    "extracted": 2,
+    "deduplicated": 0,
+    "net_added": 2,
+    "cumulative_total": 20
+  },
+  {
+    "report_id": "rep_slowmist_003",
+    "extracted": 3,
+    "deduplicated": 0,
+    "net_added": 3,
+    "cumulative_total": 23
+  },
+  {
+    "report_id": "rep_certik_001",
+    "extracted": 2,
+    "deduplicated": 1,
+    "net_added": 1,
+    "cumulative_total": 24
+  },
+  {
+    "report_id": "rep_certik_002",
+    "extracted": 2,
+    "deduplicated": 1,
+    "net_added": 1,
+    "cumulative_total": 25
+  },
+  {
+    "report_id": "rep_certik_003",
+    "extracted": 1,
+    "deduplicated": 0,
+    "net_added": 1,
+    "cumulative_total": 26
+  },
+  {
+    "report_id": "rep_certik_004",
+    "extracted": 1,
+    "deduplicated": 0,
+    "net_added": 1,
+    "cumulative_total": 27
+  },
+  {
+    "report_id": "rep_certik_005",
+    "extracted": 1,
+    "deduplicated": 0,
+    "net_added": 1,
+    "cumulative_total": 28
+  },
+  {
+    "report_id": "rep_certik_007",
+    "extracted": 1,
+    "deduplicated": 0,
+    "net_added": 1,
+    "cumulative_total": 29
+  },
+  {
+    "report_id": "rep_certik_008",
+    "extracted": 1,
+    "deduplicated": 0,
+    "net_added": 1,
+    "cumulative_total": 30
+  },
+  {
+    "report_id": "rep_certik_011",
+    "extracted": 1,
+    "deduplicated": 1,
+    "net_added": 0,
+    "cumulative_total": 30
+  },
+  {
+    "report_id": "rep_certik_012",
+    "extracted": 2,
+    "deduplicated": 0,
+    "net_added": 2,
+    "cumulative_total": 32
+  },
+  {
+    "report_id": "rep_certik_013",
+    "extracted": 1,
+    "deduplicated": 0,
+    "net_added": 1,
+    "cumulative_total": 33
+  },
+  {
+    "report_id": "rep_certik_014",
+    "extracted": 6,
+    "deduplicated": 1,
+    "net_added": 5,
+    "cumulative_total": 38
+  },
+  {
+    "report_id": "rep_blocksec_009",
+    "extracted": 4,
+    "deduplicated": 2,
+    "net_added": 2,
+    "cumulative_total": 40
+  }
+]

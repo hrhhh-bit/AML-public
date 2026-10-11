@@ -1,0 +1,321 @@
+[
+  {
+    "motif_id": "rep_slowmist_002__c01__peeling_bridge",
+    "pattern_type": "Chain_Hopping",
+    "description": "Cross-chain escape via a bridge primitive followed by asymmetric peeled dispersal toward the final target wallet",
+    "preconditions": {
+      "min_level": 1,
+      "allowed_node_roles": null,
+      "required_chains": null,
+      "max_active_branches": null
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "M",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "P",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "M",
+        "operation": "Transfer",
+        "flow_share": 0.85
+      },
+      {
+        "source": "I1",
+        "target": "P",
+        "operation": "Transfer",
+        "flow_share": 0.15
+      },
+      {
+        "source": "M",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "P",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": []
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "dry_run",
+      "cross_chain",
+      "peeling"
+    ],
+    "applicable_scale_tiers": [],
+    "flow_prototype_profile": {
+      "S": "SINGLE",
+      "CC": "SINGLE",
+      "I1": "PEELING",
+      "M": "SINGLE",
+      "P": "SINGLE",
+      "T": "NONE"
+    },
+    "edge_action_basis": [
+      "Bridge",
+      "Transfer",
+      "Transfer",
+      "Transfer",
+      "Transfer",
+      "Transfer"
+    ]
+  },
+  {
+    "motif_id": "rep_slowmist_003__c01__uniform_merge",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Uniform fan-out into twin intermediates then consolidation into one target",
+    "preconditions": {
+      "min_level": 1,
+      "allowed_node_roles": null,
+      "required_chains": null,
+      "max_active_branches": null
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "S",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I1",
+        "target": "T",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "T",
+        "operation": "Merge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": []
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "dry_run",
+      "uniform_split"
+    ],
+    "applicable_scale_tiers": [],
+    "flow_prototype_profile": {
+      "S": "UNIFORM_SPLIT",
+      "I1": "SINGLE",
+      "I2": "SINGLE",
+      "T": "NONE"
+    },
+    "edge_action_basis": [
+      "Merge",
+      "Merge",
+      "Split",
+      "Split"
+    ]
+  },
+  {
+    "motif_id": "rep_certik_001__c01__pure_peeling",
+    "pattern_type": "Peeling_Chain",
+    "description": "Single-chain peel with a dominant main branch and a minor peeled branch",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": null,
+      "required_chains": null,
+      "max_active_branches": null
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "M",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "P",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "M",
+        "operation": "Transfer",
+        "flow_share": 0.8
+      },
+      {
+        "source": "I1",
+        "target": "P",
+        "operation": "Transfer",
+        "flow_share": 0.2
+      },
+      {
+        "source": "M",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "P",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": []
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "dry_run",
+      "peeling"
+    ],
+    "applicable_scale_tiers": [],
+    "flow_prototype_profile": {
+      "S": "SINGLE",
+      "I1": "PEELING",
+      "M": "SINGLE",
+      "P": "SINGLE",
+      "T": "NONE"
+    },
+    "edge_action_basis": [
+      "Transfer",
+      "Transfer",
+      "Transfer",
+      "Transfer",
+      "Transfer"
+    ]
+  }
+]

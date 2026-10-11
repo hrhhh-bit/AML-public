@@ -1,0 +1,397 @@
+[
+  {
+    "motif_id": "motif_cross_chain_merge_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "Cross-chain asset conversions and bridges from multiple source chains merge into a consolidation-chain aggregator.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 4
+    },
+    "nodes": [
+      {
+        "temp_id": "S_A",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S_B",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "AC_A",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AC_B",
+        "role": "Asset_Conversion",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "CC_A",
+        "role": "Cross_Chain",
+        "chain": "Chain_C",
+        "level": 2
+      },
+      {
+        "temp_id": "CC_B",
+        "role": "Cross_Chain",
+        "chain": "Chain_C",
+        "level": 2
+      },
+      {
+        "temp_id": "AGG_C",
+        "role": "Aggregator",
+        "chain": "Chain_C",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S_A",
+        "target": "AC_A",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S_B",
+        "target": "AC_B",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC_A",
+        "target": "CC_A",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC_B",
+        "target": "CC_B",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC_A",
+        "target": "AGG_C",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC_B",
+        "target": "AGG_C",
+        "operation": "Merge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": true,
+      "target_chain": "Chain_C",
+      "next_recommended_roles": [
+        "Aggregator",
+        "Intermediate"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 1,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain",
+      "bridge",
+      "merge",
+      "consolidation",
+      "swap"
+    ],
+    "applicable_scale_tiers": [
+      "Whale",
+      "Medium"
+    ],
+    "flow_prototype_profile": {
+      "S_A": "SINGLE",
+      "S_B": "SINGLE",
+      "AC_A": "SINGLE",
+      "AC_B": "SINGLE",
+      "CC_A": "SINGLE",
+      "CC_B": "SINGLE",
+      "AGG_C": "NONE"
+    },
+    "edge_action_basis": [
+      "Bridge",
+      "Bridge",
+      "Merge",
+      "Merge",
+      "Swap",
+      "Swap"
+    ]
+  },
+  {
+    "motif_id": "motif_chain_hopping_multichain_consolidation",
+    "pattern_type": "Chain_Hopping",
+    "description": "Multi-chain stolen funds are swapped into a common asset on their source chains and bridged into an Ethereum aggregator for consolidation.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B",
+        "Chain_C"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S_A",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S_B",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "S_C",
+        "role": "Source",
+        "chain": "Chain_C",
+        "level": 0
+      },
+      {
+        "temp_id": "AC_A",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AC_B",
+        "role": "Asset_Conversion",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "AC_C",
+        "role": "Asset_Conversion",
+        "chain": "Chain_C",
+        "level": 1
+      },
+      {
+        "temp_id": "AGG_E",
+        "role": "Aggregator",
+        "chain": "Chain_Ethereum",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S_A",
+        "target": "AC_A",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S_B",
+        "target": "AC_B",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S_C",
+        "target": "AC_C",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC_A",
+        "target": "AGG_E",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC_B",
+        "target": "AGG_E",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC_C",
+        "target": "AGG_E",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -2,
+      "chain_transition": true,
+      "target_chain": "Chain_Ethereum",
+      "next_recommended_roles": [
+        "Intermediate",
+        "Asset_Conversion"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "multi-chain",
+      "swap",
+      "bridge",
+      "consolidation"
+    ],
+    "applicable_scale_tiers": [
+      "Whale"
+    ],
+    "flow_prototype_profile": {
+      "S_A": "SINGLE",
+      "S_B": "SINGLE",
+      "S_C": "SINGLE",
+      "AC_A": "SINGLE",
+      "AC_B": "SINGLE",
+      "AC_C": "SINGLE",
+      "AGG_E": "NONE"
+    },
+    "edge_action_basis": [
+      "Bridge",
+      "Bridge",
+      "Bridge",
+      "Swap",
+      "Swap",
+      "Swap"
+    ]
+  },
+  {
+    "motif_id": "motif_chain_hopping_synthetic_mint_bridge",
+    "pattern_type": "Chain_Hopping",
+    "description": "Synthetic asset is created without backing, consolidated from multiple source outputs, then moved across a federated bridge to a destination chain where it becomes a native asset.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Aggregator"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": null
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Intermediate",
+        "Aggregator",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 1,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "bridge",
+      "synthetic_asset",
+      "consolidation",
+      "peg_out"
+    ],
+    "applicable_scale_tiers": [
+      "Whale"
+    ],
+    "flow_prototype_profile": {
+      "S1": "SINGLE",
+      "S2": "SINGLE",
+      "AGG": "SINGLE",
+      "CC": "SINGLE",
+      "I1": "NONE"
+    },
+    "edge_action_basis": [
+      "Bridge",
+      "Merge",
+      "Merge",
+      "Transfer"
+    ]
+  }
+]

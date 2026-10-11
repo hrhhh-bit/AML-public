@@ -1,0 +1,23 @@
+model=deepseek-flash
+temperature=0.1
+mode=live
+timestamp=2026-10-11 07:34:13 UTC
+git_commit=aa6732a9c275657899df55fc6f3e8ff133ce062b
+baseline_backup=distilled_kb_v1.json
+baseline_sha256=4EE8B31C200E0DE5EA81FC5C98E1103C2B6EC18063C4B43B393F0F2F0833469D
+golden_report_count=14
+report_ids=
+  - rep_slowmist_002
+  - rep_slowmist_003
+  - rep_certik_001
+  - rep_certik_002
+  - rep_certik_003
+  - rep_certik_004
+  - rep_certik_005
+  - rep_certik_007
+  - rep_certik_008
+  - rep_certik_011
+  - rep_certik_012
+  - rep_certik_013
+  - rep_certik_014
+  - rep_blocksec_009

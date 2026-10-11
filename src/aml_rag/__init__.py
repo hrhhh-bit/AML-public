@@ -74,7 +74,16 @@ from .schema import (
     QueryContext,
     TopologicalMotif,
 )
-from .storage import IngestReport, MotifKnowledgeBase, build_default_knowledge_base
+from .storage import (
+    IngestReport,
+    MotifKnowledgeBase,
+    build_default_knowledge_base,
+    FlowPrototype,
+    classify_flow_prototype,
+    edge_action_basis,
+    node_flow_prototypes,
+    vf2_isomorphism_key,
+)
 
 __version__ = "0.4.0"
 
@@ -98,6 +107,12 @@ __all__ = [
     "MotifKnowledgeBase",
     "IngestReport",
     "build_default_knowledge_base",
+    # storage: flow prototypes & VF2 isomorphism (Direction A)
+    "FlowPrototype",
+    "classify_flow_prototype",
+    "node_flow_prototypes",
+    "edge_action_basis",
+    "vf2_isomorphism_key",
     # extractor
     "DISTILLATION_SYSTEM_PROMPT",
     "DistillationError",
