@@ -28,6 +28,8 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Any
 
+from aml_rag.config import AMLConfig, load_default_config
+
 __all__ = [
     "DEFAULT_MODEL",
     "DEFAULT_BASE_URL",
@@ -104,25 +106,37 @@ class LLMClient:
         api_key: str | None = None,
         base_url: str | None = None,
         model: str | None = None,
-        temperature: float = DEFAULT_TEMPERATURE,
-        timeout: float = 60.0,
-        max_retries: int = 3,
-        backoff_base: float = 2.0,
+        temperature: float | None = None,
+        timeout: float | None = None,
+        max_retries: int | None = None,
+        backoff_base: float | None = None,
         extra_body: dict[str, Any] | None = None,
+        config: AMLConfig | None = None,
     ) -> None:
+        """Args:
+        api_key: API key (falls back to env vars, see module docstring).
+        base_url: API base URL (explicit > env > config > legacy default).
+        model: model name (explicit > env > config > legacy default).
+        temperature / timeout / max_retries / backoff_base: explicit values
+            take precedence; otherwise resolved from the agent-domain
+            config, whose defaults equal the legacy module constants
+            (Zero-Delta when ``config=None``).
+        config: optional :class:`aml_rag.config.AMLConfig`.
+        """
+        ac = load_default_config(config).agent
         self.api_key = (
             api_key
             or os.getenv("DEEPSEEK_API_KEY")
             or os.getenv("OPENAI_API_KEY")
         )
         self.base_url = (
-            base_url or os.getenv("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
+            base_url or os.getenv("DEEPSEEK_BASE_URL") or ac.base_url
         ).rstrip("/")
-        self.model = model or os.getenv("DEEPSEEK_MODEL") or DEFAULT_MODEL
-        self.temperature = temperature
-        self.timeout = timeout
-        self.max_retries = max_retries
-        self.backoff_base = backoff_base
+        self.model = model or os.getenv("DEEPSEEK_MODEL") or ac.default_model
+        self.temperature = ac.temperature if temperature is None else temperature
+        self.timeout = ac.timeout if timeout is None else timeout
+        self.max_retries = ac.llm_max_retries if max_retries is None else max_retries
+        self.backoff_base = ac.backoff_base if backoff_base is None else backoff_base
         self.extra_body = dict(extra_body or {})
         self._metrics = LLMMetrics()
 

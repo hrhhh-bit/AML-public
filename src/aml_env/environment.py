@@ -26,6 +26,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from aml_rag.config import AMLConfig, load_default_config
 from aml_rag.schema import (
     AbstractEdge,
     AbstractNode,
@@ -98,29 +99,59 @@ class RewardConfig(BaseModel):
 # ---------------------------------------------------------------------------
 # Environment
 # ---------------------------------------------------------------------------
+#: Sentinel distinguishing "parameter not passed" from explicit ``None``.
+_UNSET = object()
+
+
 class BehavioralEnvironment:
     """Incremental DAG builder for the abstract behavioural graph."""
 
     def __init__(
         self,
         *,
-        d_max: int = 4,
-        max_level: int = 8,
-        max_steps: int = 64,
-        seed_chain: str = "Chain_A",
-        initial_role: NodeRole = NodeRole.SOURCE,
+        d_max: int = _UNSET,
+        max_level: int = _UNSET,
+        max_steps: int = _UNSET,
+        seed_chain: str = _UNSET,
+        initial_role: NodeRole = _UNSET,
         rewards: RewardConfig | None = None,
+        config: AMLConfig | None = None,
     ) -> None:
+        """Args:
+        d_max: maximum out-degree (branching factor) :math:`d_{max}`.
+        max_level: maximum graph depth :math:`L_{max}`.
+        max_steps: trajectory-length limit (primary limit for the planner).
+        seed_chain: initial abstract chain label.
+        initial_role: role of the seed (root) node.
+        rewards: optional custom reward triple.
+        config: optional :class:`aml_rag.config.AMLConfig` supplying the
+            topology-domain defaults.  Omitted parameters fall back to the
+            config values; with ``config=None`` the transparent defaults
+            equal the legacy hard-coded values (Zero-Delta).  Explicit
+            keyword arguments always take precedence over the config.
+        """
+        tc = load_default_config(config).topology
+        d_max = tc.d_max if d_max is _UNSET else d_max
+        max_level = tc.max_level_bound if max_level is _UNSET else max_level
+        max_steps = tc.max_steps if max_steps is _UNSET else max_steps
+        seed_chain = tc.seed_chain if seed_chain is _UNSET else seed_chain
+        initial_role = (
+            NodeRole(tc.initial_role) if initial_role is _UNSET else initial_role
+        )
         self._constraints = MotifConstraints(
             max_branching_factor=d_max,
             max_level_bound=max_level,
-            min_level_bound=2,
+            min_level_bound=tc.min_level_bound,
         )
         self._verifier = HardVerifier(self._constraints)
         self._max_steps = max_steps
         self._seed_chain = seed_chain
         self._initial_role = initial_role
-        self._rewards = rewards or RewardConfig()
+        self._rewards = rewards or RewardConfig(
+            legal=tc.reward_legal,
+            illegal=tc.reward_illegal,
+            terminate=tc.reward_terminate,
+        )
 
         self._nodes: dict[str, AbstractNode] = {}
         self._edges: list[AbstractEdge] = []

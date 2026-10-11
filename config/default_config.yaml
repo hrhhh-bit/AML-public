@@ -1,0 +1,142 @@
+# =============================================================================
+# AML 集中化超参数配置模板（阶段 3C · 方案 A：YAML + Dataclass）
+# =============================================================================
+# 本模板的每一个默认值都与既有源码中审计出的硬编码常量逐位一致
+# （Zero-Delta）：在未显式覆盖任何字段时，系统行为与重构前完全相同。
+#
+# 加载方式（任选其一）：
+#   1. 显式加载：
+#        from aml_rag.config import AMLConfig
+#        cfg = AMLConfig.load_yaml("config/default_config.yaml")
+#        retriever = DualTrackMotifRetriever(kb, config=cfg)
+#   2. 透明默认加载：
+#        设置环境变量 AML_CONFIG_PATH=config/default_config.yaml 后，
+#        各组件构造函数在未显式传入 config 时自动读取本文件；
+#        未设置该环境变量时一律使用内置默认值（零文件 IO，行为不变）。
+#
+# 字段名与源码符号的映射见各字段右侧注释。
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 检索域 RetrievalConfig —— 对应 aml_rag/retriever.py 与 aml_rag/embedding.py
+# -----------------------------------------------------------------------------
+retrieval:
+  # 双轨检索打分权重 α：语义轨权重（1-α 为规则轨权重）
+  # 源码: DualTrackMotifRetriever.__init__(alpha=0.5)
+  alpha: 0.5
+
+  # Top-K 数量：单次检索默认返回的候选数
+  # 源码: DualTrackMotifRetriever.__init__(top_k=5)
+  top_k: 5
+
+  # 硬门禁模式开关：True 时未通过前置条件的候选被整体剔除
+  # 源码: DualTrackMotifRetriever.__init__(strict=True)
+  strict: true
+
+  # 缓存开关：是否按 motif_id 缓存 motif 向量
+  # 源码: DualTrackMotifRetriever.__init__(cache_embeddings=True)
+  cache_embeddings: true
+
+  # 粗筛剪枝窗口 coarse_k：第一阶段稠密预筛保留的候选数；null = 全量候选
+  # （沿用旧版 gate-then-rank 行为）。coarse_k>=1 时为 Top-N 预筛窗口。
+  # 源码: DualTrackMotifRetriever.__init__(coarse_k=None)
+  coarse_k: null
+
+  # 默认稠密向量模型名称
+  # 源码: aml_rag.embedding.DEFAULT_DENSE_MODEL = "all-MiniLM-L6-v2"
+  dense_model_name: all-MiniLM-L6-v2
+
+# -----------------------------------------------------------------------------
+# 拓扑公理域 TopologyConfig —— 对应 aml_rag/schema.py 与 aml_env/
+# -----------------------------------------------------------------------------
+topology:
+  # 出度/分支度上限 d_max
+  # 源码: MotifConstraints.max_branching_factor=4 / BehavioralEnvironment(d_max=4)
+  d_max: 4
+
+  # 全局层数下界 L_min
+  # 源码: MotifConstraints.min_level_bound=2
+  min_level_bound: 2
+
+  # 最大图深度 L_max
+  # 源码: MotifConstraints.max_level_bound=8 / BehavioralEnvironment(max_level=8)
+  max_level_bound: 8
+
+  # 强制无环（生产恒为 true，保留作 schema 完整性）
+  # 源码: MotifConstraints.require_acyclic=True
+  require_acyclic: true
+
+  # 流量守恒容差 tolerance
+  # 源码: aml_rag.schema.FLOW_TOLERANCE = 0.01
+  flow_tolerance: 0.01
+
+  # 环境最大步数
+  # 源码: BehavioralEnvironment(max_steps=64)
+  max_steps: 64
+
+  # 初始链标签
+  # 源码: BehavioralEnvironment(seed_chain="Chain_A")
+  seed_chain: Chain_A
+
+  # 初始节点角色（NodeRole 枚举值）
+  # 源码: BehavioralEnvironment(initial_role=NodeRole.SOURCE)
+  initial_role: Source
+
+  # 稀疏合规奖励三元组
+  # 源码: RewardConfig(legal=0.0, illegal=-1.0, terminate=1.0)
+  reward_legal: 0.0
+  reward_illegal: -1.0
+  reward_terminate: 1.0
+
+# -----------------------------------------------------------------------------
+# 规划代理域 AgentConfig —— 对应 aml_agent/planner.py、client.py 与
+# aml_rag/context_builder.py
+# -----------------------------------------------------------------------------
+agent:
+  # 规划器每步注入的 RAG 候选数
+  # 源码: PlannerAgent(top_k=3)
+  planner_top_k: 3
+
+  # 反思重试上限（每步最多 1 + max_retries 次尝试）
+  # 源码: PlannerAgent(max_retries=3)
+  planner_max_retries: 3
+
+  # 推理温度 temperature
+  # 源码: aml_agent.client.DEFAULT_TEMPERATURE = 0.1
+  temperature: 0.1
+
+  # 默认模型名称
+  # 源码: aml_agent.client.DEFAULT_MODEL = "deepseek-flash"
+  default_model: deepseek-flash
+
+  # 默认 API 基地址
+  # 源码: aml_agent.client.DEFAULT_BASE_URL = "https://api.deepseek.com"
+  base_url: https://api.deepseek.com
+
+  # 网络超时（秒）
+  # 源码: LLMClient(timeout=60.0)
+  timeout: 60.0
+
+  # LLM 请求重试次数（HTTP 429/5xx 与网络错误）
+  # 源码: LLMClient(max_retries=3)
+  llm_max_retries: 3
+
+  # 指数退避底数
+  # 源码: LLMClient(backoff_base=2.0)
+  backoff_base: 2.0
+
+  # 提示词压缩：motif 注入上限
+  # 源码: PromptContextCompressor(max_motifs=5)
+  compressor_max_motifs: 5
+
+  # 提示词压缩输出格式：json | mermaid | hybrid
+  # 源码: PromptContextCompressor(output_format="hybrid")
+  compressor_output_format: hybrid
+
+  # 提示词压缩是否附带检索分数
+  # 源码: PromptContextCompressor(include_scores=True)
+  compressor_include_scores: true
+
+  # 可选 token 预算提示（null = 不裁剪）
+  # 源码: PromptContextCompressor(token_budget_hint=None)
+  compressor_token_budget_hint: null

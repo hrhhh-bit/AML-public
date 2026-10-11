@@ -41,6 +41,7 @@ from collections.abc import Sequence
 
 from pydantic import BaseModel, Field
 
+from .config import AMLConfig, load_default_config
 from .embedding import (  # canonical home; re-exported for backwards compat
     DeterministicHashEmbedder,
     EmbeddingProvider,
@@ -81,6 +82,12 @@ class RetrievalResult(BaseModel):
 # ---------------------------------------------------------------------------
 # Dual-track retriever
 # ---------------------------------------------------------------------------
+#: Sentinel distinguishing "parameter not passed" from an explicit ``None``
+#: (e.g. ``coarse_k=None`` must keep meaning "no pre-screen", even when a
+#: config supplies a non-null default).
+_UNSET = object()
+
+
 class DualTrackMotifRetriever:
     """Rule-gated + semantic-ranked motif retriever (no GNNs involved)."""
 
@@ -89,11 +96,12 @@ class DualTrackMotifRetriever:
         knowledge_base: MotifKnowledgeBase,
         embedder: EmbeddingProvider | None = None,
         *,
-        alpha: float = 0.5,
-        top_k: int = 5,
-        strict: bool = True,
-        cache_embeddings: bool = True,
-        coarse_k: int | None = None,
+        config: AMLConfig | None = None,
+        alpha: float = _UNSET,
+        top_k: int = _UNSET,
+        strict: bool = _UNSET,
+        cache_embeddings: bool = _UNSET,
+        coarse_k: int | None = _UNSET,
     ) -> None:
         """Args:
         knowledge_base: source of candidate motifs.
@@ -101,6 +109,12 @@ class DualTrackMotifRetriever:
             Any pluggable :class:`aml_rag.embedding.EmbeddingProvider` (dense
             or discrete) works, as do legacy duck-typed objects exposing
             ``embed(texts)``.
+        config: optional :class:`aml_rag.config.AMLConfig` supplying the
+            retrieval-domain defaults.  When omitted (or ``None``) the
+            transparent default config is used, whose values equal the
+            legacy hard-coded defaults — Zero-Delta, no behaviour change.
+            Explicit keyword arguments always take precedence over the
+            config values.
         alpha: weight of the semantic score (1-alpha = rule score weight).
         top_k: default number of results to return.
         strict: when True, motifs failing the hard gate are excluded entirely;
@@ -113,6 +127,15 @@ class DualTrackMotifRetriever:
             (default) keeps every candidate — the legacy gate-then-rank
             behaviour, preserved exactly for zero-breaking compatibility.
         """
+        cfg = load_default_config(config)
+        rc = cfg.retrieval
+        alpha = rc.alpha if alpha is _UNSET else alpha
+        top_k = rc.top_k if top_k is _UNSET else top_k
+        strict = rc.strict if strict is _UNSET else strict
+        cache_embeddings = (
+            rc.cache_embeddings if cache_embeddings is _UNSET else cache_embeddings
+        )
+        coarse_k = rc.coarse_k if coarse_k is _UNSET else coarse_k
         if not 0.0 <= alpha <= 1.0:
             raise ValueError("alpha must be in [0, 1]")
         if top_k < 1:

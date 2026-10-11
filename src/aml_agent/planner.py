@@ -32,6 +32,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from aml_env import AgentAction, BehavioralEnvironment, StepResult
 from aml_rag import PromptContextCompressor, QueryContext
+from aml_rag.config import AMLConfig, load_default_config
 from aml_rag.retriever import DualTrackMotifRetriever, RetrievalResult
 from aml_rag.schema import OperationType
 
@@ -221,6 +222,10 @@ class Planner(Protocol):
 # ---------------------------------------------------------------------------
 # Planner agent
 # ---------------------------------------------------------------------------
+#: Sentinel distinguishing "parameter not passed" from explicit ``None``.
+_UNSET = object()
+
+
 class PlannerAgent:
     """RAG-enhanced LLM planning loop over :class:`BehavioralEnvironment`."""
 
@@ -231,10 +236,28 @@ class PlannerAgent:
         llm: LLMCallable | None = None,
         *,
         compressor: PromptContextCompressor | None = None,
-        top_k: int = 3,
-        max_retries: int = 3,
+        top_k: int = _UNSET,
+        max_retries: int = _UNSET,
         step_callback: Callable[[TrajectoryStep], None] | None = None,
+        config: AMLConfig | None = None,
     ) -> None:
+        """Args:
+        environment: graph environment the planner acts upon.
+        retriever: dual-track RAG prior source.
+        llm: callable mapping a prompt to the model reply.
+        compressor: optional prompt compressor (built from the agent-domain
+            config when omitted).
+        top_k: RAG candidates injected per step.
+        max_retries: reflection retry cap (1 + max_retries attempts/step).
+        step_callback: optional per-step telemetry hook.
+        config: optional :class:`aml_rag.config.AMLConfig` supplying the
+            agent-domain defaults.  With ``config=None`` the transparent
+            defaults equal the legacy hard-coded values (Zero-Delta).
+            Explicit keyword arguments always take precedence.
+        """
+        ac = load_default_config(config).agent
+        top_k = ac.planner_top_k if top_k is _UNSET else top_k
+        max_retries = ac.planner_max_retries if max_retries is _UNSET else max_retries
         if top_k < 1:
             raise ValueError("top_k must be >= 1")
         if max_retries < 0:
@@ -242,7 +265,12 @@ class PlannerAgent:
         self._environment = environment
         self._retriever = retriever
         self._llm = llm
-        self._compressor = compressor or PromptContextCompressor()
+        self._compressor = compressor or PromptContextCompressor(
+            max_motifs=ac.compressor_max_motifs,
+            output_format=ac.compressor_output_format,  # type: ignore[arg-type]
+            include_scores=ac.compressor_include_scores,
+            token_budget_hint=ac.compressor_token_budget_hint,
+        )
         self._top_k = top_k
         self._max_retries = max_retries
         self._step_callback = step_callback

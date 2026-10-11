@@ -24,6 +24,7 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
+from aml_rag.config import AMLConfig, load_default_config
 from aml_rag.schema import (
     FLOW_TOLERANCE,
     AbstractEdge,
@@ -41,8 +42,29 @@ __all__ = ["HardVerifier"]
 class HardVerifier:
     """Zero-tolerance structural gate for agent actions."""
 
-    def __init__(self, constraints: MotifConstraints | None = None) -> None:
-        self.constraints: MotifConstraints = constraints or MotifConstraints()
+    def __init__(
+        self,
+        constraints: MotifConstraints | None = None,
+        *,
+        config: AMLConfig | None = None,
+    ) -> None:
+        """Args:
+        constraints: explicit constraint set (takes precedence).
+        config: optional :class:`aml_rag.config.AMLConfig`; when
+            ``constraints`` is omitted the verifier derives
+            :class:`MotifConstraints` from the topology domain.  With
+            ``config=None`` the transparent defaults are identical to the
+            legacy hard-coded values (Zero-Delta).
+        """
+        if constraints is None:
+            tc = load_default_config(config).topology
+            constraints = MotifConstraints(
+                max_branching_factor=tc.d_max,
+                min_level_bound=tc.min_level_bound,
+                max_level_bound=tc.max_level_bound,
+                require_acyclic=tc.require_acyclic,
+            )
+        self.constraints: MotifConstraints = constraints
 
     # ------------------------------------------------------------------
     def validate(

@@ -13,6 +13,15 @@ Generation framework.  Provides:
 
 from __future__ import annotations
 
+from .config import (
+    AML_CONFIG_PATH_ENV,
+    AgentConfig,
+    AMLConfig,
+    RetrievalConfig,
+    TopologyConfig,
+    load_default_config,
+    yaml_is_available,
+)
 from .context_builder import PromptContextCompressor
 from .distiller import (
     DISTILLATION_SYSTEM_PROMPT_V2,
@@ -155,5 +164,13 @@ __all__ = [
     "cosine_similarity",
     # context builder
     "PromptContextCompressor",
+    # config (Stage-3 Part C)
+    "AMLConfig",
+    "RetrievalConfig",
+    "TopologyConfig",
+    "AgentConfig",
+    "load_default_config",
+    "yaml_is_available",
+    "AML_CONFIG_PATH_ENV",
     "__version__",
 ]
