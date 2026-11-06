@@ -36,6 +36,7 @@
     python scripts/batch_distill.py --dry-run
     python scripts/batch_distill.py --live
     python scripts/batch_distill.py --live --temperature 0.1 --timeout 180
+    python scripts/batch_distill.py --dump-prompts --dump-dir data/staged_prompts_v2/
 """
 
 from __future__ import annotations
@@ -62,7 +63,6 @@ for _extra in (str(PROJECT_ROOT), str(SRC), str(TOOLS)):
 
 from aml_agent import DEFAULT_MODEL, LLMClient  # noqa: E402
 from aml_rag import (  # noqa: E402
-    MotifDistiller,
     MotifKnowledgeBase,
     TextChunker,
     edge_action_basis,
@@ -71,15 +71,21 @@ from aml_rag import (  # noqa: E402
     vf2_isomorphism_key,
     zero_noise_audit,
 )
+from aml_rag.prompt_v2 import (  # noqa: E402
+    PromptV2Distiller,
+    build_v2_prompt,
+    format_attention_anchor,
+)
 from aml_rag.schema import TopologicalMotif  # noqa: E402
-from tools.crawler.extractor import analyze_fund_flow_evidence  # noqa: E402
 
 DEFAULT_MANIFEST = PROJECT_ROOT / "data" / "raw_reports" / "manifest.csv"
+DEFAULT_ELIGIBILITY_AUDIT = PROJECT_ROOT / "data" / "raw_reports" / "eligibility_audit.json"
 RAW_REPORTS_DIR = PROJECT_ROOT / "data" / "raw_reports"
 PRODUCTION_KB = PROJECT_ROOT / "data" / "distilled_kb.json"
 BASELINE_BACKUP = PROJECT_ROOT / "data" / "distilled_kb_v1.json"
 DEFAULT_OUT_DIR = PROJECT_ROOT / "experiments" / "phase3_batch_distillation"
 DRY_RUN_OUT_DIR = DEFAULT_OUT_DIR / "dry_run"
+DEFAULT_DUMP_DIR = PROJECT_ROOT / "data" / "staged_prompts_v2"
 
 EXPECTED_GOLDEN_COUNT = 14      # PRISMA 定标：黄金研报必须恰好 14 篇
 MAX_REFLECTION_RETRIES = 3      # 单篇反思重试上限
@@ -133,18 +139,48 @@ def load_golden_reports(manifest_path: Path) -> list[dict[str, str]]:
     return golden
 
 
+def load_eligibility_audit(audit_path: Path) -> dict[str, Any]:
+    """读取 PRISMA 资格定标审计台账（eligibility_audit.json）。
+
+    Check 2 因果对齐的源跳数基准即来源于此：每篇黄金研报经 Tier-1 正则 +
+    Tier-2 LLM 双层判定后，固化 ``hops_detected`` 与 ``evidence_chain``。
+    台账缺失时返回空字典（离线 dry-run 在无审计台账环境下仍可跑通）。
+    """
+    if not audit_path.exists():
+        return {}
+    with audit_path.open(encoding="utf-8") as fh:
+        return json.load(fh)
+
+
 def enforce_baseline_freeze(kb_path: Path, backup_path: Path) -> str:
-    """基准防线冻结：备份必须存在且哈希与当前生产知识库一致。"""
+    """基准防线冻结：备份必须存在，且其全部 Motif 必须原样保留在生产库中。
+
+    生产知识库可以是基准备份经 ``--live`` 扩容后的**超集**，但基准备份中的
+    每一个 Motif 都不得被篡改或删除（实体级冻结校验，而非整文件哈希等值，
+    否则 ``--live`` 扩容一次后哈希必然漂移，导致二次执行被永久锁死）。
+    """
     if not backup_path.exists():
         raise RuntimeError(
             f"基准备份缺失：{backup_path} —— 禁止在无冻结基线的情况下执行扩容。"
         )
-    backup_sha = sha256_hex(backup_path)
-    if sha256_hex(kb_path) != backup_sha:
+    backup = MotifKnowledgeBase.load(backup_path)
+    try:
+        kb = MotifKnowledgeBase.load(kb_path)
+    except Exception as exc:  # noqa: BLE001 - 无法解析的生产库一律拦截
         raise RuntimeError(
-            "生产知识库与冻结基线哈希不一致，终止执行（基准防线红线）。"
-        )
-    return backup_sha
+            f"生产知识库无法解析：{exc} —— 基准防线红线。"
+        ) from exc
+
+    for motif in backup:
+        if motif.motif_id not in kb:
+            raise RuntimeError(
+                f"生产知识库缺少基准备份 Motif：{motif.motif_id}（基准防线红线）。"
+            )
+        if kb.get(motif.motif_id) != motif:
+            raise RuntimeError(
+                f"基准备份 Motif 被篡改：{motif.motif_id}（基准防线红线）。"
+            )
+    return sha256_hex(backup_path)
 
 
 # ---------------------------------------------------------------------------
@@ -274,6 +310,27 @@ def _kinds_for(report_index: int) -> list[str]:
     return ["pure_peeling", "uniform_merge"]
 
 
+def _wrap_v2(motifs: list[dict[str, Any]]) -> str:
+    """Wrap flat motif dicts into the two-phase Prompt v2 JSON envelope.
+
+    Mock-only helper: ``Integration_Merge`` (fan-in / consolidation) motifs
+    land in ``phase_a_inflow_motifs``; everything else lands in
+    ``phase_b_outflow_motifs``.  ``grounded_chains`` is derived from the
+    union of chains actually used by the motif nodes.
+    """
+    grounded = sorted({n["chain"] for m in motifs for n in m["nodes"]})
+    phase_a = [m for m in motifs if m.get("pattern_type") == "Integration_Merge"]
+    phase_b = [m for m in motifs if m.get("pattern_type") != "Integration_Merge"]
+    return json.dumps(
+        {
+            "grounded_chains": grounded,
+            "phase_a_inflow_motifs": phase_a,
+            "phase_b_outflow_motifs": phase_b,
+        },
+        ensure_ascii=False,
+    )
+
+
 class OfflineMockLLM:
     """确定性离线 Mock LLM：零网络、零 Token。
 
@@ -302,20 +359,20 @@ class OfflineMockLLM:
 
         # 隔离场景 A：守恒门禁永久拦截（仅首个分块，重试 4 次耗尽）
         if r == 11 and chunk_no == 1:
-            return json.dumps([_motif_dict("QUARANTINE_CONSERVATION", "invalid_conservation")])
+            return _wrap_v2([_motif_dict("QUARANTINE_CONSERVATION", "invalid_conservation")])
         # 隔离场景 B：JSON 解析永久失败（仅首个分块）
         if r == 12 and chunk_no == 1:
             return "### not a json array at all ["
 
         # 正常研报：首次尝试故意出错（校验反思自愈路径）
         if not is_repair:
-            return json.dumps([_motif_dict("SEED_INVALID", "invalid_conservation")])
+            return _wrap_v2([_motif_dict("SEED_INVALID", "invalid_conservation")])
 
         payload = [
             _motif_dict(f"{self._report_id}__c{chunk_no:02d}__{kind}", kind)
             for kind in _kinds_for(r)
         ]
-        return json.dumps(payload)
+        return _wrap_v2(payload)
 
 
 # ---------------------------------------------------------------------------
@@ -356,6 +413,7 @@ def run_pipeline(
     temperature: float = DEFAULT_TEMPERATURE,
     base_url: str | None = None,
     timeout: float = 120.0,
+    audit_path: Path | None = None,
     mock_factory: Callable[[int, str], Any] = OfflineMockLLM,
 ) -> dict[str, Any]:
     """执行 14 篇黄金研报批量蒸馏 + 知识库扩容（双模）。
@@ -375,6 +433,8 @@ def run_pipeline(
     # ---- 基准防线冻结 ----------------------------------------------------
     backup_sha = enforce_baseline_freeze(kb_path, backup_path)
     golden = load_golden_reports(manifest_path)
+    audit_path = Path(audit_path) if audit_path else DEFAULT_ELIGIBILITY_AUDIT
+    eligibility_audit = load_eligibility_audit(audit_path)
     kb = MotifKnowledgeBase.load(kb_path)
     base_count = len(kb)
 
@@ -384,6 +444,7 @@ def run_pipeline(
     # ---- 遥测容器 --------------------------------------------------------
     saturation_curve: list[dict[str, Any]] = []
     quarantine: list[dict[str, Any]] = []
+    micro_fragment_drops: list[dict[str, Any]] = []
     report_entries: list[dict[str, Any]] = []
     check2_rows: list[dict[str, Any]] = []
     added_motifs: list[TopologicalMotif] = []
@@ -415,13 +476,17 @@ def run_pipeline(
                 call_stats["repairs"] += 1
             return _llm(prompt)
 
-        distiller = MotifDistiller(
+        attention_anchor = format_attention_anchor(eligibility_audit.get(report_id, {}))
+        distiller = PromptV2Distiller(
             instrumented,
             chunker=TextChunker(),
             max_repair_retries=MAX_REFLECTION_RETRIES,
+            # dry-run 关闭单通旁路：离线 mock 需保留多分块以覆盖隔离场景与
+            # Check 1 门禁；live 开启单通以消除跨分块回声（统一战役 DAG）。
+            enable_single_pass=(mode == "live"),
         )
         t0 = time.perf_counter()
-        result = distiller.distill(report_text)
+        result = distiller.distill(report_text, attention_anchor=attention_anchor)
         elapsed_s = time.perf_counter() - t0
         total_elapsed_s += elapsed_s
 
@@ -429,6 +494,32 @@ def run_pipeline(
         failures = result.failures
         total_chunks += result.chunks
         passed_chunks += result.chunks - len(failures)
+
+        # 微观碎片丢弃（复杂度下界门禁）：边数 < 3 的 trivial transfer 在
+        # 解析层被物理丢弃，记入隔离遥测，严禁流入公理验证与同构去重池。
+        for pm in result.dropped_micro_fragments:
+            micro_fragment_drops.append(
+                {
+                    "report_id": report_id,
+                    "phase": pm.phase,
+                    "motif_id": pm.motif.motif_id,
+                    "edge_count": len(pm.motif.edges),
+                    "disposition": "micro-fragment discarded (<3 edges)",
+                }
+            )
+
+        # 防爆检疫：边数超过 MAX_EDGE_COUNT 的可疑超大图（节点爆炸/幽灵中继
+        # 回潮）在解析层被隔离，记入遥测，严禁流入公理验证与同构去重池。
+        for pm in result.quarantined_oversize:
+            micro_fragment_drops.append(
+                {
+                    "report_id": report_id,
+                    "phase": pm.phase,
+                    "motif_id": pm.motif.motif_id,
+                    "edge_count": len(pm.motif.edges),
+                    "disposition": "oversize quarantined (>12 edges)",
+                }
+            )
 
         # Check 1 的局部值与隔离日志（物理丢弃）
         for failure in failures:
@@ -451,19 +542,31 @@ def run_pipeline(
         )
         all_extracted.extend(result.motifs)
 
-        # Check 2：抽取路径与原始研报资金流的对齐跳数
-        evidence = analyze_fund_flow_evidence(report_text)
+        # Check 2：抽取路径与原始研报资金流的对齐跳数。
+        # 源跳数基准取自 PRISMA 资格定标审计台账 eligibility_audit.json 中
+        # 经 Tier-1 正则 + Tier-2 LLM 双层判定固化的 hops_detected，而非
+        # 原先的 ASCII 箭头图正则（analyze_fund_flow_evidence 仅面向
+        # DeFiHackLabs Markdown 复盘，对 CertiK / SlowMist 散文正文恒返回 0）。
+        audit_entry = eligibility_audit.get(report_id, {})
+        source_hops = int(audit_entry.get("hops_detected") or 0)
         motif_hops = [len(m.edges) for m in result.motifs]
         mean_hops = (sum(motif_hops) / len(motif_hops)) if motif_hops else 0.0
         check2_rows.append(
             {
                 "report_id": report_id,
-                "source_hop_count": evidence["hop_count"],
-                "source_flow_markers": evidence["markers"][:8],
+                "source_hop_count": source_hops,
+                "source_hop_origin": "eligibility_audit_llm",
+                "source_flow_markers": list(audit_entry.get("markers") or [])[:8],
+                "evidence_chain": audit_entry.get("evidence_chain") or "",
                 "extracted_motif_edge_counts": motif_hops,
                 "alignment_hops": round(
-                    min(evidence["hop_count"], mean_hops), 2
-                ) if motif_hops else 0.0,
+                    min(source_hops, mean_hops), 2
+                ) if motif_hops and source_hops > 0 else 0.0,
+                "alignment_gap": (
+                    round(abs(source_hops - mean_hops), 2)
+                    if source_hops > 0
+                    else None
+                ),
             }
         )
 
@@ -615,6 +718,8 @@ def run_pipeline(
         "check4_saturation": saturation_curve,
         "ledger_audit": {"clean": audit_clean, "issues": ledger_issues},
         "quarantine_count": len(quarantine),
+        "micro_fragment_drop_count": len(micro_fragment_drops),
+        "micro_fragment_drops": micro_fragment_drops,
         "per_report": report_entries,
         "token_and_latency": token_summary,
         "total_elapsed_s": round(total_elapsed_s, 3),
@@ -638,6 +743,53 @@ def run_pipeline(
     return report
 
 
+def dump_prompts(
+    dump_dir: Path,
+    *,
+    manifest_path: Path | None = None,
+    raw_dir: Path | None = None,
+    audit_path: Path | None = None,
+) -> list[Path]:
+    """离线导出：为 14 篇黄金研报装配完整 Prompt v2 并落盘（零网络零 Token）。
+
+    读取研报全文，注入 ``eligibility_audit.json`` 的资金链遥测作为注意力
+    锚点，将装配好的 Prompt v2 逐篇写为 ``<report_id>_prompt.md``。
+    不调用任何 LLM、不触碰生产知识库。
+    """
+    manifest_path = Path(manifest_path) if manifest_path else DEFAULT_MANIFEST
+    raw_dir = Path(raw_dir) if raw_dir else RAW_REPORTS_DIR
+    audit_path = Path(audit_path) if audit_path else DEFAULT_ELIGIBILITY_AUDIT
+    dump_dir = Path(dump_dir)
+    dump_dir.mkdir(parents=True, exist_ok=True)
+
+    golden = load_golden_reports(manifest_path)
+    eligibility_audit = load_eligibility_audit(audit_path)
+
+    written: list[Path] = []
+    for row in golden:
+        report_id = row["report_id"]
+        report_file = raw_dir / row["filename"]
+        if not report_file.exists():
+            raise RuntimeError(f"黄金研报正文缺失：{report_file}")
+        report_text = report_file.read_text(encoding="utf-8")
+        entry = eligibility_audit.get(report_id, {})
+        anchor = format_attention_anchor(entry)
+        prompt = build_v2_prompt(report_text, attention_anchor=anchor)
+
+        header = (
+            f"# Prompt v2 — {report_id}\n\n"
+            f"- vendor: {row.get('vendor', '')}\n"
+            f"- title: {row.get('title', '')}\n"
+            f"- filename: {row.get('filename', '')}\n"
+            f"- hops_detected: {entry.get('hops_detected', '')}\n\n"
+            "---\n\n"
+        )
+        out = dump_dir / f"{report_id}_prompt.md"
+        out.write_text(header + prompt, encoding="utf-8")
+        written.append(out)
+    return written
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="14 篇黄金研报批量蒸馏与知识库扩容（双模调度器）"
@@ -645,13 +797,30 @@ def main() -> int:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--dry-run", action="store_true", help="离线自检（零网络零 Token）")
     group.add_argument("--live", action="store_true", help="正式生产：真实调用 deepseek-flash")
+    group.add_argument("--dump-prompts", action="store_true",
+                       help="离线导出 14 篇 Prompt v2 装配文本（零网络零 Token）")
     parser.add_argument("--out-dir", default=None, help="产物输出目录（覆盖默认）")
+    parser.add_argument("--dump-dir", default=str(DEFAULT_DUMP_DIR),
+                        help="Prompt v2 导出目录（默认 data/staged_prompts_v2/）")
+    parser.add_argument("--kb-path", default=None,
+                        help="输出知识库路径（默认生产库 data/distilled_kb.json）")
+    parser.add_argument("--backup-path", default=None,
+                        help="基准冻结参考路径（默认 data/distilled_kb_v1.json）")
     parser.add_argument("--model", default=None, help=f"模型名（默认 {DEFAULT_MODEL}）")
     parser.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE,
                         help="采样温度（默认 0.1）")
     parser.add_argument("--base-url", default=None, help="API Base URL 覆盖")
     parser.add_argument("--timeout", type=float, default=120.0, help="HTTP 超时(s)")
     args = parser.parse_args()
+
+    if args.dump_prompts:
+        files = dump_prompts(Path(args.dump_dir))
+        print("\n== Prompt v2 离线装配导出 ==")
+        print(f"导出目录: {args.dump_dir}")
+        print(f"已装配 {len(files)} 篇黄金研报提示词:")
+        for path in files:
+            print(f"  - {path.name}")
+        return 0
 
     mode = "live" if args.live else "dry-run"
     if mode == "live":
@@ -661,6 +830,8 @@ def main() -> int:
     out_dir = Path(args.out_dir) if args.out_dir else None
     report = run_pipeline(
         mode,
+        kb_path=Path(args.kb_path) if args.kb_path else None,
+        backup_path=Path(args.backup_path) if args.backup_path else None,
         out_dir=out_dir,
         model=args.model,
         temperature=args.temperature,

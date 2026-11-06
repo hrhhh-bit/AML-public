@@ -1,0 +1,6702 @@
+[
+  {
+    "motif_id": "Peeling_Chain_Single_Chain",
+    "pattern_type": "Peeling_Chain",
+    "description": "Rapid linear peeled transfers along a single chain: funds hop through a short chain of fresh intermediate wallets before reaching the final target.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": null,
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "I2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "linear",
+      "single_chain",
+      "rapid",
+      "peeling"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Cross_Chain_Swap_Bridge",
+    "pattern_type": "Chain_Hopping",
+    "description": "Swap volatile assets into a stablecoin on the origin chain, then bridge the proceeds to a target chain before final transfer to the destination wallet.",
+    "preconditions": {
+      "min_level": 1,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion"
+      ],
+      "required_chains": null,
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "swap",
+      "stablecoin",
+      "bridge",
+      "cross_chain"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Multi_Split_Obfuscation",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "One-to-N splitting: the source fans funds out into multiple parallel intermediate nodes on the same chain, which later converge into an aggregator before the final target.",
+    "preconditions": {
+      "min_level": 1,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": null,
+      "max_active_branches": 4
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.6
+      },
+      {
+        "source": "S",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.25
+      },
+      {
+        "source": "S",
+        "target": "I3",
+        "operation": "Split",
+        "flow_share": 0.15
+      },
+      {
+        "source": "I1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I3",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 3,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Aggregator",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 3,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "fan_out",
+      "obfuscation",
+      "1_to_N",
+      "split"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Multi_Chain_Hop_Layering",
+    "pattern_type": "Chain_Hopping",
+    "description": "Layered chain hopping across three distinct chains: funds bridge from chain A to chain B, then immediately bridge again to chain C, where they are finally transferred to the target.",
+    "preconditions": {
+      "min_level": 2,
+      "allowed_node_roles": [
+        "Source",
+        "Cross_Chain"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "CC1",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "CC2",
+        "role": "Cross_Chain",
+        "chain": "Chain_C",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_C",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "CC1",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC1",
+        "target": "CC2",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC2",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_C",
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "chain_hop",
+      "multi_chain",
+      "bridge",
+      "layering"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Aggregation_Merge_To_Target",
+    "pattern_type": "Integration_Merge",
+    "description": "N-to-1 integration: several source streams merge into a single aggregator node, which then transfers the consolidated funds to the final target.",
+    "preconditions": {
+      "min_level": 1,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": null,
+      "max_active_branches": 6
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S3",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S3",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -3,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 3,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "fan_in",
+      "integration",
+      "N_to_1",
+      "merge"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "DEX_Liquidity_Pool_Swap",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Asset conversion through a decentralized exchange liquidity pool: funds are transferred into a swap node and converted into a different asset before reaching the target.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion"
+      ],
+      "required_chains": null,
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "dex",
+      "liquidity_pool",
+      "swap",
+      "single_chain"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Peeling_Chain_Multi_Layer",
+    "pattern_type": "Peeling_Chain",
+    "description": "Deep layered peeling chain: a long sequence of linear hops through intermediate wallets on one chain, maximising the number of hops before reaching the target.",
+    "preconditions": {
+      "min_level": 2,
+      "allowed_node_roles": [
+        "Intermediate"
+      ],
+      "required_chains": null,
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "I4",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 4
+      },
+      {
+        "temp_id": "I5",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 5
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 6
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "I2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "I3",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I3",
+        "target": "I4",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I4",
+        "target": "I5",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I5",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "linear",
+      "deep_layering",
+      "single_chain",
+      "peeling"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Cross_Chain_Bridge_And_Back",
+    "pattern_type": "Chain_Hopping",
+    "description": "Round-trip bridging: funds leave the origin chain through a bridge, pass through an intermediate chain, and are bridged back to the origin chain before final settlement.",
+    "preconditions": {
+      "min_level": 3,
+      "allowed_node_roles": [
+        "Source",
+        "Cross_Chain"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "CC1",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "CC2",
+        "role": "Cross_Chain",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "CC1",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC1",
+        "target": "CC2",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC2",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_A",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "round_trip",
+      "bridge",
+      "return_to_origin",
+      "chain_hop"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Mixer_Anonymization_Split_Merge",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Mixer-style anonymisation: funds are swapped through an asset-conversion node, split into parallel streams, and merged back into an aggregator before the final target.",
+    "preconditions": {
+      "min_level": 2,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Intermediate"
+      ],
+      "required_chains": null,
+      "max_active_branches": 5
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "AC",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 2,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "layering",
+      "anonymization",
+      "split",
+      "merge"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Single_Chain_Multi_Swap_Layering",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Repeated same-chain asset conversions: funds are swapped through multiple conversion nodes in sequence to obfuscate the asset trail before the final transfer.",
+    "preconditions": {
+      "min_level": 1,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion"
+      ],
+      "required_chains": null,
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC1",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AC2",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC1",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC1",
+        "target": "AC2",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC2",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "swap",
+      "layering",
+      "single_chain",
+      "token_obfuscation"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Cross_Chain_Layered_Integration",
+    "pattern_type": "Integration_Merge",
+    "description": "Cross-chain layered integration: two source streams merge on the origin chain and are bridged to the target chain, where they merge again with a local stream before settlement.",
+    "preconditions": {
+      "min_level": 3,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Cross_Chain",
+        "Aggregator",
+        "Target"
+      ],
+      "required_chains": null,
+      "max_active_branches": 6
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG1",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "S3",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG2",
+        "role": "Aggregator",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG1",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG1",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG1",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S3",
+        "target": "AGG2",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "AGG2",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG2",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "integration",
+      "merge",
+      "bridge",
+      "cross_chain"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "Multi_Split_Cross_Chain_Bridge",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Split-then-bridge fan-out: funds are split into parallel streams on the origin chain and each stream is bridged to a different destination chain before re-converging on the final target chain.",
+    "preconditions": {
+      "min_level": 3,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Cross_Chain",
+        "Target"
+      ],
+      "required_chains": null,
+      "max_active_branches": 6
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC1",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "CC2",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "CC3",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "S",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "S",
+        "target": "I3",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "I1",
+        "target": "CC1",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "CC2",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I3",
+        "target": "CC3",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC1",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC2",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC3",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 3,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "split",
+      "bridge",
+      "fan_out",
+      "cross_chain"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "peeling_chain_iterative_asymmetric_split_v1",
+    "pattern_type": "Peeling_Chain",
+    "description": "Iterative peeling chain: a source or continuation node splits value asymmetrically into a dominant continuation edge and a minor peel edge; the continuation repeats the split and minor peel edges terminate at targets.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "M1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "P1",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "M2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "P2",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "M1",
+        "operation": "Split",
+        "flow_share": 0.9
+      },
+      {
+        "source": "S",
+        "target": "P1",
+        "operation": "Split",
+        "flow_share": 0.1
+      },
+      {
+        "source": "M1",
+        "target": "M2",
+        "operation": "Split",
+        "flow_share": 0.9
+      },
+      {
+        "source": "M1",
+        "target": "P2",
+        "operation": "Split",
+        "flow_share": 0.1
+      },
+      {
+        "source": "M2",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 2,
+      "min_level_bound": 1,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "Peeling_Chain",
+      "Asymmetric_Split",
+      "Sequential_Layering",
+      "High_Volume_Laundering"
+    ],
+    "applicable_scale_tiers": [
+      "Medium",
+      "Whale",
+      "State_Sponsored"
+    ]
+  },
+  {
+    "motif_id": "multi_layering_split_fanout_v1",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Source distributes incoming funds via multiple split edges to a first layer of intermediate nodes, each of which further splits funds to additional intermediate nodes, forming a layered fan-out distribution structure.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I4",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I5",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I6",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "S",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I1",
+        "target": "I3",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I1",
+        "target": "I4",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I2",
+        "target": "I5",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I2",
+        "target": "I6",
+        "operation": "Split",
+        "flow_share": 0.5
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 3,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 2,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "fan_out",
+      "distribution",
+      "layering",
+      "early_stage"
+    ],
+    "applicable_scale_tiers": [
+      "Medium",
+      "Whale"
+    ]
+  },
+  {
+    "motif_id": "mixer_pooling_obfuscation",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Funds from multiple sources merge into a mixer aggregator, then are split into fragmented withdrawals to targets, breaking the link between deposit and withdrawal.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": null,
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "M",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "M",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "M",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "M",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "M",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.5
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Asset_Conversion"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "mixer",
+      "pooling",
+      "fragmented_withdrawal",
+      "delayed_output",
+      "anonymity_set"
+    ],
+    "applicable_scale_tiers": [
+      "Retail",
+      "Medium",
+      "Whale"
+    ]
+  },
+  {
+    "motif_id": "motif_chain_hopping_bridge_evasion",
+    "pattern_type": "Chain_Hopping",
+    "description": "Cross-chain bridge hop to a less-monitored chain, optionally preceded by asset conversion, followed by transfer through a reconstructed destination address.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Intermediate"
+      ],
+      "required_chains": null,
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "CC",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "I",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain",
+      "bridge",
+      "evasion",
+      "chain_hopping"
+    ],
+    "applicable_scale_tiers": [
+      "Medium",
+      "Whale"
+    ]
+  },
+  {
+    "motif_id": "many_to_one_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "Multiple victim source accounts merge chaotic irregular inflows into one or few attacker core aggregation wallets, forming consolidation peaks; source accounts are victims and not part of the gang.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 8
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S3",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S4",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG1",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG1",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG1",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S3",
+        "target": "AGG1",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S4",
+        "target": "AGG1",
+        "operation": "Merge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -3,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "consolidation",
+      "ponzi",
+      "rug_pull",
+      "emergency_exit",
+      "many_to_one"
+    ],
+    "applicable_scale_tiers": [
+      "Medium",
+      "Whale"
+    ]
+  },
+  {
+    "motif_id": "otc_p2p_integration_merge",
+    "pattern_type": "Integration_Merge",
+    "description": "Illicit crypto flows fragmented across source branches converge into the attacker's source-chain consolidation wallet, are bridged to a target chain, then transferred into the target-chain OTC/P2P acceptor deposit address for off-chain cash-out.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 4
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "AC",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "I2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "AG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "AG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AG",
+        "target": "AC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Asset_Conversion",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "otc",
+      "p2p",
+      "off_ramp",
+      "integration_merge"
+    ],
+    "applicable_scale_tiers": [
+      "Medium",
+      "Whale"
+    ]
+  },
+  {
+    "motif_id": "multi_chain_inflow_conversion_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "Multiple source streams on separate origin chains are converted through asset swaps, moved via intermediate transfers, bridged into a consolidation chain, and merged into a single aggregator.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Intermediate",
+        "Cross_Chain",
+        "Aggregator"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B",
+        "Chain_C"
+      ],
+      "max_active_branches": 4
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_C",
+        "level": 0
+      },
+      {
+        "temp_id": "AC1",
+        "role": "Asset_Conversion",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "AC2",
+        "role": "Asset_Conversion",
+        "chain": "Chain_C",
+        "level": 1
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_C",
+        "level": 2
+      },
+      {
+        "temp_id": "CC1",
+        "role": "Cross_Chain",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "CC2",
+        "role": "Cross_Chain",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AC1",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC1",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "CC1",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AC2",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC2",
+        "target": "I2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "CC2",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": true,
+      "target_chain": "Chain_A",
+      "next_recommended_roles": [
+        "Aggregator"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "consolidation",
+      "cross_chain",
+      "asset_conversion"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "same_chain_otc_cashout_fanout",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Consolidated funds are fanned out to multiple same-chain OTC/P2P acceptor addresses for off-chain cash-out.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T3",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 1
+      }
+    ],
+    "edges": [
+      {
+        "source": "AGG",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.4
+      },
+      {
+        "source": "AGG",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.3
+      },
+      {
+        "source": "AGG",
+        "target": "T3",
+        "operation": "Split",
+        "flow_share": 0.3
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "otc_cashout",
+      "fanout"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_swap_bridge_otc_dispersal",
+    "pattern_type": "Chain_Hopping",
+    "description": "Consolidated funds are swapped into a bridgeable asset, moved via intermediate transfer, bridged to a target chain, and dispersed to multiple OTC/P2P acceptor addresses for final cash-out.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Asset_Conversion",
+        "Intermediate",
+        "Cross_Chain",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_D"
+      ],
+      "max_active_branches": 4
+    },
+    "nodes": [
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_D",
+        "level": 3
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_D",
+        "level": 4
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_D",
+        "level": 4
+      },
+      {
+        "temp_id": "T3",
+        "role": "Target",
+        "chain": "Chain_D",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "AGG",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "CC",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "CC",
+        "target": "T3",
+        "operation": "Split",
+        "flow_share": 0.33
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": true,
+      "target_chain": "Chain_D",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain",
+      "otc_cashout",
+      "asset_conversion"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "ethereum_fanout_otc_cashout",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Consolidated funds on the primary chain are split across multiple intermediate addresses, which further disperse to various over-the-counter cash-out points.",
+    "preconditions": {
+      "min_level": 2,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T3",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T4",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T5",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "AGG",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "AGG",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "AGG",
+        "target": "I3",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "I1",
+        "target": "T1",
+        "operation": "Transfer",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I1",
+        "target": "T2",
+        "operation": "Transfer",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I2",
+        "target": "T3",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I3",
+        "target": "T4",
+        "operation": "Transfer",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I3",
+        "target": "T5",
+        "operation": "Transfer",
+        "flow_share": 0.5
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 4,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_swap_bridge_to_tron_otc",
+    "pattern_type": "Chain_Hopping",
+    "description": "An intermediate on the primary chain swaps assets, bridges them to a secondary chain, and then disperses the received funds across multiple over-the-counter cash-out points.",
+    "preconditions": {
+      "min_level": 1,
+      "allowed_node_roles": [
+        "Intermediate",
+        "Asset_Conversion",
+        "Cross_Chain",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_D"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_D",
+        "level": 2
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_D",
+        "level": 3
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_D",
+        "level": 3
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_D",
+        "level": 3
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_D",
+        "level": 4
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_D",
+        "level": 4
+      },
+      {
+        "temp_id": "T3",
+        "role": "Target",
+        "chain": "Chain_D",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "I",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "CC",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "CC",
+        "target": "I3",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "I1",
+        "target": "T1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "T2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I3",
+        "target": "T3",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": true,
+      "target_chain": "Chain_D",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "phase_a_fake_issuance_consolidation_bridge",
+    "pattern_type": "Integration_Merge",
+    "description": "Multiple exploit-origin asset streams on Chain_A are consolidated into an aggregator, then bridged through a peg-out channel to Chain_B and transferred to a destination.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Aggregator",
+        "Cross_Chain",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S3",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S3",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -2,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "phase_b_return_and_peeling_self_transfer",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "After cross-chain redemption, the held asset on Chain_B is split between a returned portion routed to a restitution sink and a remaining portion that is repeatedly self-transferred along a linear wallet chain.",
+    "preconditions": {
+      "min_level": 3,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "T_RETURN",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T_HOLD",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "T_RETURN",
+        "operation": "Split",
+        "flow_share": 0.8
+      },
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.2
+      },
+      {
+        "source": "I1",
+        "target": "I2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "T_HOLD",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target",
+        "Intermediate"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "origin_consolidation_bridge_entry",
+    "pattern_type": "Chain_Hopping",
+    "description": "Illicitly originated assets are consolidated on the origin chain, then bridged to the target chain and received by a destination wallet.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Aggregator",
+        "Cross_Chain",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AGG",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "return_and_retained_split_outflow",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Received funds on the target chain are split between a federation-controlled return wallet and a retained branch that is repeatedly forwarded under attacker control.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "T_RETURN",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "T_RETAINED",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "T_RETURN",
+        "operation": "Split",
+        "flow_share": 0.85
+      },
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Split",
+        "flow_share": 0.15
+      },
+      {
+        "source": "I",
+        "target": "T_RETAINED",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_consolidation_entry",
+    "pattern_type": "Integration_Merge",
+    "description": "Multiple exploit-derived asset streams are consolidated by an aggregator on the origin chain, then bridged to the destination chain and forwarded to a recipient wallet.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Aggregator",
+        "Cross_Chain",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_pegout_cashout",
+    "pattern_type": "Chain_Hopping",
+    "description": "Unauthorized assets on the origin chain are spent by an intermediate and split across two cross-chain peg-out outputs into the target chain, each forwarded to a destination for cash-out.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC1",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "CC2",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "CC1",
+        "operation": "Bridge",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I",
+        "target": "CC2",
+        "operation": "Bridge",
+        "flow_share": 0.5
+      },
+      {
+        "source": "CC1",
+        "target": "T1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC2",
+        "target": "T2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain_exit",
+      "cash_out",
+      "peg_out"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "inflation_pegout_split_exit",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Unauthorized value is created on the origin chain, spent into a cross-chain peg-out, and then split on the destination chain between a returned sink and a retained sink.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Cross_Chain"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.85
+      },
+      {
+        "source": "CC",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.15
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_bridge_drain",
+    "pattern_type": "Chain_Hopping",
+    "description": "A source on the origin chain initiates a cross-chain export that is processed and bridged to the destination chain, where a fabricated import authorization releases drained assets to a target.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Cross_Chain",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "I2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain",
+      "bridge",
+      "exploit"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_bridge_consolidation_entry",
+    "pattern_type": "Chain_Hopping",
+    "description": "Cross-chain entry: a source on the origin chain forwards assets to an intermediate, bridges into the target chain, and consolidates the proceeds into an aggregator.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Cross_Chain",
+        "Aggregator"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "AGG",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Aggregator"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "swap_then_mixer_deposit_outflow",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Outflow obfuscation: aggregated proceeds are swapped through a conversion service into a native asset, transferred onward, and deposited into a mixer sink.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Asset_Conversion",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "AGG",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_entry_bridge_to_landing",
+    "pattern_type": "Chain_Hopping",
+    "description": "Two attacker-controlled source streams on the origin chain are bridged through a cross-chain service into an intermediate landing point on the target chain.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Cross_Chain",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain",
+      "bridge",
+      "entry"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "target_chain_split_to_mixer_and_retained_wallet",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Landed cross-chain funds on the target chain are split between a privacy-mixer deposit sink and a retained wallet sink.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Cross_Chain",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "CC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.5
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "split",
+      "mixer_deposit",
+      "retained_wallet",
+      "exit"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "approval_drain_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "Victim source funds are drained through multiple malicious approval helper contracts and consolidated into an attacker-controlled aggregator on the same chain.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Aggregator"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "S",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "S",
+        "target": "I3",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "I1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I3",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -2,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Aggregator"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 3,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "dispersal_swap_split",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Attacker aggregator swaps drained stable token balances into native asset and splits the proceeds directly across multiple target addresses on the same chain.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Asset_Conversion",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 5
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T3",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T4",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T5",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.2
+      },
+      {
+        "source": "AC",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.2
+      },
+      {
+        "source": "AC",
+        "target": "T3",
+        "operation": "Split",
+        "flow_share": 0.2
+      },
+      {
+        "source": "AC",
+        "target": "T4",
+        "operation": "Split",
+        "flow_share": 0.2
+      },
+      {
+        "source": "AC",
+        "target": "T5",
+        "operation": "Split",
+        "flow_share": 0.2
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 4,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 5,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "mixer_deposit_stable_swap_exit",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Part of the proceeds is transferred into a privacy mixer while another part is swapped into a stable token and retained in a final wallet.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Asset_Conversion",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "MIX",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "MIX",
+        "operation": "Transfer",
+        "flow_share": 0.7
+      },
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 0.3
+      },
+      {
+        "source": "AC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 2,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "bridge_entry_initial_conversion",
+    "pattern_type": "Chain_Hopping",
+    "description": "Cross-chain entry from the origin chain to the destination chain, followed by a transfer and an initial asset conversion.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Cross_Chain",
+        "Intermediate",
+        "Asset_Conversion"
+      ],
+      "required_chains": [
+        "Chain_A",
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain",
+      "asset_conversion"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "post_conversion_split_dispersal",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Funds held in the destination wallet are split into multiple target wallets for dispersal.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_B"
+      ],
+      "max_active_branches": 4
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "T3",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "T4",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 1
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.25
+      },
+      {
+        "source": "S",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.25
+      },
+      {
+        "source": "S",
+        "target": "T3",
+        "operation": "Split",
+        "flow_share": 0.25
+      },
+      {
+        "source": "S",
+        "target": "T4",
+        "operation": "Split",
+        "flow_share": 0.25
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 3,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "fan_out",
+      "dispersal"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_entry_bridge",
+    "pattern_type": "Chain_Hopping",
+    "description": "Source funds are converted into another asset on the origin chain and bridged to the destination chain.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Intermediate",
+        "Cross_Chain"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Intermediate",
+        "Asset_Conversion"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "post_bridge_swap_shield_exit",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Bridge proceeds are moved within the destination chain, swapped into another asset, and deposited to a privacy shielding sink.",
+    "preconditions": {
+      "min_level": 3,
+      "allowed_node_roles": [
+        "Cross_Chain",
+        "Intermediate",
+        "Asset_Conversion"
+      ],
+      "required_chains": [
+        "Chain_B"
+      ],
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "CC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "flash_loan_reward_consolidation_entry",
+    "pattern_type": "Integration_Merge",
+    "description": "Borrowed capital and accumulated reward tokens merge into an attack contract, which then converts assets through a vulnerable liquidity pool and extracts proceeds to an attacker-controlled target.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Aggregator",
+        "Asset_Conversion",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "AC",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "I",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Asset_Conversion",
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "flash_loan",
+      "consolidation",
+      "asset_conversion",
+      "pool_manipulation"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "post_exploit_split_to_offramp_and_mixer",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Post-exploit proceeds consolidate briefly and then split between an off-ramp exchange acceptor and a mixer sink for dispersal.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.8
+      },
+      {
+        "source": "I",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.2
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "fan_out",
+      "off_ramp",
+      "mixer",
+      "dispersal"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "exploit_swap_and_secondary_extraction",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Repeated asset conversion cycles swap exploit proceeds into native asset and merge into a primary accumulation wallet, while a secondary extraction branch routes directly to another accumulation wallet.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Aggregator"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC1",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AC2",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AGG1",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "AGG2",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC1",
+        "operation": "Swap",
+        "flow_share": 0.45
+      },
+      {
+        "source": "S",
+        "target": "AC2",
+        "operation": "Swap",
+        "flow_share": 0.45
+      },
+      {
+        "source": "S",
+        "target": "AGG2",
+        "operation": "Transfer",
+        "flow_share": 0.1
+      },
+      {
+        "source": "AC1",
+        "target": "AGG1",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC2",
+        "target": "AGG1",
+        "operation": "Merge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Aggregator"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "split_and_mixer_outflow",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Primary accumulation wallet splits proceeds across two holding wallets, while a secondary accumulation wallet transfers funds into a mixing service.",
+    "preconditions": {
+      "min_level": 2,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "AGG1",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG2",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T3",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 1
+      }
+    ],
+    "edges": [
+      {
+        "source": "AGG1",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "AGG1",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "AGG2",
+        "target": "T3",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "swap_inflation_withdrawal",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Repeated asset swaps inflate an internal aggregated balance, which is then withdrawn to a target.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Aggregator",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "AGG",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "initial_swap_accumulation",
+    "pattern_type": "Token_Obfuscation",
+    "description": "Multiple source asset streams are merged into an asset conversion step and swapped into an aggregator internal balance.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AC",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AC",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "AGG",
+        "operation": "Swap",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Aggregator"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "swap_obfuscation",
+      "consolidation"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_laundering_exit",
+    "pattern_type": "Chain_Hopping",
+    "description": "Funds on a secondary chain are converted and bridged to the primary chain before a final transfer to a target sink.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion"
+      ],
+      "required_chains": [
+        "Chain_B"
+      ],
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_A",
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain",
+      "asset_conversion"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "external_funding_and_exploit_proceeds_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "External funding and exploited asset proceeds are consolidated through an execution helper into a controlling wallet.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Aggregator",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "batched_outflow_to_mixer_sink",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "A controlling wallet disperses proceeds across multiple batched transfer branches that converge at an external mixer sink.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "B1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "B2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "B3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "B1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "S",
+        "target": "B2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "S",
+        "target": "B3",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "B1",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "B2",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "B3",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "initial_funding_liquidity_seed",
+    "pattern_type": "Integration_Merge",
+    "description": "External funding and pre-mined token supply converge on a deployer aggregator; the deployer then seeds a liquidity venue and routes liquidity tokens to a burn sink.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Aggregator",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "POOL",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "BURN",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "POOL",
+        "operation": "Transfer",
+        "flow_share": 0.5
+      },
+      {
+        "source": "AGG",
+        "target": "BURN",
+        "operation": "Transfer",
+        "flow_share": 0.5
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "fabricated_volume_split_to_liquidity",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "A controlling source splits value across several buyer addresses that each swap into the same liquidity venue, fabricating trading volume before the exit.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "POOL",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "S",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "S",
+        "target": "I3",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "I1",
+        "target": "POOL",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "POOL",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I3",
+        "target": "POOL",
+        "operation": "Swap",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "approval_drain_swap_exit",
+    "pattern_type": "Token_Obfuscation",
+    "description": "An attacker-controlled token position is moved through a malicious approval path and swapped through the liquidity venue, with native asset forwarded to a cash-out sink.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Asset_Conversion",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "P",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "P",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "P",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "rug_pull_inflow_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "Initial funding and token-deployment stage: a funding source splits support to masquerade purchase addresses, which merge into a liquidity pool; the rug-puller extracts proceeds through an intermediate transfer address into a central fund-holding aggregator.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Aggregator"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "LP",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "R",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "FT",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 4
+      },
+      {
+        "temp_id": "FH",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 5
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "S",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I1",
+        "target": "LP",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "LP",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "LP",
+        "target": "R",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "R",
+        "target": "FT",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "FT",
+        "target": "FH",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Aggregator"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "fund_holding_dispersal_cashout",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Dispersal from the central fund-holding aggregator: majority is split back to fund a new token launch or liquidity pool, while a minority is routed through an asset-conversion venue into a centralized cash-out acceptor.",
+    "preconditions": {
+      "min_level": 5,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Intermediate",
+        "Asset_Conversion",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "FH",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I_FUND",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I_SWAP",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T_NEW",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T_CASH",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "FH",
+        "target": "I_FUND",
+        "operation": "Split",
+        "flow_share": 0.7
+      },
+      {
+        "source": "FH",
+        "target": "I_SWAP",
+        "operation": "Split",
+        "flow_share": 0.3
+      },
+      {
+        "source": "I_FUND",
+        "target": "T_NEW",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I_SWAP",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "T_CASH",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "multi_source_rug_pull_profit_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "Multiple rug-pull proceeds are converted from tokens into native asset, passed through fund-transfer hops, and merged into a central fund-holding aggregator.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Intermediate",
+        "Aggregator"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC1",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AC2",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AC1",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC1",
+        "target": "I1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AC2",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC2",
+        "target": "I2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Aggregator"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "infrastructure_split_for_volume_fabrication",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "A fund-holding aggregator routes proceeds through a shared infrastructure contract that splits them across recipient addresses, which then use decentralized exchange swaps to simulate trading activity.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Intermediate",
+        "Asset_Conversion"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "INF",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "R1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "R2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "R3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "AC1",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "AC2",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "AC3",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "AGG",
+        "target": "INF",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "INF",
+        "target": "R1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "INF",
+        "target": "R2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "INF",
+        "target": "R3",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "R1",
+        "target": "AC1",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "R2",
+        "target": "AC2",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "R3",
+        "target": "AC3",
+        "operation": "Swap",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "fund_holding_cashout_and_recycle",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "A fund-holding aggregator splits accumulated proceeds between funding new laundering cycles and cashing out through centralized exchange or swap exit paths.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Aggregator",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "AGG",
+        "target": "I1",
+        "operation": "Split",
+        "flow_share": 0.7
+      },
+      {
+        "source": "AGG",
+        "target": "I2",
+        "operation": "Split",
+        "flow_share": 0.3
+      },
+      {
+        "source": "I1",
+        "target": "T1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I2",
+        "target": "T2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cex_operational_funding_merge",
+    "pattern_type": "Integration_Merge",
+    "description": "Multiple exchange hot-wallet funding streams merge into an operational deployer/aggregator, which then forwards funds to a downstream deployment or liquidity-preparation node.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Aggregator",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 1,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "shared_splitter_fanout_swap",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "A fund-holding source routes operational funds through a shared splitter contract, which fans out to multiple recipient addresses; one recipient converts assets at a DEX before forwarding to a downstream sink.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Asset_Conversion",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "R1",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "R2",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "R3",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "R1",
+        "operation": "Split",
+        "flow_share": 0.34
+      },
+      {
+        "source": "I",
+        "target": "R2",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "I",
+        "target": "R3",
+        "operation": "Split",
+        "flow_share": 0.33
+      },
+      {
+        "source": "R1",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 1,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "direct_dex_swap_obfuscation",
+    "pattern_type": "Token_Obfuscation",
+    "description": "A recipient address directly converts assets through a DEX and forwards the converted value onward, simulating organic trading activity while obscuring the funding trail.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 1,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cex_swap_funding_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "Operational funds from multiple exchange hot wallets and a swap conversion consolidate into an aggregator, then pass through an intermediate to the deployment/liquidity target.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Asset_Conversion",
+        "Aggregator",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S3",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AC",
+        "role": "Asset_Conversion",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 3
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 4
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S3",
+        "target": "AC",
+        "operation": "Swap",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AC",
+        "target": "AGG",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "AGG",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -2,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Intermediate",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "funding",
+      "consolidation",
+      "entry"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "liquidity_removal_split_cashout",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Proceeds extracted from the scam liquidity pool pass to an attacker-controlled intermediate and are then split across multiple cash-out target addresses.",
+    "preconditions": {
+      "min_level": 1,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_A",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.5
+      },
+      {
+        "source": "I",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.5
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cash_out",
+      "split",
+      "exit"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "multi_source_exchange_consolidation",
+    "pattern_type": "Integration_Merge",
+    "description": "Multiple source streams consolidate into a major exchange aggregator on the same abstract chain.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Aggregator"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S1",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S2",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "S3",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "AGG",
+        "role": "Aggregator",
+        "chain": "Chain_A",
+        "level": 1
+      }
+    ],
+    "edges": [
+      {
+        "source": "S1",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S2",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "S3",
+        "target": "AGG",
+        "operation": "Merge",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": -2,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Aggregator",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "consolidation",
+      "exchange"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "sidechain_exploit_bridge_entry",
+    "pattern_type": "Chain_Hopping",
+    "description": "Exploit creates unbacked sidechain asset, then bridges the proceeds to the main chain and transfers them to a destination wallet.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate"
+      ],
+      "required_chains": [
+        "Chain_A"
+      ],
+      "max_active_branches": 1
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_A",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_A",
+        "level": 1
+      },
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "CC",
+        "operation": "Bridge",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC",
+        "target": "T",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 0,
+      "chain_transition": true,
+      "target_chain": "Chain_B",
+      "next_recommended_roles": [
+        "Cross_Chain",
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "cross_chain",
+      "exploit",
+      "bridge"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "post_bridge_split_return_and_retain",
+    "pattern_type": "Multi_Layering_Split",
+    "description": "Bridged funds are split on the main chain: a majority portion is returned to the custodian group while the remainder is retained by the attacker.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Cross_Chain",
+        "Intermediate",
+        "Target"
+      ],
+      "required_chains": [
+        "Chain_B"
+      ],
+      "max_active_branches": 2
+    },
+    "nodes": [
+      {
+        "temp_id": "CC",
+        "role": "Cross_Chain",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 2
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_B",
+        "level": 2
+      }
+    ],
+    "edges": [
+      {
+        "source": "CC",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "T1",
+        "operation": "Split",
+        "flow_share": 0.8
+      },
+      {
+        "source": "I",
+        "target": "T2",
+        "operation": "Split",
+        "flow_share": 0.2
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 1,
+      "chain_transition": false,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [
+      "split",
+      "return",
+      "retention"
+    ],
+    "applicable_scale_tiers": []
+  },
+  {
+    "motif_id": "cross_chain_bridge_multi_destination_entry",
+    "pattern_type": "Chain_Hopping",
+    "description": "A source-chain deposit is relayed through an intermediate portal and bridged to multiple destination chains, where cross-chain representations are issued to target-controlled addresses.",
+    "preconditions": {
+      "min_level": 0,
+      "allowed_node_roles": [
+        "Source",
+        "Intermediate",
+        "Cross_Chain"
+      ],
+      "required_chains": [
+        "Chain_B",
+        "Chain_C",
+        "Chain_D",
+        "Chain_E"
+      ],
+      "max_active_branches": 3
+    },
+    "nodes": [
+      {
+        "temp_id": "S",
+        "role": "Source",
+        "chain": "Chain_B",
+        "level": 0
+      },
+      {
+        "temp_id": "I",
+        "role": "Intermediate",
+        "chain": "Chain_B",
+        "level": 1
+      },
+      {
+        "temp_id": "CC1",
+        "role": "Cross_Chain",
+        "chain": "Chain_C",
+        "level": 2
+      },
+      {
+        "temp_id": "CC2",
+        "role": "Cross_Chain",
+        "chain": "Chain_D",
+        "level": 2
+      },
+      {
+        "temp_id": "CC3",
+        "role": "Cross_Chain",
+        "chain": "Chain_E",
+        "level": 2
+      },
+      {
+        "temp_id": "T1",
+        "role": "Target",
+        "chain": "Chain_C",
+        "level": 3
+      },
+      {
+        "temp_id": "T2",
+        "role": "Target",
+        "chain": "Chain_D",
+        "level": 3
+      },
+      {
+        "temp_id": "T3",
+        "role": "Target",
+        "chain": "Chain_E",
+        "level": 3
+      }
+    ],
+    "edges": [
+      {
+        "source": "S",
+        "target": "I",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "I",
+        "target": "CC1",
+        "operation": "Bridge",
+        "flow_share": 0.34
+      },
+      {
+        "source": "I",
+        "target": "CC2",
+        "operation": "Bridge",
+        "flow_share": 0.33
+      },
+      {
+        "source": "I",
+        "target": "CC3",
+        "operation": "Bridge",
+        "flow_share": 0.33
+      },
+      {
+        "source": "CC1",
+        "target": "T1",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC2",
+        "target": "T2",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      },
+      {
+        "source": "CC3",
+        "target": "T3",
+        "operation": "Transfer",
+        "flow_share": 1.0
+      }
+    ],
+    "post_state_effect": {
+      "branch_increment": 2,
+      "chain_transition": true,
+      "target_chain": null,
+      "next_recommended_roles": [
+        "Target"
+      ]
+    },
+    "constraints": {
+      "max_branching_factor": 4,
+      "min_level_bound": 2,
+      "max_level_bound": 8,
+      "require_acyclic": true
+    },
+    "tags": [],
+    "applicable_scale_tiers": []
+  }
+]

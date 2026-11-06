@@ -129,8 +129,8 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_B, 4),
             ],
             edges=[
-                _e("S", "AC", T),
-                _e("AC", "I", S),
+                _e("S", "AC", S),
+                _e("AC", "I", T),
                 _e("I", "CC", B),
                 _e("CC", "T", T),
             ],
@@ -272,8 +272,8 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_A, 2),
             ],
             edges=[
-                _e("S", "AC", T),
-                _e("AC", "T", S),
+                _e("S", "AC", S),
+                _e("AC", "T", T),
             ],
             post_state_effect=PostStateEffect(
                 branch_increment=0,
@@ -378,7 +378,7 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_A, 4),
             ],
             edges=[
-                _e("S", "AC", T),
+                _e("S", "AC", S),
                 # equal-slice anonymisation split (symmetric prototype)
                 _e("AC", "I1", P, 0.50),
                 _e("AC", "I2", P, 0.50),
@@ -391,7 +391,7 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 chain_transition=False,
                 next_recommended_roles=(R_TGT,),
             ),
-            tags=("mixer", "anonymization", "split", "merge"),
+            tags=("layering", "anonymization", "split", "merge"),
         ),
         # 10 --------------------------------------------------------------
         TopologicalMotif(
@@ -414,9 +414,9 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("T", R_TGT, CHAIN_A, 3),
             ],
             edges=[
-                _e("S", "AC1", T),
+                _e("S", "AC1", S),
                 _e("AC1", "AC2", S),
-                _e("AC2", "T", S),
+                _e("AC2", "T", T),
             ],
             post_state_effect=PostStateEffect(
                 branch_increment=0,
@@ -436,7 +436,7 @@ def build_seed_motifs() -> list[TopologicalMotif]:
             ),
             preconditions=Preconditions(
                 min_level=3,
-                allowed_node_roles=[R_SRC, R_INT, R_CC],
+                allowed_node_roles=[R_SRC, R_INT, R_CC, R_AGG, R_TGT],
                 max_active_branches=6,
             ),
             nodes=[
@@ -453,7 +453,7 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _e("S2", "AGG1", M),
                 _e("AGG1", "CC", B),
                 _e("S3", "AGG2", M),
-                _e("CC", "AGG2", T),
+                _e("CC", "AGG2", M),
                 _e("AGG2", "T", T),
             ],
             post_state_effect=PostStateEffect(
@@ -476,7 +476,7 @@ def build_seed_motifs() -> list[TopologicalMotif]:
             ),
             preconditions=Preconditions(
                 min_level=3,
-                allowed_node_roles=[R_SRC, R_INT, R_CC],
+                allowed_node_roles=[R_SRC, R_INT, R_CC, R_TGT],
                 max_active_branches=6,
             ),
             constraints=MotifConstraints(max_branching_factor=3),
@@ -486,7 +486,7 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _n("I2", R_INT, CHAIN_A, 1),
                 _n("I3", R_INT, CHAIN_A, 1),
                 _n("CC1", R_CC, CHAIN_B, 2),
-                _n("CC2", R_CC, CHAIN_C, 2),
+                _n("CC2", R_CC, CHAIN_B, 2),
                 _n("CC3", R_CC, CHAIN_B, 2),
                 _n("T", R_TGT, CHAIN_B, 3),
             ],
@@ -499,7 +499,7 @@ def build_seed_motifs() -> list[TopologicalMotif]:
                 _e("I2", "CC2", B),
                 _e("I3", "CC3", B),
                 _e("CC1", "T", T),
-                _e("CC2", "T", B),
+                _e("CC2", "T", T),
                 _e("CC3", "T", T),
             ],
             post_state_effect=PostStateEffect(

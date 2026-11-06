@@ -17,6 +17,8 @@ from aml_rag import (
     TopologicalMotif,
     build_default_knowledge_base,
     cross_source_consistency,
+    detect_survey_report,
+    focus_survey_case_narrative,
     saturation_analysis,
     topology_validity,
     zero_noise_audit,
@@ -101,6 +103,44 @@ def test_chunker_slides_long_sections() -> None:
     )
     assert len(chunks) > 1
     assert all(len(c) <= 700 for c in chunks)
+
+
+# ---------------------------------------------------------------------------
+# survey-genre detection & case-narrative focus
+# ---------------------------------------------------------------------------
+def test_detect_survey_report_flags_caption_dense_reports() -> None:
+    survey = (
+        "We analyzed the token ecosystem.\n\n"
+        "Table 1: foo\n\nTable 2: bar\n\nTable 3: baz\n\nFigure 12: qux"
+    )
+    assert detect_survey_report(survey) is True
+
+
+def test_detect_survey_report_rejects_single_incident() -> None:
+    incident = "The attacker drained the pool and bridged to another chain."
+    assert detect_survey_report(incident) is False
+
+
+def test_focus_survey_case_narrative_trims_to_case() -> None:
+    text = (
+        "Macro preamble with aggregate stats.\n\n"
+        "Below, we will examine a specific rug pull case in detail.\n\n"
+        "The token was deployed and used to fabricate volume.\n\n"
+        "Funds were split through infrastructure contracts.\n\n"
+        "These Twitter and Telegram groups are used to acquire victims.\n\n"
+        "Conclusion about the ecosystem."
+    )
+    focused = focus_survey_case_narrative(text)
+    assert "Below, we will examine" in focused
+    assert "fabricate volume" in focused
+    assert "Telegram groups" not in focused
+    assert "Conclusion" not in focused
+    assert "Macro preamble" not in focused
+
+
+def test_focus_survey_case_narrative_fails_safe_without_anchor() -> None:
+    text = "Some prose without a case anchor.\n\nAnother paragraph."
+    assert focus_survey_case_narrative(text) == text
 
 
 # ---------------------------------------------------------------------------

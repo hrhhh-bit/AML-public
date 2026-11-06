@@ -1,0 +1,557 @@
+{
+  "mode": "live",
+  "model": "deepseek-flash",
+  "temperature": 0.1,
+  "timestamp": "2026-11-01 11:34:19 UTC",
+  "git_commit": "82e4b705ead6ec6c8d1130abdea442671655d25a",
+  "baseline_sha256": "34273C2E3D5DFE955E5DAC6A7A71C8FFBA693B635FF653BC5132A2709FD95AB2",
+  "golden_report_ids": [
+    "rep_slowmist_002",
+    "rep_slowmist_003",
+    "rep_certik_001",
+    "rep_certik_002",
+    "rep_certik_003",
+    "rep_certik_004",
+    "rep_certik_005",
+    "rep_certik_007",
+    "rep_certik_008",
+    "rep_certik_011",
+    "rep_certik_012",
+    "rep_certik_013",
+    "rep_certik_014",
+    "rep_blocksec_009"
+  ],
+  "base_motif_count": 18,
+  "final_motif_count": 33,
+  "net_added": 15,
+  "check1_legality": {
+    "candidate_chunks": 14,
+    "passed_chunks": 14,
+    "pass_rate": 1.0,
+    "threshold": 0.9,
+    "passed": true,
+    "reflection_repairs": 0,
+    "reflection_retry_mean": 0.0,
+    "llm_calls": 14
+  },
+  "check2_causal_alignment": [
+    {
+      "report_id": "rep_slowmist_002",
+      "source_hop_count": 10,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "money laundering",
+        "laundering",
+        "cross-chain",
+        "bridge"
+      ],
+      "evidence_chain": "0x6d37... -> 0x0A57... / 0x0DF6... / 0x2d53... / 0x111f...; then 0x0A57... -> 0x4c73... -> USDT0 -> TRON TF2hm...; 0x0DF6... -> FixedFloat; 0x2d53... -> KuCoin/FixedFloat; 0x111f... -> FixedFloat/cce.cash/Bridgers->TRON TUi5q...",
+      "extracted_motif_edge_counts": [
+        25
+      ],
+      "alignment_hops": 10,
+      "alignment_gap": 15.0
+    },
+    {
+      "report_id": "rep_slowmist_003",
+      "source_hop_count": 4,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "money laundering",
+        "laundering"
+      ],
+      "evidence_chain": "Liquid L-BTC consolidation/spend via ex1q7kgx... -> federated peg-out to BTC bc1ql4mfu6aundtkksxklfajs2h3t9nzcd6gyqjlte -> 3,400 BTC transferred to federation peg wallet bc1qdlld6... -> remaining ~598.5 BTC repeatedly self-transferred between Bitcoin blocks 966,052 and 966,199 with OP_RETURN messages.",
+      "extracted_motif_edge_counts": [
+        7
+      ],
+      "alignment_hops": 4,
+      "alignment_gap": 3.0
+    },
+    {
+      "report_id": "rep_certik_001",
+      "source_hop_count": 4,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "cash out"
+      ],
+      "evidence_chain": "incident tx f24... output -> 3875a6d6... spent f24...:0 -> two sendtomainchain peg-outs (46f117c9... and ce4caece...) -> Bitcoin tx 8db751a6... paid exact peg-out amounts; later 3,400 BTC returned and 598.5 BTC kept at bc1ql4mfu6aundtkksxklfajs2h3t9nzcd6gyqjlte",
+      "extracted_motif_edge_counts": [
+        6
+      ],
+      "alignment_hops": 4,
+      "alignment_gap": 2.0
+    },
+    {
+      "report_id": "rep_certik_002",
+      "source_hop_count": 2,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "tornado",
+        "cross-chain",
+        "bridge"
+      ],
+      "evidence_chain": "stolen assets -> swap via Relay -> 2,778.8662 ETH -> Tornado Cash deposit",
+      "extracted_motif_edge_counts": [
+        4
+      ],
+      "alignment_hops": 2,
+      "alignment_gap": 2.0
+    },
+    {
+      "report_id": "rep_certik_003",
+      "source_hop_count": 2,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "bridge"
+      ],
+      "evidence_chain": "7hiH.../BK9a... Solana attacker addresses -> Mayan bridge from Solana to Ethereum -> 140 ETH deposited into Railgun; 291,696 DAI + 5 ETH remains static in wallet 0x509B9D094A6C26D716aaC131E8aDee5B16B86d3e.",
+      "extracted_motif_edge_counts": [
+        7
+      ],
+      "alignment_hops": 2,
+      "alignment_gap": 5.0
+    },
+    {
+      "report_id": "rep_certik_004",
+      "source_hop_count": 4,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "tornado"
+      ],
+      "evidence_chain": "Attacker drains funds -> swaps USDC/USDT for ETH via DEX -> sends funds to 5 addresses (0x5aF3..., 0x71d4..., 0x74Dc..., 0xe3Da..., 0xd8C1...) -> deposits 3,000 ETH into Tornado Cash -> swaps 1,422 ETH for ~$2.44M DAI held in wallet 0x7B4F...",
+      "extracted_motif_edge_counts": [
+        13
+      ],
+      "alignment_hops": 4,
+      "alignment_gap": 9.0
+    },
+    {
+      "report_id": "rep_certik_005",
+      "source_hop_count": 4,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "bridge"
+      ],
+      "evidence_chain": "0x81BA... -> bridge USDT Ethereum->Hyperliquid -> 0xb183... -> swap to XMR -> XMR split to 0xcce2..., 0x3eb1..., 0x0dda..., 0x31c2...",
+      "extracted_motif_edge_counts": [
+        8
+      ],
+      "alignment_hops": 4,
+      "alignment_gap": 4.0
+    },
+    {
+      "report_id": "rep_certik_007",
+      "source_hop_count": 4,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "bridge"
+      ],
+      "evidence_chain": "381.7468 WBNB -> ~242k USDC -> bridge BSC->Ethereum -> ~242k DAI -> Railgun shield",
+      "extracted_motif_edge_counts": [
+        6
+      ],
+      "alignment_hops": 4,
+      "alignment_gap": 2.0
+    },
+    {
+      "report_id": "rep_certik_008",
+      "source_hop_count": 10,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "tornado"
+      ],
+      "evidence_chain": "SOF exploiter -> FixedFloat: ~$213,617 BSC-USD across 10 transactions; SOF exploiter -> Tornado Cash: 20 BNB as 2 x 10 BNB transfers.",
+      "extracted_motif_edge_counts": [
+        6
+      ],
+      "alignment_hops": 6.0,
+      "alignment_gap": 4.0
+    },
+    {
+      "report_id": "rep_certik_011",
+      "source_hop_count": 3,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "tornado"
+      ],
+      "evidence_chain": "0x6C8EC8f14bE7C01672d31CFa5f2CEfeAB2562b50 -> 0xD12f6E0fa7FBF4e3A1c7996E3F0Dd26AB9031a60 (4,267.09 ETH); 0x6C8EC8f14bE7C01672d31CFa5f2CEfeAB2562b50 -> 0x273589ca3713e7becf42069f9fb3f0c164ce850a (4,001.0004637 ETH); 0xc0454E545a7A715c6D3627f77bEd376a05182FBc -> Tornado Cash (71.03 ETH)",
+      "extracted_motif_edge_counts": [
+        6
+      ],
+      "alignment_hops": 3,
+      "alignment_gap": 3.0
+    },
+    {
+      "report_id": "rep_certik_012",
+      "source_hop_count": 2,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "laundered",
+        "tornado"
+      ],
+      "evidence_chain": "Exploit wallets -> Tornado Cash: 3,711 ETH in 39 txs; Sonic funds -> launder/circumvent freeze -> ETH (~$3.3M).",
+      "extracted_motif_edge_counts": [
+        8
+      ],
+      "alignment_hops": 2,
+      "alignment_gap": 6.0
+    },
+    {
+      "report_id": "rep_certik_013",
+      "source_hop_count": 9,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "tornado"
+      ],
+      "evidence_chain": "attacker EOA 0xf96eb14171b71ac16200013753dff3e91043b63b -> Tornado Cash deposits (8 batches 100 BNB + 1 batch 10 BNB; first deposit tx 0x3fb71a026e34f6d12d9a8ede48a7019e72e33049189c41bcea685c75c746cc3a)",
+      "extracted_motif_edge_counts": [
+        5
+      ],
+      "alignment_hops": 5.0,
+      "alignment_gap": 4.0
+    },
+    {
+      "report_id": "rep_certik_014",
+      "source_hop_count": 2,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "fund flow",
+        "cash out",
+        "cash-out"
+      ],
+      "evidence_chain": "0x43A9 (rug puller) -> 0xD921 (fund-transfer) -> 0x2836 (fund-holding)",
+      "extracted_motif_edge_counts": [
+        13
+      ],
+      "alignment_hops": 2,
+      "alignment_gap": 11.0
+    },
+    {
+      "report_id": "rep_blocksec_009",
+      "source_hop_count": 2,
+      "source_hop_origin": "eligibility_audit_llm",
+      "source_flow_markers": [
+        "cross-chain",
+        "bridge",
+        "phalcon"
+      ],
+      "evidence_chain": "Symbiosis: forged mint to 0x025122...5d3Ba2 (excluded as exploit mint) -> swap via Uniswap v4 syBTC/WBTC pool for 4.38897292 WBTC -> proceeds routed onward to roughly 137 ETH. Liquid: peg-out to BTC and later return to federation not counted as >=2 post-exploit laundering hops.",
+      "extracted_motif_edge_counts": [
+        4,
+        6
+      ],
+      "alignment_hops": 2,
+      "alignment_gap": 3.0
+    }
+  ],
+  "check3_zero_noise": {
+    "extracted_residues": 0,
+    "kb_residues": 0,
+    "violations": {},
+    "passed": true
+  },
+  "check4_saturation": [
+    {
+      "report_id": "rep_slowmist_002",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 19
+    },
+    {
+      "report_id": "rep_slowmist_003",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 20
+    },
+    {
+      "report_id": "rep_certik_001",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 21
+    },
+    {
+      "report_id": "rep_certik_002",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 22
+    },
+    {
+      "report_id": "rep_certik_003",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 23
+    },
+    {
+      "report_id": "rep_certik_004",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 24
+    },
+    {
+      "report_id": "rep_certik_005",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 25
+    },
+    {
+      "report_id": "rep_certik_007",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 26
+    },
+    {
+      "report_id": "rep_certik_008",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 27
+    },
+    {
+      "report_id": "rep_certik_011",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 28
+    },
+    {
+      "report_id": "rep_certik_012",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 29
+    },
+    {
+      "report_id": "rep_certik_013",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 30
+    },
+    {
+      "report_id": "rep_certik_014",
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "cumulative_total": 31
+    },
+    {
+      "report_id": "rep_blocksec_009",
+      "extracted": 2,
+      "deduplicated": 0,
+      "net_added": 2,
+      "cumulative_total": 33
+    }
+  ],
+  "ledger_audit": {
+    "clean": true,
+    "issues": {}
+  },
+  "quarantine_count": 0,
+  "micro_fragment_drop_count": 0,
+  "micro_fragment_drops": [],
+  "per_report": [
+    {
+      "report_id": "rep_slowmist_002",
+      "vendor": "SlowMist",
+      "filename": "rep_slowmist_002_2026-09-20.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 67.698
+    },
+    {
+      "report_id": "rep_slowmist_003",
+      "vendor": "SlowMist",
+      "filename": "rep_slowmist_003_2026-09-11.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 54.57
+    },
+    {
+      "report_id": "rep_certik_001",
+      "vendor": "CertiK",
+      "filename": "rep_certik_001_liquid-network-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 29.736
+    },
+    {
+      "report_id": "rep_certik_002",
+      "vendor": "CertiK",
+      "filename": "rep_certik_002_verus-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 37.545
+    },
+    {
+      "report_id": "rep_certik_003",
+      "vendor": "CertiK",
+      "filename": "rep_certik_003_defituna-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 80.98
+    },
+    {
+      "report_id": "rep_certik_004",
+      "vendor": "CertiK",
+      "filename": "rep_certik_004_jaredfromsubway-mev-bot-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 52.146
+    },
+    {
+      "report_id": "rep_certik_005",
+      "vendor": "CertiK",
+      "filename": "rep_certik_005_gnosispay-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 45.806
+    },
+    {
+      "report_id": "rep_certik_007",
+      "vendor": "CertiK",
+      "filename": "rep_certik_007_movie-token-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 25.795
+    },
+    {
+      "report_id": "rep_certik_008",
+      "vendor": "CertiK",
+      "filename": "rep_certik_008_sof-laxo-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 73.938
+    },
+    {
+      "report_id": "rep_certik_011",
+      "vendor": "CertiK",
+      "filename": "rep_certik_011_truebit-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 35.831
+    },
+    {
+      "report_id": "rep_certik_012",
+      "vendor": "CertiK",
+      "filename": "rep_certik_012_balancer-incident-analysis-certik.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 35.565
+    },
+    {
+      "report_id": "rep_certik_013",
+      "vendor": "CertiK",
+      "filename": "rep_certik_013_2026-03-23.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 40.955
+    },
+    {
+      "report_id": "rep_certik_014",
+      "vendor": "CertiK",
+      "filename": "rep_certik_014_2025-07-22.txt",
+      "chunks": 1,
+      "extracted": 1,
+      "deduplicated": 0,
+      "net_added": 1,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 58.73
+    },
+    {
+      "report_id": "rep_blocksec_009",
+      "vendor": "BlockSec",
+      "filename": "rep_blocksec_009_2026-09-24.txt",
+      "chunks": 1,
+      "extracted": 2,
+      "deduplicated": 0,
+      "net_added": 2,
+      "failed_chunks": 0,
+      "noise_residues": 0,
+      "elapsed_s": 81.81
+    }
+  ],
+  "token_and_latency": {
+    "prompt_tokens": 141689,
+    "completion_tokens": 129684,
+    "total_latency_ms": 721084.37,
+    "total_calls": 14
+  },
+  "total_elapsed_s": 721.106,
+  "production_kb_updated": true,
+  "artifact_sha256": {
+    "meta_config.txt": "F819CF101CA8C9C1942AF59339E1E7C65476981A88D4C299F1C74ABA3AD94D3A",
+    "distillation_report.json": "6191ABA5F5247307F69F01220B00F63E1BB0B7AE633CEABD35AAF6D807E7BFA3",
+    "saturation_curve.json": "00FA87D790325A462FC700C284648AAF5B88CD886DF07FAB2CE6193F0EBEACEA",
+    "sample_extracted_motifs.json": "092DCDF22B5B730B324DAC7BAE7A1CEE2DCC0C8376AF1AAB29E99E5CD4EC9C40",
+    "quarantine_log.json": "4F53CDA18C2BAA0C0354BB5F9A3ECBE5ED12AB4D8E11BA873C2F11161202B945"
+  },
+  "out_dir": "D:\\projects\\AML\\experiments\\fresh_baseline_v2"
+}

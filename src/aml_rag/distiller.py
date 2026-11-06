@@ -29,6 +29,8 @@ from .schema import TopologicalMotif
 
 __all__ = [
     "TextChunker",
+    "detect_survey_report",
+    "focus_survey_case_narrative",
     "DistillationPromptBuilder",
     "DistillationFailure",
     "DistillationResult",
@@ -200,6 +202,82 @@ class TextChunker:
         """Split one oversized paragraph into fixed-window slices."""
         step = max(self.max_chars - self.overlap_chars, 100)
         return [para[i : i + self.max_chars] for i in range(0, len(para), step)]
+
+
+# ---------------------------------------------------------------------------
+# Survey-genre detection & case-narrative focus (macro-survey guard)
+# ---------------------------------------------------------------------------
+_SURVEY_CAPTION_RE = re.compile(r"\b(?:Table|Figure|Exhibit)\s+\d+\b", re.IGNORECASE)
+_SURVEY_MASS_PHRASE_RE = re.compile(
+    r"\b(?:we analyzed|we examined|across the ecosystem|token ecosystem|"
+    r"industry-wide|return on investment|promoted via)\b",
+    re.IGNORECASE,
+)
+_CASE_START_RE = re.compile(
+    r"\b(?:below,?\s+we\s+(?:will\s+)?(?:examine|analyze|walk\s+through)|"
+    r"we will use .{0,60} as an example|case study|"
+    r"a specific (?:rug pull|scam|honeypot|exit scam) case|"
+    r"for consistency,?\s+we will use)\b",
+    re.IGNORECASE,
+)
+#: Off-chain acquisition / promotion semantics — the section AFTER the deep-dive
+#: case where surveys pivot from on-chain fund-flow topology to how victims are
+#: acquired (user acquisition, marketing, social/messaging channels).  Deliberately
+#: generic: no vendor-specific proper nouns (Telegram/Banana Gun/Unibot), so the
+#: focus logic generalises to unseen Chainalysis/Elliptic surveys.  The regex is a
+#: best-effort trim only — the SURVEY_DIRECTIVE is the robust backstop, so a missed
+#: boundary merely leaves more background context, never wrong topology.
+_OFFCHAIN_ACQUISITION_RE = re.compile(
+    r"\b(?:how they acquire|acquire users|acquire victims|"
+    r"victim acquisition|user acquisition|lure users|luring users|"
+    r"promotion channel|acquisition channel|marketing|social media|"
+    r"messaging group|community group|solicit)\b",
+    re.IGNORECASE,
+)
+
+
+def detect_survey_report(text: str) -> bool:
+    """Heuristic macro industry-survey detection (genre gate).
+
+    Returns True when ``text`` carries the signature of a CertiK-style macro
+    token-ecosystem study — many statistical table/figure captions, with or
+    without aggregate mass-statistic phrasing.  Such reports MUST NOT be
+    distilled chunk-by-chunk, otherwise every statistical section is mistaken
+    for an independent laundering incident (the ``rep_certik_014`` failure).
+    """
+    captions = len(_SURVEY_CAPTION_RE.findall(text))
+    return captions >= 3 or (captions >= 1 and bool(_SURVEY_MASS_PHRASE_RE.search(text)))
+
+
+def focus_survey_case_narrative(text: str) -> str:
+    """Trim a survey to its deep-dive case narrative.
+
+    Locates the line that signals the case walk-through ("Below, we will
+    examine a specific ... case"), drops the macro preamble before it, and
+    stops when the survey pivots to channel/acquisition analysis (Telegram /
+    sniper-bot promotion) — that material is background, not laundering
+    topology.  Fails safe: returns ``text`` unchanged when no case anchor is
+    found or when the focused slice would be empty.
+
+    Splits on newline runs (not blank-line paragraphs) because plain-text
+    surveys such as ``rep_certik_014`` are single-line paragraphs without
+    blank-line separators.
+    """
+    paragraphs = [p.strip() for p in re.split(r"\n+", text) if p.strip()]
+    if not paragraphs:
+        return text
+    start = next(
+        (i for i, p in enumerate(paragraphs) if _CASE_START_RE.search(p)),
+        None,
+    )
+    if start is None:
+        return text
+    kept: list[str] = []
+    for paragraph in paragraphs[start:]:
+        if _OFFCHAIN_ACQUISITION_RE.search(paragraph):
+            break
+        kept.append(paragraph)
+    return "\n".join(kept) if kept else text
 
 
 class DistillationFailure(BaseModel):

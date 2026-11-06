@@ -219,6 +219,40 @@ class TestVf2ThreePartCriterion:
         assert edge_action_basis(a) != edge_action_basis(b)
         assert vf2_isomorphism_key(a) != vf2_isomorphism_key(b)
 
+    def test_swap_vs_bridge_same_topology_distinct(self) -> None:
+        """同拓扑同流向原型、仅边动作 Swap vs Bridge -> Σ 不同，判为不同。
+
+        针对同行评审提出的"Swap→Bridge 是否会被错误合并"的显式回归用例：
+        两者拓扑键一致、流向原型一致，但边动作基 Σ 不同，VF2 键必须不同，
+        且合并入库时两者都保留。
+        """
+        def _two_edge_motif(motif_id: str, op: OperationType) -> TopologicalMotif:
+            return TopologicalMotif(
+                motif_id=motif_id,
+                pattern_type=PatternType.CHAIN_HOPPING,
+                description="swap vs bridge probe",
+                nodes=[
+                    _node("S", SRC, "Chain_A", 0),
+                    _node("M", INT, "Chain_A", 1),
+                    _node("T", TGT, "Chain_A", 2),
+                ],
+                edges=[
+                    _edge("S", "M", op),
+                    _edge("M", "T", TRANSFER),
+                ],
+            )
+
+        swap_m = _two_edge_motif("A", SWAP)
+        bridge_m = _two_edge_motif("B", BRIDGE)
+        assert _topo_key(swap_m) == _topo_key(bridge_m)
+        assert edge_action_basis(swap_m) != edge_action_basis(bridge_m)
+        assert vf2_isomorphism_key(swap_m) != vf2_isomorphism_key(bridge_m)
+
+        kb = MotifKnowledgeBase()
+        report = kb.merge_motifs([swap_m, bridge_m])
+        assert sorted(report.added) == ["A", "B"]
+        assert len(kb) == 2
+
     def test_merge_honors_all_three_components(self) -> None:
         kb = MotifKnowledgeBase()
         a = _peel_motif("A", 0.8)          # PEELING

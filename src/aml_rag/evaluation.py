@@ -272,6 +272,11 @@ _GAS_RE = re.compile(r"\bgas\b", re.IGNORECASE)
 _TOKEN_RE = re.compile(
     r"\b(USDT|USDC|ETH|BTC|XMR|XRP|SOL|DAI|WBTC|WETH|BNB)\b", re.IGNORECASE
 )
+#: Concrete L1/L2 chain names (must be abstract Chain_A/B/C, never Ethereum/Tron).
+_CHAIN_NAME_RE = re.compile(
+    r"\b(ETHEREUM|TRON|SOLANA|ARBITRUM|OPTIMISM|POLYGON|AVALANCHE|FANTOM|BSC)\b",
+    re.IGNORECASE,
+)
 _AMOUNT_RE = re.compile(r"(\$\s*\d[\d,\.]*|\b\d[\d,\.]*\s*(USDT|USDC|ETH|BTC|USD)\b)")
 _MS_TS_RE = re.compile(r"\b1[3-9]\d{11}\b")  # 13-digit millisecond timestamps
 _DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
@@ -289,6 +294,8 @@ def zero_noise_audit(motifs: Sequence[TopologicalMotif]) -> NoiseAuditReport:
             found.append("gas_reference")
         if _TOKEN_RE.search(text):
             found.append("token_symbol")
+        if _CHAIN_NAME_RE.search(text):
+            found.append("chain_name")
         if _AMOUNT_RE.search(text):
             found.append("explicit_amount")
         if _MS_TS_RE.search(text) or _DATE_RE.search(text):

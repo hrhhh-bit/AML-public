@@ -52,13 +52,37 @@ def test_baseline_freeze_rejects_missing_backup(tmp_path) -> None:
         bd.enforce_baseline_freeze(kb, missing)
 
 
-def test_baseline_freeze_rejects_hash_mismatch(tmp_path) -> None:
+def test_baseline_freeze_rejects_modified_baseline_motif(tmp_path) -> None:
     kb = tmp_path / "kb.json"
     backup = tmp_path / "backup.json"
-    kb.write_text("{}", encoding="utf-8")
-    backup.write_text("[]", encoding="utf-8")
-    with pytest.raises(RuntimeError, match="哈希不一致"):
+    baseline = json.loads(BASELINE_BACKUP.read_text(encoding="utf-8"))
+    backup.write_text(json.dumps(baseline, ensure_ascii=False), encoding="utf-8")
+    # 篡改一个基线 Motif：生产库不再是基线的忠实超集
+    drifted = json.loads(json.dumps(baseline))
+    drifted[0]["description"] = "TAMPERED BASELINE MOTIF"
+    kb.write_text(json.dumps(drifted, ensure_ascii=False), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="被篡改"):
         bd.enforce_baseline_freeze(kb, backup)
+
+
+def test_baseline_freeze_accepts_live_expanded_superset(tmp_path) -> None:
+    kb = tmp_path / "kb.json"
+    backup = tmp_path / "backup.json"
+    baseline = json.loads(BASELINE_BACKUP.read_text(encoding="utf-8"))
+    backup.write_text(json.dumps(baseline, ensure_ascii=False), encoding="utf-8")
+    extra = {
+        "motif_id": "extra_after_live",
+        "pattern_type": "Peeling_Chain",
+        "description": "extra motif added by --live",
+        "nodes": [
+            {"temp_id": "S", "role": "Source", "chain": "Chain_A", "level": 0},
+            {"temp_id": "T", "role": "Target", "chain": "Chain_A", "level": 1},
+        ],
+        "edges": [{"source": "S", "target": "T", "operation": "Transfer"}],
+    }
+    kb.write_text(json.dumps(baseline + [extra], ensure_ascii=False), encoding="utf-8")
+    # 生产库是基线的合法超集：冻结校验应放行
+    assert bd.enforce_baseline_freeze(kb, backup)
 
 
 # ---------------------------------------------------------------------------
@@ -163,3 +187,33 @@ def test_dry_run_needs_no_api_key(isolated_kb, tmp_path, monkeypatch) -> None:
     # 零 Token：dry-run 不产生任何真实 API 调用账单
     assert report["token_and_latency"]["prompt_tokens"] == 0
     assert report["token_and_latency"]["completion_tokens"] == 0
+
+
+# ---------------------------------------------------------------------------
+# Prompt v2 离线装配导出（--dump-prompts）
+# ---------------------------------------------------------------------------
+def test_dump_prompts_exports_14_assembled_files(tmp_path) -> None:
+    files = bd.dump_prompts(tmp_path)
+    assert len(files) == 14
+    names = {f.name for f in files}
+    assert "rep_slowmist_002_prompt.md" in names
+
+    content = (tmp_path / "rep_slowmist_002_prompt.md").read_text(encoding="utf-8")
+    # 资金链遥测注意力锚点已注入（v2.2：仅宏观跳数 + 语义标记）
+    assert "ATTENTION ANCHOR" in content
+    assert "hops_detected" in content
+    assert "evidence_chain" not in content
+    assert "CAUSAL FIDELITY" in content
+    # 双阶段 Schema 约束与实体接地边界
+    assert "phase_a_inflow_motifs" in content
+    assert "phase_b_outflow_motifs" in content
+    assert "grounded_chains" in content
+    # 负向防幻觉反例
+    assert "REJECTED: Hallucinated Intermediate Relay Chain/Node" in content
+
+
+def test_dump_prompts_needs_no_api_key(tmp_path, monkeypatch) -> None:
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    files = bd.dump_prompts(tmp_path)
+    assert len(files) == 14

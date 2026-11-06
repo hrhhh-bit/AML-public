@@ -130,13 +130,13 @@
       {
         "source": "S",
         "target": "AC",
-        "operation": "Transfer",
+        "operation": "Swap",
         "flow_share": 1.0
       },
       {
         "source": "AC",
         "target": "I",
-        "operation": "Swap",
+        "operation": "Transfer",
         "flow_share": 1.0
       },
       {
@@ -507,13 +507,13 @@
       {
         "source": "S",
         "target": "AC",
-        "operation": "Transfer",
+        "operation": "Swap",
         "flow_share": 1.0
       },
       {
         "source": "AC",
         "target": "T",
-        "operation": "Swap",
+        "operation": "Transfer",
         "flow_share": 1.0
       }
     ],
@@ -795,7 +795,7 @@
       {
         "source": "S",
         "target": "AC",
-        "operation": "Transfer",
+        "operation": "Swap",
         "flow_share": 1.0
       },
       {
@@ -844,7 +844,7 @@
       "require_acyclic": true
     },
     "tags": [
-      "mixer",
+      "layering",
       "anonymization",
       "split",
       "merge"
@@ -894,7 +894,7 @@
       {
         "source": "S",
         "target": "AC1",
-        "operation": "Transfer",
+        "operation": "Swap",
         "flow_share": 1.0
       },
       {
@@ -906,7 +906,7 @@
       {
         "source": "AC2",
         "target": "T",
-        "operation": "Swap",
+        "operation": "Transfer",
         "flow_share": 1.0
       }
     ],
@@ -941,7 +941,9 @@
       "allowed_node_roles": [
         "Source",
         "Intermediate",
-        "Cross_Chain"
+        "Cross_Chain",
+        "Aggregator",
+        "Target"
       ],
       "required_chains": null,
       "max_active_branches": 6
@@ -1018,7 +1020,7 @@
       {
         "source": "CC",
         "target": "AGG2",
-        "operation": "Transfer",
+        "operation": "Merge",
         "flow_share": 1.0
       },
       {
@@ -1059,7 +1061,8 @@
       "allowed_node_roles": [
         "Source",
         "Intermediate",
-        "Cross_Chain"
+        "Cross_Chain",
+        "Target"
       ],
       "required_chains": null,
       "max_active_branches": 6
@@ -1098,7 +1101,7 @@
       {
         "temp_id": "CC2",
         "role": "Cross_Chain",
-        "chain": "Chain_C",
+        "chain": "Chain_B",
         "level": 2
       },
       {
@@ -1160,7 +1163,7 @@
       {
         "source": "CC2",
         "target": "T",
-        "operation": "Bridge",
+        "operation": "Transfer",
         "flow_share": 1.0
       },
       {
@@ -1435,7 +1438,8 @@
     "preconditions": {
       "min_level": 0,
       "allowed_node_roles": [
-        "Source"
+        "Source",
+        "Intermediate"
       ],
       "required_chains": null,
       "max_active_branches": 2
@@ -1461,13 +1465,13 @@
       },
       {
         "temp_id": "T1",
-        "role": "Target",
+        "role": "Intermediate",
         "chain": "Chain_A",
         "level": 2
       },
       {
         "temp_id": "T2",
-        "role": "Target",
+        "role": "Intermediate",
         "chain": "Chain_A",
         "level": 2
       }
@@ -1576,7 +1580,7 @@
       {
         "source": "S",
         "target": "AC",
-        "operation": "Transfer",
+        "operation": "Swap",
         "flow_share": 1.0
       },
       {
@@ -1727,7 +1731,7 @@
   {
     "motif_id": "otc_p2p_integration_merge",
     "pattern_type": "Integration_Merge",
-    "description": "Illicit crypto flows fragmented across source branches converge into an OTC/P2P intermediary aggregator, then convert to fiat or privacy assets and exit to an off-chain target.",
+    "description": "Illicit crypto flows fragmented across source branches converge into the attacker's source-chain consolidation wallet, are bridged to a target chain, then transferred into the target-chain OTC/P2P acceptor deposit address for off-chain cash-out.",
     "preconditions": {
       "min_level": 0,
       "allowed_node_roles": [
@@ -1772,7 +1776,7 @@
       },
       {
         "temp_id": "AC",
-        "role": "Asset_Conversion",
+        "role": "Intermediate",
         "chain": "Chain_B",
         "level": 3
       },
@@ -1817,7 +1821,7 @@
       {
         "source": "AC",
         "target": "T",
-        "operation": "Swap",
+        "operation": "Transfer",
         "flow_share": 1.0
       }
     ],

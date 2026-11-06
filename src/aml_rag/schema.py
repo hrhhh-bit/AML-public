@@ -424,6 +424,51 @@ class TopologicalMotif(BaseModel):
                     queue.append(nxt)
         return visited == len(self.nodes)
 
+    def is_weakly_connected(self) -> bool:
+        """Return True iff every node is reachable ignoring edge direction.
+
+        Guards against a "unified campaign DAG" that is actually several
+        physically disconnected fragments pasted into one motif (weakly
+        connected component count == 1 is required for causal coherence).
+        """
+        if not self.nodes:
+            return True
+        adj: dict[str, list[str]] = {n.temp_id: [] for n in self.nodes}
+        for edge in self.edges:
+            adj[edge.source].append(edge.target)
+            adj[edge.target].append(edge.source)
+        seen: set[str] = set()
+        stack = [self.nodes[0].temp_id]
+        while stack:
+            nid = stack.pop()
+            if nid in seen:
+                continue
+            seen.add(nid)
+            stack.extend(adj[nid])
+        return len(seen) == len(self.nodes)
+
+    def stage_boundary_nodes(self) -> list[str]:
+        """Return ``temp_id`` of bottleneck nodes (in-degree >= 2 AND
+        out-degree >= 2).
+
+        Such nodes mark the convergence/fan-out boundary of a unified campaign
+        DAG — e.g. a fund-holding aggregator that merges several inflows then
+        splits them onward to mules / cash-out points.  This is a "sandglass
+        bottleneck" heuristic (not the strict undirected articulation point):
+        it identifies the natural Inflow/Outflow seam without physically
+        cutting the graph, so the campaign keeps its causal closure.
+        """
+        indeg: Counter[str] = Counter()
+        outdeg: Counter[str] = Counter()
+        for edge in self.edges:
+            indeg[edge.target] += 1
+            outdeg[edge.source] += 1
+        return [
+            n.temp_id
+            for n in self.nodes
+            if indeg.get(n.temp_id, 0) >= 2 and outdeg.get(n.temp_id, 0) >= 2
+        ]
+
     def topological_order(self) -> list[AbstractNode]:
         """Return nodes ordered by (level, temp_id) — an execution sequence."""
         return sorted(self.nodes, key=lambda n: (n.level, n.temp_id))
